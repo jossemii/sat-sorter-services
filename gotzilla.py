@@ -92,7 +92,7 @@ class Session:
                 try:
                     response = requests.post( self.uris.get(solver)+'/', json={'cnf':cnf}, timeout=self.timeout ).json().get('interpretation')
                     interpretation = response.text
-                    time = response.time
+                    time = response.elapsed.total_seconds()
                     if interpretation == '':
                         # Me dices que es insatisfactible, se guarda cada solver con el tiempo tardado.
                         insats.update({solver:time})
