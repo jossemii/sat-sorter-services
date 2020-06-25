@@ -48,7 +48,7 @@ class Session:
         return uris
 
     def random_cnf(self):
-        random_uri = self.get_image_uri('f2aaf326eabb22b1775d0fbd91d9a7660394ca300bef3f4d63df6f955d60e0dd')
+        random_uri = self.get_image_uri('a05d3653fc494b92ea64c1308771cf8ae154f663e9156a3914e369d4501d6913')
         docker_snail = True
         while docker_snail==True:
             try:
