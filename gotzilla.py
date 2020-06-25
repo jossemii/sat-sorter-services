@@ -44,7 +44,7 @@ class Session:
     def make_uris(self):
         uris = {}
         for solver in self.solvers:
-            uris.update({solver:self.get_image_uri(solver.key())})
+            uris.update({solver:self.get_image_uri(solver)})
         return uris
 
     def random_cnf(self):
