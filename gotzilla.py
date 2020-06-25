@@ -15,6 +15,7 @@ def add_solver(image):
 
 class Session:
     def __init__(self, gateway_uri, gateway_uri_delete):
+        self.timeout = 30
         self.auth = self.make_auth()
         self.gateway_uri = gateway_uri
         self.gateway_uri_delete  = gateway_uri_delete
@@ -87,19 +88,27 @@ class Session:
             cnf = self.random_cnf()
             is_insat = True # En caso en que se demuestre lo contrario.
             insats = {} # Solvers que afirman la insatisfactibilidad junto con su respectivo tiempo.
-            for solver in self.solvers:    
-                interpretation, time = requests.post( self.uris.get(solver)+'/', json={'cnf':cnf} ).json().get('interpretation')
-                if interpretation == '':
-                    # Me dices que es insatisfactible, se guarda cada solver con el tiempo tardado.
-                    insats.update({solver:time})
-                else:
-                    if isGod(cnf, interpretation):
-                        # La interpretacion es correcta.
-                        is_insat = False
+            for solver in self.solvers:
+                try:
+                    response = requests.post( self.uris.get(solver)+'/', json={'cnf':cnf}, timeout=self.timeout ).json().get('interpretation')
+                    interpretation = response.text
+                    time = response.time
+                    if interpretation == '':
+                        # Me dices que es insatisfactible, se guarda cada solver con el tiempo tardado.
+                        insats.update({solver:time})
                     else:
-                        time = -1*time
-                    score = self.solvers.get(solver)+1/time
+                        if isGod(cnf, interpretation):
+                            # La interpretacion es correcta.
+                            is_insat = False
+                        else:
+                            time = -1*time
+                        score = self.solvers.get(solver)+1/time
+                        self.solvers.update({solver:{'score':score}})
+                except TimeoutError:
+                    # Tradó demasiado....
+                    score = self.solvers.get(solver)+1/(-1*self.timeout)
                     self.solvers.update({solver:{'score':score}})
+
             # Registra los solvers que afirmaron la insatisfactibilidad en caso en que ninguno
             #  haya demostrado lo contrario.
             if is_insat:
