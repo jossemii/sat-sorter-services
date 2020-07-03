@@ -3,8 +3,7 @@
     "Methods": [
         {
             "Params": [
-                "gateway_uri",
-                "gateway_uri_delete"
+                "gateway"
             ],
             "Path": "/start",
             "Return": "auth",

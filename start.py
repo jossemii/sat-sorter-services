@@ -4,13 +4,14 @@ import gotzilla
 app = Flask(__name__)
 
 if __name__ == "__main__":
-
+    
+    # Una sesion por instancia.
+    
     @app.route('/start', methods=['GET', 'POST'])
     def start():
-        global Session # Una sesion por instancia.
-        gateway_uri=request.json.get('gateway_uri')
-        gateway_uri_delete=request.json.get('gateway_uri_delete')
-        Session = gotzilla.new_session(gateway_uri, gateway_uri_delete)
+        global Session 
+        gateway=request.json.get('gateway')
+        Session = gotzilla.new_session(gateway)
         return {'auth':Session.get_auth()}
 
     @app.route('/stop', methods=['POST'])
