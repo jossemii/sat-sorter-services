@@ -49,7 +49,7 @@ class Session:
         return uris
 
     def random_cnf(self):
-        random_uri = self.get_image_uri('a05d3653fc494b92ea64c1308771cf8ae154f663e9156a3914e369d4501d6913')
+        random_uri = self.get_image_uri('e7224c40ce98d3e56a60974329343be8d430031e4e87f8dd1c48f951d95f8d52')
         docker_snail = True
         while docker_snail==True:
             try:
@@ -67,7 +67,8 @@ class Session:
     def stop(self):
         self.dont_stop == False
         with open('solvers.json', 'w') as file:
-            file.write( json.dumps(self.solvers, indent=4, sort_keys=True) )   
+            file.write( json.dumps(self.solvers, indent=4, sort_keys=True) )
+        
 
     def start(self):
         def isGod(cnf, interpretation):
