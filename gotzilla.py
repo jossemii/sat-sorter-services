@@ -1,8 +1,8 @@
 import requests
 import json
 
-def new_session(gateway_uri, gateway_uri_delete):
-    return Session(gateway_uri, gateway_uri_delete)
+def new_session(gateway):
+    return Session(gateway = gateway)
 
 def add_solver(image):
     # Si añades uno que ya esta, se reescribirá.
@@ -22,6 +22,7 @@ class Session:
         self.solvers = self.load_solvers()
         self.uris = self.make_uris()
         self.start()
+        self.random_cnf_token = None
 
     def get_auth(self):
         return self.auth
@@ -38,8 +39,8 @@ class Session:
         return json.load(open('solvers.json','r'))
 
     def get_image_uri(self, image):
-        response = requests.get(self.gateway + image)
-        return response.text
+        response = requests.get(self.gateway + '/' + image)
+        return response.json
 
     def make_uris(self):
         uris = {}
@@ -48,7 +49,9 @@ class Session:
         return uris
 
     def random_cnf(self):
-        random_uri = self.get_image_uri('e7224c40ce98d3e56a60974329343be8d430031e4e87f8dd1c48f951d95f8d52')
+        random_dict = self.get_image_uri('e7224c40ce98d3e56a60974329343be8d430031e4e87f8dd1c48f951d95f8d52')
+        random_uri = random_dict.get('uri')
+        self.random_cnf_token = random_dict.get('token')
         docker_snail = True
         while docker_snail==True:
             try:
@@ -67,7 +70,9 @@ class Session:
         self.dont_stop == False
         with open('solvers.json', 'w') as file:
             file.write( json.dumps(self.solvers, indent=4, sort_keys=True) )
-        requests.get(self.gateway)
+        requests.get(self.gateway+'/'+self.random_cnf_token.get('token'))
+        for solver in self.uris:
+            requests.get(self.gateway+'/'+solver.get('token'))
 
     def start(self):
         def isGod(cnf, interpretation):
@@ -90,7 +95,7 @@ class Session:
             insats = {} # Solvers que afirman la insatisfactibilidad junto con su respectivo tiempo.
             for solver in self.solvers:
                 try:
-                    response = requests.post( self.uris.get(solver)+'/', json={'cnf':cnf}, timeout=self.timeout ).json().get('interpretation')
+                    response = requests.post( self.uris.get(solver).get('uri')+'/', json={'cnf':cnf}, timeout=self.timeout ).json().get('interpretation')
                     interpretation = response.text
                     time = response.elapsed.total_seconds()
                     if interpretation == '':
