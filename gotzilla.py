@@ -14,11 +14,10 @@ def add_solver(image):
         file.write( json.dumps( with_new_sovler, indent=4, sort_keys=True) )
 
 class Session:
-    def __init__(self, gateway_uri, gateway_uri_delete):
+    def __init__(self, gateway):
         self.timeout = 30
         self.auth = self.make_auth()
-        self.gateway_uri = gateway_uri
-        self.gateway_uri_delete  = gateway_uri_delete
+        self.gateway = gateway
         self.dont_stop = True
         self.solvers = self.load_solvers()
         self.uris = self.make_uris()
@@ -39,7 +38,7 @@ class Session:
         return json.load(open('solvers.json','r'))
 
     def get_image_uri(self, image):
-        response = requests.get(self.gateway_uri+image)
+        response = requests.get(self.gateway + image)
         return response.text
 
     def make_uris(self):
@@ -68,7 +67,7 @@ class Session:
         self.dont_stop == False
         with open('solvers.json', 'w') as file:
             file.write( json.dumps(self.solvers, indent=4, sort_keys=True) )
-        
+        requests.get(self.gateway)
 
     def start(self):
         def isGod(cnf, interpretation):
