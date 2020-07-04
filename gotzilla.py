@@ -106,10 +106,10 @@ class Session:
             else:
                 refresh = 0
                 # Actualizo el tensor.
-                solvers = load_solvers()
+                solvers = self.load_solvers()
                 for solver in self.solvers:
                     d = self.solvers[solver] 
-                    d.update({'score': solver:self.sovlers[solver] + solvers[solver]})
+                    d.update({'score': self.solvers[solver] + solvers[solver]})
                     solvers.update({solver:d})
                 with open('solvers.json', 'w') as file:
                     file.write( json.dumps(solvers, indent=4, sort_keys=True) )
