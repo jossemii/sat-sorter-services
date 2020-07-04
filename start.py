@@ -2,7 +2,7 @@ import gotzilla
 
 if __name__ == "__main__":
 
-    gateway = None
-    refresh = None
+    gateway = None # $GATEWAY
+    refresh = None # $REFRESH
 
     gotzilla.start(gateway, refresh)
