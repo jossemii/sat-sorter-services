@@ -1,39 +1,21 @@
 import requests
 import json
 
-def new_session(gateway):
-    return Session(gateway = gateway)
-
-def add_solver(image):
-    # Si añades uno que ya esta, se reescribirá.
-    with_new_sovler = json.load(open('solvers.json','r'))
-    with_new_sovler.update({image:{
-        "score":0
-    }})
-    with open('solvers.json','w') as file:
-        file.write( json.dumps( with_new_sovler, indent=4, sort_keys=True) )
+def start(gateway, refresh):
+    Session(gateway=gateway, refresh=refresh)
 
 class Session:
-    def __init__(self, gateway):
-        self.timeout = 30
-        self.auth = self.make_auth()
+    def __init__(self, gateway, refresh):
+        self.refresh = refresh
         self.gateway = gateway
-        self.dont_stop = True
         self.solvers = self.load_solvers()
+        self.solvers_init_score()
         self.uris = self.make_uris()
         self.start()
-        self.random_cnf_token = None
 
-    def get_auth(self):
-        return self.auth
-    
-    def make_auth(self):
-        import random
-        import string
-        def randomString(stringLength=8):
-            letters = string.ascii_lowercase
-            return ''.join(random.choice(letters) for i in range(stringLength))
-        return randomString()
+    def solvers_init_score(self):
+        for solver in self.solvers:
+            score 0
 
     def load_solvers(self):
         return json.load(open('solvers.json','r'))
@@ -66,14 +48,6 @@ class Session:
         print(cnf)
         return cnf
 
-    def stop(self):
-        self.dont_stop == False
-        with open('solvers.json', 'w') as file:
-            file.write( json.dumps(self.solvers, indent=4, sort_keys=True) )
-        requests.get(self.gateway+'/'+self.random_cnf_token.get('token'))
-        for solver in self.uris:
-            requests.get(self.gateway+'/'+solver.get('token'))
-
     def start(self):
         def isGod(cnf, interpretation):
             interpretation = interpretation.split(' ')
@@ -88,40 +62,54 @@ class Session:
                     return False
             return True
 
-        # En caso de fallo el tiempo tardado se resta al score.
-        while self.dont_stop:
-            cnf = self.random_cnf()
-            is_insat = True # En caso en que se demuestre lo contrario.
-            insats = {} # Solvers que afirman la insatisfactibilidad junto con su respectivo tiempo.
-            for solver in self.solvers:
-                try:
-                    response = requests.post( self.uris.get(solver).get('uri')+'/', json={'cnf':cnf}, timeout=self.timeout ).json().get('interpretation')
-                    interpretation = response.text
-                    time = response.elapsed.total_seconds()
-                    if interpretation == '':
-                        # Me dices que es insatisfactible, se guarda cada solver con el tiempo tardado.
-                        insats.update({solver:time})
-                    else:
-                        if isGod(cnf, interpretation):
-                            # La interpretacion es correcta.
-                            is_insat = False
+        refresh = 0
+        while 1:
+            if refresh<self.refresh:
+                cnf = self.random_cnf()
+                is_insat = True # En caso en que se demuestre lo contrario.
+                insats = {} # Solvers que afirman la insatisfactibilidad junto con su respectivo tiempo.
+                for solver in self.solvers:
+                    try:
+# El timeout se podria calcular a partir del resto..
+                        response = requests.post( self.uris.get(solver).get('uri')+'/', json={'cnf':cnf}, timeout=30 ).json().get('interpretation')
+                        interpretation = response.text
+                        time = response.elapsed.total_seconds()
+                        if interpretation == '':
+                            # Me dices que es insatisfactible, se guarda cada solver con el tiempo tardado.
+                            insats.update({solver:time})
                         else:
-                            time = -1*time
+                            if isGod(cnf, interpretation):
+                                # La interpretacion es correcta.
+                                is_insat = False
+                            else:
+                                time = -1*time
+                            score = self.solvers.get(solver)+1/time
+                            self.solvers.update({solver:{'score':score}})
+                    except TimeoutError:
+                        # Tradó demasiado....
+                        score = self.solvers.get(solver)+1/(-1*self.refresh)
+                        self.solvers.update({solver:{'score':score}})
+
+                # Registra los solvers que afirmaron la insatisfactibilidad en caso en que ninguno
+                #  haya demostrado lo contrario.
+                if is_insat:
+                    for solver in insats:
+                        score = self.solvers.get(solver)+1/insats.get(solver)
+                        self.solvers.update({solver:{'score':score}})
+                else:
+                    for solver in insats:
+                        time = -1*insats.get(solver)
                         score = self.solvers.get(solver)+1/time
                         self.solvers.update({solver:{'score':score}})
-                except TimeoutError:
-                    # Tradó demasiado....
-                    score = self.solvers.get(solver)+1/(-1*self.timeout)
-                    self.solvers.update({solver:{'score':score}})
-
-            # Registra los solvers que afirmaron la insatisfactibilidad en caso en que ninguno
-            #  haya demostrado lo contrario.
-            if is_insat:
-                for solver in insats:
-                    score = self.solvers.get(solver)+1/insats.get(solver)
-                    self.solvers.update({solver:{'score':score}})
             else:
-                for solver in insats:
-                    time = -1*insats.get(solver)
-                    score = self.solvers.get(solver)+1/time
-                    self.solvers.update({solver:{'score':score}})
+                refresh = 0
+                # Actualizo el tensor.
+                solvers = load_solvers()
+                for solver in self.solvers:
+                    d = self.solvers.[solver] 
+                    d.update({'score': solver:self.sovlers[solver] + solvers[solver]})
+                    solvers.update({solver:d})
+                with open('solvers.json', 'w') as file:
+                    file.write( json.dumps(solvers, indent=4, sort_keys=True) )
+                    
+                self.solvers_init_score()

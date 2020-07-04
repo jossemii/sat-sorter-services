@@ -1,6 +1,8 @@
 import gotzilla
 
-gateway = None
-refresh = None
+if __name__ == "__main__":
 
-gotzilla.start(gateway, refresh)
+    gateway = None
+    refresh = None
+
+    gotzilla.start(gateway, refresh)
