@@ -15,7 +15,9 @@ class Session:
 
     def solvers_init_score(self):
         for solver in self.solvers:
-            score 0
+            self.solvers.update({solver:{
+                'score': 0
+            }})
 
     def load_solvers(self):
         return json.load(open('solvers.json','r'))
@@ -106,10 +108,10 @@ class Session:
                 # Actualizo el tensor.
                 solvers = load_solvers()
                 for solver in self.solvers:
-                    d = self.solvers.[solver] 
+                    d = self.solvers[solver] 
                     d.update({'score': solver:self.sovlers[solver] + solvers[solver]})
                     solvers.update({solver:d})
                 with open('solvers.json', 'w') as file:
                     file.write( json.dumps(solvers, indent=4, sort_keys=True) )
-                    
+
                 self.solvers_init_score()
