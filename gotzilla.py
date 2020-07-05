@@ -73,6 +73,7 @@ class Session:
                 for solver in self.solvers:
                     try:
                         # El timeout se podria calcular a partir del resto..
+                        # Tambien podria ser asincrono ¿? ..
                         response = requests.post( self.uris.get(solver).get('uri')+'/', json={'cnf':cnf}, timeout=30 ).json().get('interpretation')
                         interpretation = response.text
                         time = response.elapsed.total_seconds()
