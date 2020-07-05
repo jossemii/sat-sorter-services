@@ -1,9 +1,9 @@
 import gotzilla
-import argparse
+import sys
 
 if __name__ == "__main__":
 
-    gateway = None # $GATEWAY
-    refresh = None # $REFRESH
+    gateway = sys.argv[1]
+    refresh = sys.argv[2]
 
     gotzilla.start(gateway, refresh)
