@@ -1,4 +1,2 @@
 #!/bin/bash
-gateway = $GATEWAY
-refresh = $REFRESH
-python3 start.py gateway refresh
+python3 start.py $GATEWAY $REFRESH
