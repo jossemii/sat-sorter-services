@@ -23,6 +23,7 @@ class Session:
         return json.load(open('solvers.json','r'))
 
     def get_image_uri(self, image):
+        print('\n\n\nConecta con gateway\n\n\n')
         response = requests.get(self.gateway + '/' + image)
         return response.json
 
@@ -34,6 +35,7 @@ class Session:
 
     def random_cnf(self):
         random_dict = self.get_image_uri('e7224c40ce98d3e56a60974329343be8d430031e4e87f8dd1c48f951d95f8d52')
+        print('Obtenemos cnf random.')
         random_uri = random_dict.get('uri')
         self.random_cnf_token = random_dict.get('token')
         docker_snail = True
