@@ -73,6 +73,7 @@ class Session:
         while 1:
             if refresh<self.refresh:
                 cnf = self.random_cnf()
+                print(cnf)
                 is_insat = True # En caso en que se demuestre lo contrario.
                 insats = {} # Solvers que afirman la insatisfactibilidad junto con su respectivo tiempo.
                 for solver in self.solvers:
