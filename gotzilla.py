@@ -49,7 +49,7 @@ class Session:
                     exit()
                 break
             except requests.exceptions.ConnectionError:
-                print(self.random_uri+'\n\nDocker va muy lento.....')
+                print(self.random_uri+'   Docker va muy lento.....\n\n')
         cnf = response.json().get('cnf')
         print(cnf)
         return cnf
@@ -76,6 +76,7 @@ class Session:
                 is_insat = True # En caso en que se demuestre lo contrario.
                 insats = {} # Solvers que afirman la insatisfactibilidad junto con su respectivo tiempo.
                 for solver in self.solvers:
+                    print(solver)
                     try:
                         # El timeout se podria calcular a partir del resto..
                         # Tambien podria ser asincrono ¿? ..
@@ -83,18 +84,19 @@ class Session:
                         interpretation = response.text
                         time = response.elapsed.total_seconds()
                         if interpretation == '':
-                            # Me dices que es insatisfactible, se guarda cada solver con el tiempo tardado.
+                            print('Me dices que es insatisfactible, se guarda cada solver con el tiempo tardado.') 
                             insats.update({solver:time})
                         else:
                             if isGod(cnf, interpretation):
-                                # La interpretacion es correcta.
+                                print('La interpretacion es correcta.') 
                                 is_insat = False
                             else:
+                                print('La interpretacion es incorrecta.')
                                 time = -1*time
                             score = self.solvers.get(solver)+1/time
                             self.solvers.update({solver:{'score':score}})
                     except TimeoutError:
-                        # Tradó demasiado....
+                        print('Tradó demasiado....')
                         score = self.solvers.get(solver)+1/(-1*self.refresh)
                         self.solvers.update({solver:{'score':score}})
 
@@ -111,7 +113,7 @@ class Session:
                         self.solvers.update({solver:{'score':score}})
             else:
                 refresh = 0
-                # Actualizo el tensor.
+                print('Actualizo el tensor.')
                 solvers = self.load_solvers()
                 for solver in self.solvers:
                     d = self.solvers[solver] 
