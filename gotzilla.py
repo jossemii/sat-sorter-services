@@ -25,7 +25,7 @@ class Session:
     def get_image_uri(self, image):
         print('\n\n\nConecta con gateway\n'+self.gateway + '/'+ image+'\n\n')
         response = requests.get(self.gateway + '/' + image)
-        return response.json
+        return response.json()
 
     def make_uris(self):
         uris = {}
