@@ -33,21 +33,23 @@ class Session:
             uris.update({solver:self.get_image_uri(solver)})
         return uris
 
-    def random_cnf(self):
+    def init_random_cnf(self):
         random_dict = self.get_image_uri('e7224c40ce98d3e56a60974329343be8d430031e4e87f8dd1c48f951d95f8d52')
-        print('Obtenemos cnf random.')
-        random_uri = random_dict.get('uri')
+        print('Iniciamos cnf random.')
+        self.random_uri = random_dict.get('uri')
         self.random_cnf_token = random_dict.get('token')
-        docker_snail = True
-        while docker_snail==True:
+
+    def random_cnf(self):
+        print('Obtenemos cnf random.')
+        while 1:
             try:
-                response = requests.get(random_uri+'/')
-                docker_snail = False
+                response = requests.get(self.random_uri+'/')
                 if response.status_code != 200:
                     print("Algo va mal ....", response)
                     exit()
+                break
             except requests.exceptions.ConnectionError:
-                print('Docker va muy lento.....')
+                print(self.random_uri+'\n\nDocker va muy lento.....')
         cnf = response.json().get('cnf')
         print(cnf)
         return cnf
@@ -67,6 +69,7 @@ class Session:
             return True
 
         refresh = 0
+        self.init_random_cnf()
         while 1:
             if refresh<self.refresh:
                 cnf = self.random_cnf()
