@@ -6,7 +6,7 @@ def start(gateway, refresh):
 
 class Session:
     def __init__(self, gateway, refresh):
-        self.refresh = refresh
+        self.refresh = int(refresh)
         self.gateway = gateway
         self.solvers = self.load_solvers()
         self.solvers_init_score()
@@ -23,7 +23,7 @@ class Session:
         return json.load(open('solvers.json','r'))
 
     def get_image_uri(self, image):
-        print('\n\n\nConecta con gateway\n\n\n')
+        print('\n\n\nConecta con gateway\n'+self.gateway + '/'+ image+'\n\n')
         response = requests.get(self.gateway + '/' + image)
         return response.json
 
