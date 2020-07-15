@@ -63,8 +63,9 @@ class Session:
                         if var == i:
                             return True
                 return False
-            interpretation = interpretation.split(' ')
-            cnf = [clause.split(' ') for clause in cnf.split('\n')]
+            interpretation = interpretation.split(' ')[1:]
+            cnf = [clause.split(' ')[:-1] for clause in cnf.split('\n')[2:]]
+            print('cnf ---> ',cnf,'/n/ninterpretation ---> ',interpretation)
             for clause in cnf:
                 print('   ',clause)
                 if goodClause(clause, interpretation) == False:
@@ -95,6 +96,7 @@ class Session:
                             print('Me dices que es insatisfactible, se guarda cada solver con el tiempo tardado.') 
                             insats.update({solver:time})
                         else:
+                            print('Dice que es satisfactible .....')
                             if isGood(cnf, interpretation):
                                 print('La interpretacion es correcta.') 
                                 is_insat = False
