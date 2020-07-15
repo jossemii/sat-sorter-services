@@ -81,8 +81,7 @@ class Session:
                     try:
                         # El timeout se podria calcular a partir del resto..
                         # Tambien podria ser asincrono ¿? ..
-                        response = requests.post( self.uris.get(solver).get('uri')+'/', json={'cnf':cnf}, timeout=30 ).json().get('interpretation')
-                        interpretation = response.text
+                        interpretation = requests.post( self.uris.get(solver).get('uri')+'/', json={'cnf':cnf}, timeout=30 ).json().get('interpretation')
                         time = response.elapsed.total_seconds()
                         if interpretation == '':
                             print('Me dices que es insatisfactible, se guarda cada solver con el tiempo tardado.') 
