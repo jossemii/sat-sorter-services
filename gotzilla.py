@@ -69,11 +69,12 @@ class Session:
             return True
 
         refresh = 0
+        timeout=30
         self.init_random_cnf()
         while 1:
             if refresh<self.refresh:
+                refresh=+refresh
                 cnf = self.random_cnf()
-                print(cnf)
                 is_insat = True # En caso en que se demuestre lo contrario.
                 insats = {} # Solvers que afirman la insatisfactibilidad junto con su respectivo tiempo.
                 for solver in self.solvers:
@@ -81,7 +82,7 @@ class Session:
                     try:
                         # El timeout se podria calcular a partir del resto..
                         # Tambien podria ser asincrono ¿? ..
-                        response = requests.post( self.uris.get(solver).get('uri')+'/', json={'cnf':cnf}, timeout=30 )
+                        response = requests.post( self.uris.get(solver).get('uri')+'/', json={'cnf':cnf}, timeout=timeout )
                         interpretation = response.json().get('interpretation')
                         time = response.elapsed.total_seconds()
                         if interpretation == '':
@@ -94,31 +95,32 @@ class Session:
                             else:
                                 print('La interpretacion es incorrecta.')
                                 time = -1*time
-                            score = self.solvers.get(solver)+1/time
+                            score = self.solvers.get(solver).get('score')+1/time
                             self.solvers.update({solver:{'score':score}})
                     except TimeoutError:
                         print('Tradó demasiado....')
-                        score = self.solvers.get(solver)+1/(-1*self.refresh)
+                        score = self.solvers.get(solver).get('score')-1/timeout
                         self.solvers.update({solver:{'score':score}})
 
                 # Registra los solvers que afirmaron la insatisfactibilidad en caso en que ninguno
                 #  haya demostrado lo contrario.
                 if is_insat:
+                    print('Estaban en lo cierto', insats)
                     for solver in insats:
-                        score = self.solvers.get(solver)+1/insats.get(solver)
+                        score = self.solvers.get(solver).get('score')+1/insats.get(solver)
                         self.solvers.update({solver:{'score':score}})
                 else:
+                    print('Se equivocaron..')
                     for solver in insats:
-                        time = -1*insats.get(solver)
-                        score = self.solvers.get(solver)+1/time
+                        score = self.solvers.get(solver).get('score')-1/insats.get(solver)
                         self.solvers.update({solver:{'score':score}})
             else:
                 refresh = 0
                 print('Actualizo el tensor.')
                 solvers = self.load_solvers()
                 for solver in self.solvers:
-                    d = self.solvers[solver] 
-                    d.update({'score': self.solvers[solver] + solvers[solver]})
+                    d = self.solvers[solver]
+                    d.update({'score': self.solvers[solver].get('score') + solvers[solver].get('score')})
                     solvers.update({solver:d})
                 with open('solvers.json', 'w') as file:
                     file.write( json.dumps(solvers, indent=4, sort_keys=True) )
