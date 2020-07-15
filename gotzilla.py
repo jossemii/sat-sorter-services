@@ -73,6 +73,7 @@ class Session:
         self.init_random_cnf()
         while 1:
             if refresh<self.refresh:
+                print(refresh+' / '+self.refresh)
                 refresh=+refresh
                 cnf = self.random_cnf()
                 is_insat = True # En caso en que se demuestre lo contrario.
