@@ -74,7 +74,7 @@ class Session:
         while 1:
             if refresh<self.refresh:
                 print(refresh,' / ',self.refresh)
-                refresh=+refresh
+                refresh = refresh+1
                 cnf = self.random_cnf()
                 is_insat = True # En caso en que se demuestre lo contrario.
                 insats = {} # Solvers que afirman la insatisfactibilidad junto con su respectivo tiempo.
@@ -98,7 +98,7 @@ class Session:
                                 time = -1*time
                             score = self.solvers.get(solver).get('score')+1/time
                             self.solvers.update({solver:{'score':score}})
-                    except TimeoutError:
+                    except (TimeoutError, requests.exceptions.ReadTimeout):
                         print('Tradó demasiado....')
                         score = self.solvers.get(solver).get('score')-1/timeout
                         self.solvers.update({solver:{'score':score}})
