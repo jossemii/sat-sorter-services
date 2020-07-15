@@ -87,8 +87,8 @@ class Session:
                 for solver in self.solvers:
                     print(solver)
                     try:
-                        # El timeout se podria calcular a partir del resto..
-                        # Tambien podria ser asincrono ¿? ..
+                        # El timeout se podria calcular a partir del resto ...
+                        # Tambien podria ser asincrono ...
                         response = requests.post( self.uris.get(solver).get('uri')+'/', json={'cnf':cnf}, timeout=timeout )
                         interpretation = response.json().get('interpretation')
                         time = response.elapsed.total_seconds()
