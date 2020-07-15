@@ -64,7 +64,7 @@ class Session:
                             return True
                 return False
             interpretation = interpretation.split(' ')[1:]
-            cnf = [clause.split(' ')[:-1] for clause in cnf.split('\n')[2:]]
+            cnf = [clause.split(' ')[:-1] for clause in cnf.split('\n')[2:-1]]
             print('cnf ---> ',cnf,'/n/ninterpretation ---> ',interpretation)
             for clause in cnf:
                 print('   ',clause)
