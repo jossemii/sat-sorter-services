@@ -55,17 +55,22 @@ class Session:
         return cnf
 
     def start(self):
-        def isGod(cnf, interpretation):
+        def isGood(cnf, interpretation):
+            def goodClause(clause, interpretation):
+                for var in clause:
+                    for i in interpretation:
+                        print('      ', var, i)
+                        if var == i:
+                            return True
+                return False
             interpretation = interpretation.split(' ')
             cnf = [clause.split(' ') for clause in cnf.split('\n')]
             for clause in cnf:
-                ok = False
-                for var in clause:
-                    for i in interpretation:
-                        if var == i:
-                            ok = True
-                if ok == False:
+                print('   ',clause)
+                if goodClause(clause, interpretation) == False:
+                    print('         is False')
                     return False
+            print('         is True')
             return True
 
         refresh = 0
@@ -90,7 +95,7 @@ class Session:
                             print('Me dices que es insatisfactible, se guarda cada solver con el tiempo tardado.') 
                             insats.update({solver:time})
                         else:
-                            if isGod(cnf, interpretation):
+                            if isGood(cnf, interpretation):
                                 print('La interpretacion es correcta.') 
                                 is_insat = False
                             else:
