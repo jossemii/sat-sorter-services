@@ -34,7 +34,7 @@ class Session:
         return uris
 
     def init_random_cnf(self):
-        random_dict = self.get_image_uri('e7224c40ce98d3e56a60974329343be8d430031e4e87f8dd1c48f951d95f8d52')
+        random_dict = self.get_image_uri('3d67d9ded8d0abe00bdaa9a3ae83d552351afebe617f4e7b0653b5d49eb4e67a')
         print('Iniciamos cnf random.')
         self.random_uri = random_dict.get('uri')
         self.random_cnf_token = random_dict.get('token')
