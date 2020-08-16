@@ -1,2 +1,1 @@
-#!/bin/bash
-python3 start.py $GATEWAY $REFRESH
+python3 /satrainer/start.py $GATEWAY $REFRESH
