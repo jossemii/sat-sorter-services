@@ -1,9 +1,10 @@
 import gotzilla
 import sys
+import os
 
 if __name__ == "__main__":
 
-    gateway = sys.argv[1]
-    refresh = sys.argv[2]
+    gateway = os.environ['GATEWAY']
+    refresh = os.environ['REFRESH']
 
     gotzilla.start(gateway, refresh)
