@@ -20,7 +20,7 @@ class Session:
             }})
 
     def load_solvers(self):
-        return json.load(open('solvers.json','r'))
+        return json.load(open('satrainer/solvers.json','r'))
 
     def get_image_uri(self, image):
         print('\n\n\nConecta con gateway\n'+self.gateway + '/'+ image+'\n\n')
@@ -130,7 +130,7 @@ class Session:
                     d = self.solvers[solver]
                     d.update({'score': self.solvers[solver].get('score') + solvers[solver].get('score')})
                     solvers.update({solver:d})
-                with open('solvers.json', 'w') as file:
+                with open('satrainer/solvers.json', 'w') as file:
                     file.write( json.dumps(solvers, indent=4, sort_keys=True) )
 
                 self.solvers_init_score()
