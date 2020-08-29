@@ -24,7 +24,7 @@ class Session:
 
     def get_image_uri(self, image):
         print('\n\n\nConecta con gateway\n'+self.gateway + '/'+ image+'\n\n')
-        response = requests.get(self.gateway + '/' + image)
+        response = requests.get('http://'+self.gateway + '/' + image)
         return response.json()
 
     def make_uris(self):
@@ -43,7 +43,7 @@ class Session:
         print('Obtenemos cnf random.')
         while 1:
             try:
-                response = requests.get(self.random_uri+'/')
+                response = requests.get('http://'+self.random_uri+'/')
                 if response.status_code != 200:
                     print("Algo va mal ....", response)
                     exit()
@@ -89,7 +89,7 @@ class Session:
                     try:
                         # El timeout se podria calcular a partir del resto ...
                         # Tambien podria ser asincrono ...
-                        response = requests.post( self.uris.get(solver).get('uri')+'/', json={'cnf':cnf}, timeout=timeout )
+                        response = requests.post('http://'+ self.uris.get(solver).get('uri')+'/', json={'cnf':cnf}, timeout=timeout )
                         interpretation = response.json().get('interpretation')
                         time = response.elapsed.total_seconds()
                         if interpretation == '':
