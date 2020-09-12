@@ -8,30 +8,18 @@ class Session:
     def __init__(self, gateway, refresh):
         self.refresh = int(refresh)
         self.gateway = gateway
-        self.solvers = self.load_solvers()
-        self.solvers_init_score()
-        self.uris = self.make_uris()
+        self.solvers = json.load(open('satrainer/solvers.json','r'))
+        self.uris = { solver : self.get_image_uri(solver) for solver in self.solvers }
         self.start()
 
-    def solvers_init_score(self):
-        for solver in self.solvers:
-            self.solvers.update({solver:{
-                'score': 0
-            }})
-
-    def load_solvers(self):
-        return json.load(open('satrainer/solvers.json','r'))
+    def load_solver(self, solver):
+        self.solvers.update({solver:{}})
+        self.uris.update({solver:self.get_image_uri(solver)})
 
     def get_image_uri(self, image):
         print('\n\n\nConecta con gateway\n'+self.gateway + '/'+ image+'\n\n')
         response = requests.get('http://'+self.gateway + '/' + image)
         return response.json()
-
-    def make_uris(self):
-        uris = {}
-        for solver in self.solvers:
-            uris.update({solver:self.get_image_uri(solver)})
-        return uris
 
     def init_random_cnf(self):
         random_dict = self.get_image_uri('3d67d9ded8d0abe00bdaa9a3ae83d552351afebe617f4e7b0653b5d49eb4e67a')
@@ -54,31 +42,37 @@ class Session:
         print(cnf)
         return cnf
 
-    def start(self):
-        def isGood(cnf, interpretation):
-            def goodClause(clause, interpretation):
-                for var in clause:
-                    for i in interpretation:
-                        print('      ', var, i)
-                        if var == i:
-                            return True
+    @staticmethod
+    def isGood(cnf, interpretation):
+        def goodClause(clause, interpretation):
+            for var in clause:
+                for i in interpretation:
+                    print('      ', var, i)
+                    if var == i:
+                        return True
+            return False
+        interpretation = interpretation.split(' ')[1:]
+        cnf = [clause.split(' ')[:-1] for clause in cnf.split('\n')[2:-1]]
+        print('cnf ---> ',cnf,'/n/ninterpretation ---> ',interpretation)
+        for clause in cnf:
+            print('   ',clause)
+            if goodClause(clause, interpretation) == False:
+                print('         is False')
                 return False
-            interpretation = interpretation.split(' ')[1:]
-            cnf = [clause.split(' ')[:-1] for clause in cnf.split('\n')[2:-1]]
-            print('cnf ---> ',cnf,'/n/ninterpretation ---> ',interpretation)
-            for clause in cnf:
-                print('   ',clause)
-                if goodClause(clause, interpretation) == False:
-                    print('         is False')
-                    return False
-            print('         is True')
-            return True
+        print('         is True')
+        return True
 
+    def updateScore( self, cnf, solver, score):
+        self.solvers.update({solver:{
+            'score': score
+            }})
+
+    def start(self):
         refresh = 0
         timeout=30
         self.init_random_cnf()
         while 1:
-            if refresh<self.refresh:
+            if refresh < self.refresh:
                 print(refresh,' / ',self.refresh)
                 refresh = refresh+1
                 cnf = self.random_cnf()
@@ -93,44 +87,49 @@ class Session:
                         interpretation = response.json().get('interpretation')
                         time = response.elapsed.total_seconds()
                         if interpretation == '':
-                            print('Me dices que es insatisfactible, se guarda cada solver con el tiempo tardado.') 
+                            print('Dice que es insatisfactible, se guarda cada solver con el tiempo tardado.')
                             insats.update({solver:time})
                         else:
                             print('Dice que es satisfactible .....')
-                            if isGood(cnf, interpretation):
+                            if self.isGood(cnf, interpretation):
                                 print('La interpretacion es correcta.') 
                                 is_insat = False
                             else:
                                 print('La interpretacion es incorrecta.')
-                                time = -1*time
-                            score = self.solvers.get(solver).get('score')+1/time
-                            self.solvers.update({solver:{'score':score}})
+                            self.updateScore(
+                                cnf = cnf,
+                                solver = solver,
+                                score = self.solvers.get(solver).get('score')+1/time
+                            )
                     except (TimeoutError, requests.exceptions.ReadTimeout):
                         print('Tradó demasiado....')
-                        score = self.solvers.get(solver).get('score')-1/timeout
-                        self.solvers.update({solver:{'score':score}})
+                        self.updateScore(
+                            cnf = cnf,
+                            solver = solver,
+                            score = self.solvers.get(solver).get('score')-1/timeout
+                        )
 
                 # Registra los solvers que afirmaron la insatisfactibilidad en caso en que ninguno
                 #  haya demostrado lo contrario.
                 if is_insat:
                     print('Estaban en lo cierto', insats)
                     for solver in insats:
-                        score = self.solvers.get(solver).get('score')+1/insats.get(solver)
-                        self.solvers.update({solver:{'score':score}})
+                        self.updateScore(
+                            cnf = cnf,
+                            solver = solver,
+                            score =  self.solvers.get(solver).get('score')+1/insats.get(solver)
+                        )
                 else:
                     print('Se equivocaron..')
                     for solver in insats:
-                        score = self.solvers.get(solver).get('score')-1/insats.get(solver)
-                        self.solvers.update({solver:{'score':score}})
+                        self.updateScore(
+                            cnf = cnf,
+                            solver = solver,
+                            score = self.solvers.get(solver).get('score')-1/insats.get(solver)
+                        )
             else:
                 refresh = 0
                 print('Actualizo el tensor.')
-                solvers = self.load_solvers()
-                for solver in self.solvers:
-                    d = self.solvers[solver]
-                    d.update({'score': self.solvers[solver].get('score') + solvers[solver].get('score')})
-                    solvers.update({solver:d})
                 with open('satrainer/solvers.json', 'w') as file:
-                    file.write( json.dumps(solvers, indent=4, sort_keys=True) )
-
-                self.solvers_init_score()
+                    file.write( json.dumps(self.solvers, indent=4, sort_keys=True) )
+                self.load_solvers()
