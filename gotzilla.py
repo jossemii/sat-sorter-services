@@ -21,7 +21,7 @@ class Session:
         response = requests.get('http://'+self.gateway + '/' + image)
         return response.json()
 
-    def init_random_cnf(self):
+    def init_random_cnf_service(self):
         random_dict = self.get_image_uri('3d67d9ded8d0abe00bdaa9a3ae83d552351afebe617f4e7b0653b5d49eb4e67a')
         print('Iniciamos cnf random.')
         self.random_uri = random_dict.get('uri')
@@ -37,9 +37,9 @@ class Session:
                     exit()
                 break
             except requests.exceptions.ConnectionError:
-                print(self.random_uri+'   Docker va muy lento.....\n\n')
+                print(self.random_uri+'   esperando cnf .....\n\n')
         cnf = response.json().get('cnf')
-        print(cnf)
+        print(' CNF --> ',cnf)
         return cnf
 
     @staticmethod
@@ -63,14 +63,28 @@ class Session:
         return True
 
     def updateScore( self, cnf, solver, score):
-        self.solvers.update({solver:{
-            'score': score
-            }})
+        num_clauses, num_literals = (
+            cnf.split('\n')[1].split(' ')[-2],
+            cnf.split('\n')[1].split(' ')[-1],
+        )
+        try:
+            solver_cnf = self.solvers[solver][(num_clauses, num_literals)]
+        except Exception:
+            solver_cnf = {
+                'index': 1,
+                'score': 0
+            }
+        self.solvers[solver].update({
+                (num_clauses, num_literals) : {
+                    'index': solver_cnf['index']+1,
+                    'score': ( solver_cnf['score']*solver_cnf['index'] + score )/(solver_cnf['index']+1)
+                }
+            })
 
     def start(self):
         refresh = 0
         timeout=30
-        self.init_random_cnf()
+        self.init_random_cnf_service()
         while 1:
             if refresh < self.refresh:
                 print(refresh,' / ',self.refresh)
@@ -132,4 +146,3 @@ class Session:
                 print('Actualizo el tensor.')
                 with open('satrainer/solvers.json', 'w') as file:
                     file.write( json.dumps(self.solvers, indent=4, sort_keys=True) )
-                self.load_solvers()
