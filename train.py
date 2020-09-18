@@ -1,9 +1,6 @@
 import requests
 import json
 
-def start(gateway, refresh):
-    Session(gateway=gateway, refresh=refresh)
-
 class Session:
     def __init__(self, gateway, refresh):
         self.refresh = int(refresh)
@@ -11,6 +8,14 @@ class Session:
         self.solvers = json.load(open('satrainer/solvers.json','r'))
         self.uris = { solver : self.get_image_uri(solver) for solver in self.solvers }
         self.start()
+
+    @staticmethod
+    def start(gateway, refresh):
+        return Session(gateway=gateway, refresh=refresh)
+
+    @staticmethod
+    def stop():
+        pass
 
     def load_solver(self, solver):
         self.solvers.update({solver:{}})
