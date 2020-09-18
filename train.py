@@ -2,12 +2,6 @@ import requests
 import json
 
 class Session:
-    def __init__(self, gateway, refresh):
-        self.refresh = int(refresh)
-        self.gateway = gateway
-        self.solvers = json.load(open('satrainer/solvers.json','r'))
-        self.uris = { solver : self.get_image_uri(solver) for solver in self.solvers }
-        self.start()
 
     @staticmethod
     def start(gateway, refresh):
@@ -86,7 +80,11 @@ class Session:
                 }
             })
 
-    def start(self):
+    def __init__(self, gateway, refresh):
+        self.refresh = int(refresh)
+        self.gateway = gateway
+        self.solvers = json.load(open('satrainer/solvers.json','r'))
+        self.uris = { solver : self.get_image_uri(solver) for solver in self.solvers }
         refresh = 0
         timeout=30
         self.init_random_cnf_service()
