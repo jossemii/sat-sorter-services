@@ -7,9 +7,8 @@ class Session:
     def start(gateway, refresh):
         return Session(gateway=gateway, refresh=refresh)
 
-    @staticmethod
-    def stop():
-        pass
+    def stop(self):
+        self.working = False
 
     def load_solver(self, solver):
         self.solvers.update({solver:{}})
@@ -81,6 +80,7 @@ class Session:
             })
 
     def __init__(self, gateway, refresh):
+        self.working = True
         self.refresh = int(refresh)
         self.gateway = gateway
         self.solvers = json.load(open('satrainer/solvers.json','r'))
@@ -88,7 +88,7 @@ class Session:
         refresh = 0
         timeout=30
         self.init_random_cnf_service()
-        while 1:
+        while self.working:
             if refresh < self.refresh:
                 print(refresh,' / ',self.refresh)
                 refresh = refresh+1
