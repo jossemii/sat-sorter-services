@@ -1,16 +1,19 @@
 import requests
 import json
 
-class Session:
+class Singleton(type):
+    _instances = {}
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
 
-    @staticmethod
-    def start(gateway, refresh):
-        return Session(gateway=gateway, refresh=refresh)
+class Session(metaclass=Singleton):
 
     def stop(self):
         self.working = False
 
-    def load_solver(self, solver):
+    def load_solver( self, solver):
         self.solvers.update({solver:{}})
         self.uris.update({solver:self.get_image_uri(solver)})
 

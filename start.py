@@ -16,10 +16,13 @@ if __name__ == "__main__":
 
     @app.route('/train', methods=['GET'])
     def start_train():
-        train.Session.start( os.environ['GATEWAY'], os.environ['REFRESH'])
+        train.Session.__call__.__init__(
+            os.environ['GATEWAY'],
+            os.environ['REFRESH']
+        )
 
     @app.route('/train/stop', methods=['GET'])
     def stop_train():
-        train.Session.stop()
+        train.Session.__call__.stop()
 
     app.run(host='0.0.0.0', port=8080)
