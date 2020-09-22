@@ -1,4 +1,4 @@
-def select(cnf):
+def cnf(cnf):
     solvers = open('solvers.json', 'r')
     best_interpretation, best_interpretation_score = None, 0
     for solver in solvers:
