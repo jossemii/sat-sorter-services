@@ -1,8 +1,7 @@
-import sys
 import os
 
 from flask import Flask, request
-import train, _select
+import train, _get
 
 app = Flask(__name__)
 
@@ -10,8 +9,9 @@ if __name__ == "__main__":
 
     @app.route('/select', methods=['GET', 'POST'])
     def _select():
-        print( request.get_json()['cnf'] )
-        return { 'interpretation': _select.cnf() }
+        return { 'interpretation': _get.cnf(
+            cnf=request.get_json()['cnf']
+        ) }
 
     @app.route('/train', methods=['GET'])
     def start_train():
