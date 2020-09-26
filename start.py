@@ -13,7 +13,7 @@ if __name__ == "__main__":
             cnf=request.get_json()['cnf']
         ) }
 
-    @app.route('/train', methods=['GET'])
+    @app.route('/train/strain', methods=['GET'])
     def start_train():
         train.Session.__call__.__init__(
             os.environ['GATEWAY'],
