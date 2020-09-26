@@ -19,9 +19,11 @@ if __name__ == "__main__":
             os.environ['GATEWAY'],
             os.environ['REFRESH']
         )
+        return 'DoIt'
 
     @app.route('/train/stop', methods=['GET'])
     def stop_train():
         train.Session.__call__.stop()
+        return 'DoIt'
 
     app.run(host='0.0.0.0', port=8080)
