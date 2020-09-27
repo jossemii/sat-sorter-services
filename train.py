@@ -69,14 +69,14 @@ class Session(metaclass=Singleton):
             cnf.split('\n')[1].split(' ')[-1],
         )
         try:
-            solver_cnf = self.solvers[solver][(num_clauses, num_literals)]
+            solver_cnf = self.solvers[solver][str(num_clauses)+':'+str(num_literals)]
         except Exception:
             solver_cnf = {
                 'index': 1,
                 'score': 0
             }
         self.solvers[solver].update({
-                (num_clauses, num_literals) : {
+                str(num_clauses)+':'+str(num_literals) : {
                     'index': solver_cnf['index']+1,
                     'score': ( solver_cnf['score']*solver_cnf['index'] + score )/(solver_cnf['index']+1)
                 }
