@@ -116,6 +116,8 @@ class Session(metaclass=Singleton):
                                 is_insat = False
                             else:
                                 print('La interpretacion es incorrecta.')
+                            if time==0:score=+1
+                            else: score=float(-1/time)
                             self.updateScore(
                                 cnf = cnf,
                                 solver = solver,
@@ -123,6 +125,8 @@ class Session(metaclass=Singleton):
                             )
                     except (TimeoutError, requests.exceptions.ReadTimeout):
                         print('Tradó demasiado....')
+                        if timeout==0:score=-1
+                        else: score=float(-1/timeout)
                         self.updateScore(
                             cnf = cnf,
                             solver = solver,
