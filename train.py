@@ -121,7 +121,7 @@ class Session(metaclass=Singleton):
                             self.updateScore(
                                 cnf = cnf,
                                 solver = solver,
-                                score = float(+1/time)
+                                score = score
                             )
                     except (TimeoutError, requests.exceptions.ReadTimeout):
                         print('Tradó demasiado....')
@@ -130,7 +130,7 @@ class Session(metaclass=Singleton):
                         self.updateScore(
                             cnf = cnf,
                             solver = solver,
-                            score = float(-1/timeout)
+                            score = score
                         )
 
                 # Registra los solvers que afirmaron la insatisfactibilidad en caso en que ninguno
