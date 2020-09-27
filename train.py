@@ -82,7 +82,7 @@ class Session(metaclass=Singleton):
                 }
             })
 
-    def __init__(self, gateway, refresh):
+    def init(self, gateway, refresh):
         self.working = True
         self.refresh = int(refresh)
         self.gateway = gateway
