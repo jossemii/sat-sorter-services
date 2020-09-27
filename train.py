@@ -105,7 +105,7 @@ class Session(metaclass=Singleton):
                         # Tambien podria ser asincrono ...
                         response = requests.post('http://'+ self.uris.get(solver).get('uri')+'/', json={'cnf':cnf}, timeout=timeout )
                         interpretation = response.json().get('interpretation')
-                        time = response.elapsed.total_seconds()
+                        time = int(response.elapsed.total_seconds())
                         if interpretation == '':
                             print('Dice que es insatisfactible, se guarda cada solver con el tiempo tardado.')
                             insats.update({solver:time})
@@ -119,14 +119,14 @@ class Session(metaclass=Singleton):
                             self.updateScore(
                                 cnf = cnf,
                                 solver = solver,
-                                score = self.solvers.get(solver).get('score')+1/time
+                                score = float(+1/time)
                             )
                     except (TimeoutError, requests.exceptions.ReadTimeout):
                         print('Tradó demasiado....')
                         self.updateScore(
                             cnf = cnf,
                             solver = solver,
-                            score = self.solvers.get(solver).get('score')-1/timeout
+                            score = float(-1/timeout)
                         )
 
                 # Registra los solvers que afirmaron la insatisfactibilidad en caso en que ninguno
@@ -137,7 +137,7 @@ class Session(metaclass=Singleton):
                         self.updateScore(
                             cnf = cnf,
                             solver = solver,
-                            score =  self.solvers.get(solver).get('score')+1/insats.get(solver)
+                            score =  float(+1/insats.get(solver))
                         )
                 else:
                     print('Se equivocaron..')
@@ -145,7 +145,7 @@ class Session(metaclass=Singleton):
                         self.updateScore(
                             cnf = cnf,
                             solver = solver,
-                            score = self.solvers.get(solver).get('score')-1/insats.get(solver)
+                            score = float(-1/insats.get(solver))
                         )
             else:
                 refresh = 0
