@@ -15,7 +15,7 @@ if __name__ == "__main__":
 
     @app.route('/train/start', methods=['GET'])
     def start_train():
-        train.Session.__call__.init(
+        train.Session.__call__().init(
             os.environ['GATEWAY'],
             os.environ['REFRESH']
         )
@@ -23,7 +23,7 @@ if __name__ == "__main__":
 
     @app.route('/train/stop', methods=['GET'])
     def stop_train():
-        train.Session.__call__.stop()
+        train.Session.__call__().stop()
         return 'DoIt'
 
     app.run(host='0.0.0.0', port=8080)
