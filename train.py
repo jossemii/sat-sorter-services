@@ -86,7 +86,7 @@ class Session(metaclass=Singleton):
         self.working = True
         self.refresh = int(refresh)
         self.gateway = gateway
-        self.solvers = json.load(open('satrainer/solvers.json','r'))
+        self.solvers = json.load(open('/satrainer/solvers.json','r'))
         self.uris = { solver : self.get_image_uri(solver) for solver in self.solvers }
         refresh = 0
         timeout=30
@@ -150,5 +150,5 @@ class Session(metaclass=Singleton):
             else:
                 refresh = 0
                 print('Actualizo el tensor.')
-                with open('satrainer/solvers.json', 'w') as file:
+                with open('/satrainer/solvers.json', 'w') as file:
                     file.write( json.dumps(self.solvers, indent=4, sort_keys=True) )
