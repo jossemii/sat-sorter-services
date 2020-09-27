@@ -155,4 +155,4 @@ class Session(metaclass=Singleton):
                 refresh = 0
                 print('Actualizo el tensor.')
                 with open('/satrainer/solvers.json', 'w') as file:
-                    file.write( json.dumps(self.solvers, indent=4, sort_keys=True) )
+                    json.dump(self.sovlers, file)
