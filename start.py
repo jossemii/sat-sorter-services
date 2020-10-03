@@ -18,7 +18,7 @@ if __name__ == "__main__":
         from multiprocessing import Process
         session = train.Session.__call__()
         Process(
-            session.init,
+            target=session.init,
             args=(
                 os.environ['GATEWAY'],
                 os.environ['REFRESH']
