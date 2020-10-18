@@ -27,16 +27,15 @@ class Session(metaclass=Singleton):
         self.random_cnf_token = random_dict.get('token')
 
     def random_cnf(self):
-        while 1:
-            try:
-                response = requests.get('http://'+self.random_uri+'/')
-                if response.status_code != 200:
-                    exit()
-                break
-            except requests.exceptions.ConnectionError:
-                pass
-        cnf = response.json().get('cnf')
-        return cnf
+        try:
+            print('OBTENINEDO RANDON CNF')
+            response = requests.get('http://'+self.random_uri+'/', timeout=30)
+            print('RESPUESTA DEL CNF --> ', response, response.text)
+        except (TimeoutError, requests.exceptions.ReadTimeout) or requests.exceptions.ConnectionError:
+            print('VAMOS A CAMBIAR EL SERVICIO DE OBTENCION DE CNFs RANDOM')
+            self.init_random_cnf_service()
+            print('listo. ahora vamos a probar otra vez.')
+        return response.json().get('cnf')
 
     @staticmethod
     def isGood(cnf, interpretation):
@@ -73,27 +72,36 @@ class Session(metaclass=Singleton):
                 }
             })
 
-    def init(self, gateway, refresh):
+    def init(self, gateway, refresh=2):
 
         self.working = True
         self.refresh = int(refresh)
         self.gateway = gateway
-        self.solvers = json.load(open('/satrainer/solvers.json','r'))
+        self.solvers = json.load(open('./solvers.json','r'))
+        print('OBTENIENDO IMAGENES..')
         self.uris = { solver : self.get_image_uri(solver) for solver in self.solvers }
+        print('listo')
         refresh = 0
         timeout=30
+        print('INICIANDO SERVICIO DE RANDOM CNF')
         self.init_random_cnf_service()
+        print('hecho.')
         while self.working:
             if refresh < self.refresh:
+                print('REFRESH ES MENOR')
                 refresh = refresh+1
                 cnf = self.random_cnf()
                 is_insat = True # En caso en que se demuestre lo contrario.
                 insats = {} # Solvers que afirman la insatisfactibilidad junto con su respectivo tiempo.
+                print('VAMOS A PROBAR LOS SOLVERS')
                 for solver in self.solvers:
+                    print('SOVLER --> ', solver)
                     try:
                         # El timeout se podria calcular a partir del resto ...
                         # Tambien podria ser asincrono ...
+                        print('RESPUESTA DEL SOLVER -->')
                         response = requests.post('http://'+ self.uris.get(solver).get('uri')+'/', json={'cnf':cnf}, timeout=timeout )
+                        print(response.text)
                         interpretation = response.json().get('interpretation')
                         time = int(response.elapsed.total_seconds())
                         if interpretation == '':
@@ -111,6 +119,7 @@ class Session(metaclass=Singleton):
                                 score = score
                             )
                     except (TimeoutError, requests.exceptions.ReadTimeout):
+                        print('TIME OUT NO SUPERADO.')
                         if timeout==0:score=-1
                         else: score=float(-1/timeout)
                         self.updateScore(
@@ -136,6 +145,7 @@ class Session(metaclass=Singleton):
                             score = float(-1/insats.get(solver))
                         )
             else:
+                print('ACTUALIZA EL JSON')
                 refresh = 0
-                with open('/satrainer/solvers.json', 'w') as file:
+                with open('./solvers.json', 'w') as file:
                     json.dump(self.solvers, file)

@@ -15,10 +15,8 @@ if __name__ == "__main__":
 
     @app.route('/train/start', methods=['GET'])
     def start_train():
-        train.Session.__call__().init(
-                os.environ['GATEWAY'],
-                os.environ['REFRESH']
-            )
+        train.Session.__call__().init( os.environ['GATEWAY'] ) # subprocess
+        # return 'DoIt'
 
     @app.route('/train/stop', methods=['GET'])
     def stop_train():
