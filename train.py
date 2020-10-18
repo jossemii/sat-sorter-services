@@ -77,7 +77,7 @@ class Session(metaclass=Singleton):
         self.working = True
         self.refresh = int(refresh)
         self.gateway = gateway
-        self.solvers = json.load(open('./solvers.json','r'))
+        self.solvers = json.load(open('/satrainer/solvers.json','r'))
         print('OBTENIENDO IMAGENES..')
         self.uris = { solver : self.get_image_uri(solver) for solver in self.solvers }
         print('listo')
@@ -147,5 +147,5 @@ class Session(metaclass=Singleton):
             else:
                 print('ACTUALIZA EL JSON')
                 refresh = 0
-                with open('./solvers.json', 'w') as file:
+                with open('/satrainer/solvers.json', 'w') as file:
                     json.dump(self.solvers, file)
