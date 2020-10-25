@@ -18,13 +18,25 @@ class Session(metaclass=Singleton):
         self.uris.update({solver:self.get_image_uri(solver)})
 
     def get_image_uri(self, image):
-        response = requests.get('http://'+self.gateway + '/' + image)
-        return response.json()
+        while True:
+            try:
+                response = requests.get('http://'+self.gateway + '/' + image)
+            except requests.HTTPError as e:
+                print('Error al solicitar solver, ', image, e)
+                pass
+            if response and response == 200:
+                return response.json()
 
     def init_random_cnf_service(self):
-        random_dict = self.get_image_uri('3d67d9ded8d0abe00bdaa9a3ae83d552351afebe617f4e7b0653b5d49eb4e67a')
-        self.random_uri = random_dict.get('uri')
-        self.random_cnf_token = random_dict.get('token')
+        try:
+            random_dict = self.get_image_uri('3d67d9ded8d0abe00bdaa9a3ae83d552351afebe617f4e7b0653b5d49eb4e67a')
+            if random_dict and random_dict == 200:
+                self.random_uri = random_dict.get('uri')
+                self.random_cnf_token = random_dict.get('token')
+            else: raise requests.HTTPError
+        except requests.HTTPError as e:
+            print('Error al solicitar random cnf, ', e)
+            self.init_random_cnf_service()
 
     def random_cnf(self):
         while True:
@@ -32,7 +44,7 @@ class Session(metaclass=Singleton):
                 print('OBTENINEDO RANDON CNF')
                 response = requests.get('http://'+self.random_uri+'/', timeout=30)
                 print('RESPUESTA DEL CNF --> ', response, response.text)
-            except (TimeoutError, requests.exceptions.ReadTimeout) or requests.exceptions.ConnectionError:
+            except (TimeoutError, requests.exceptions.ReadTimeout) or requests.exceptions.ConnectionError or requests.HTTPError:
                 print('VAMOS A CAMBIAR EL SERVICIO DE OBTENCION DE CNFs RANDOM')
                 requests.get('http://'+self.random_cnf_token+'/', timeout=30)
                 self.init_random_cnf_service()
