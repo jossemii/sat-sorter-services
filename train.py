@@ -27,15 +27,18 @@ class Session(metaclass=Singleton):
         self.random_cnf_token = random_dict.get('token')
 
     def random_cnf(self):
-        try:
-            print('OBTENINEDO RANDON CNF')
-            response = requests.get('http://'+self.random_uri+'/', timeout=30)
-            print('RESPUESTA DEL CNF --> ', response, response.text)
-        except (TimeoutError, requests.exceptions.ReadTimeout) or requests.exceptions.ConnectionError:
-            print('VAMOS A CAMBIAR EL SERVICIO DE OBTENCION DE CNFs RANDOM')
-            self.init_random_cnf_service()
-            print('listo. ahora vamos a probar otra vez.')
-        return response.json().get('cnf')
+        while True:
+            try:
+                print('OBTENINEDO RANDON CNF')
+                response = requests.get('http://'+self.random_uri+'/', timeout=30)
+                print('RESPUESTA DEL CNF --> ', response, response.text)
+            except (TimeoutError, requests.exceptions.ReadTimeout) or requests.exceptions.ConnectionError:
+                print('VAMOS A CAMBIAR EL SERVICIO DE OBTENCION DE CNFs RANDOM')
+                requests.get('http://'+self.random_cnf_token+'/', timeout=30)
+                self.init_random_cnf_service()
+                print('listo. ahora vamos a probar otra vez.')
+            if response and response == 200 and 'cnf' in response.json():
+                return response.json().get('cnf')
 
     @staticmethod
     def isGood(cnf, interpretation):
@@ -100,7 +103,10 @@ class Session(metaclass=Singleton):
                         # El timeout se podria calcular a partir del resto ...
                         # Tambien podria ser asincrono ...
                         print('RESPUESTA DEL SOLVER -->')
-                        response = requests.post('http://'+ self.uris.get(solver).get('uri')+'/', json={'cnf':cnf}, timeout=timeout )
+                        response = requests.post(
+                            'http://'+ self.uris.get(solver).get('uri')+'/',
+                            json={'cnf':cnf}, timeout=timeout
+                        )
                         print(response.text)
                         interpretation = response.json().get('interpretation')
                         time = int(response.elapsed.total_seconds())
