@@ -20,17 +20,17 @@ class Session(metaclass=Singleton):
     def get_image_uri(self, image):
         while True:
             try:
-                response = requests.get('http://'+self.gateway + '/' + image)
+                response = requests.get('http://'+self.gateway + '/' + image, timeout=30)
             except requests.HTTPError as e:
                 print('Error al solicitar solver, ', image, e)
                 pass
-            if response and response == 200:
+            if response and response.status_code == 200:
                 return response.json()
 
     def init_random_cnf_service(self):
         try:
             random_dict = self.get_image_uri('3d67d9ded8d0abe00bdaa9a3ae83d552351afebe617f4e7b0653b5d49eb4e67a')
-            if random_dict and random_dict == 200:
+            if random_dict and random_dict.status_code == 200:
                 self.random_uri = random_dict.get('uri')
                 self.random_cnf_token = random_dict.get('token')
             else: raise requests.HTTPError
@@ -49,7 +49,7 @@ class Session(metaclass=Singleton):
                 requests.get('http://'+self.random_cnf_token+'/', timeout=30)
                 self.init_random_cnf_service()
                 print('listo. ahora vamos a probar otra vez.')
-            if response and response == 200 and 'cnf' in response.json():
+            if response and response.status_code == 200 and 'cnf' in response.json():
                 return response.json().get('cnf')
 
     @staticmethod
