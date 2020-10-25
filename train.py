@@ -28,14 +28,12 @@ class Session(metaclass=Singleton):
                 return response.json()
 
     def init_random_cnf_service(self):
-        try:
-            random_dict = self.get_image_uri('3d67d9ded8d0abe00bdaa9a3ae83d552351afebe617f4e7b0653b5d49eb4e67a')
-            if random_dict and random_dict.status_code == 200:
-                self.random_uri = random_dict.get('uri')
-                self.random_cnf_token = random_dict.get('token')
-            else: raise requests.HTTPError
-        except requests.HTTPError as e:
-            print('Error al solicitar random cnf, ', e)
+        random_dict = self.get_image_uri('3d67d9ded8d0abe00bdaa9a3ae83d552351afebe617f4e7b0653b5d49eb4e67a')
+        if random_dict and random_dict.status_code == 200:
+            self.random_uri = random_dict.get('uri')
+            self.random_cnf_token = random_dict.get('token')
+        else:
+            print('Error al solicitar random cnf, ')
             self.init_random_cnf_service()
 
     def random_cnf(self):
@@ -92,7 +90,7 @@ class Session(metaclass=Singleton):
         self.working = True
         self.refresh = int(refresh)
         self.gateway = gateway
-        self.solvers = json.load(open('/satrainer/solvers.json','r'))
+        self.solvers = json.load(open('solvers.json','r'))
         print('OBTENIENDO IMAGENES..')
         self.uris = { solver : self.get_image_uri(solver) for solver in self.solvers }
         print('listo')
@@ -165,5 +163,5 @@ class Session(metaclass=Singleton):
             else:
                 print('ACTUALIZA EL JSON')
                 refresh = 0
-                with open('/satrainer/solvers.json', 'w') as file:
+                with open('solvers.json', 'w') as file:
                     json.dump(self.solvers, file)
