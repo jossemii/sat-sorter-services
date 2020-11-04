@@ -19,22 +19,21 @@ class Session(metaclass=Singleton):
 
     def get_image_uri(self, image):
         while True:
+            print('Intenta obtener la imagen'+str(image))
             try:
                 response = requests.get('http://'+self.gateway + '/' + image, timeout=30)
             except requests.HTTPError as e:
                 print('Error al solicitar solver, ', image, e)
                 pass
             if response and response.status_code == 200:
-                return response.json()
+                content = response.json()
+                if 'uri' in content and 'token' in content:
+                    return content
 
     def init_random_cnf_service(self):
         random_dict = self.get_image_uri('3d67d9ded8d0abe00bdaa9a3ae83d552351afebe617f4e7b0653b5d49eb4e67a')
-        if 'uri' in random_dict and 'token' in random_dict:
-            self.random_uri = random_dict.get('uri')
-            self.random_cnf_token = random_dict.get('token')
-        else:
-            print('Error al solicitar random cnf, ')
-            self.init_random_cnf_service()
+        self.random_uri = random_dict.get('uri')
+        self.random_cnf_token = random_dict.get('token')
 
     def random_cnf(self):
         while True:
@@ -42,7 +41,7 @@ class Session(metaclass=Singleton):
                 print('OBTENINEDO RANDON CNF')
                 response = requests.get('http://'+self.random_uri+'/', timeout=30)
                 print('RESPUESTA DEL CNF --> ', response, response.text)
-            except (TimeoutError, requests.exceptions.ReadTimeout) or requests.exceptions.ConnectionError or requests.HTTPError:
+            except (TimeoutError, requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError, requests.HTTPError):
                 print('VAMOS A CAMBIAR EL SERVICIO DE OBTENCION DE CNFs RANDOM')
                 requests.get('http://'+self.random_cnf_token+'/', timeout=30)
                 self.init_random_cnf_service()
@@ -86,7 +85,6 @@ class Session(metaclass=Singleton):
             })
 
     def init(self, gateway, refresh=2):
-
         self.working = True
         self.refresh = int(refresh)
         self.gateway = gateway
@@ -115,7 +113,8 @@ class Session(metaclass=Singleton):
                         print('RESPUESTA DEL SOLVER -->')
                         response = requests.post(
                             'http://'+ self.uris.get(solver).get('uri')+'/',
-                            json={'cnf':cnf}, timeout=timeout
+                            json={'cnf':cnf}, 
+                            timeout=timeout
                         )
                         print(response.text)
                         interpretation = response.json().get('interpretation')
@@ -143,6 +142,17 @@ class Session(metaclass=Singleton):
                             solver = solver,
                             score = score
                         )
+                        # Check if service is alive.
+                        try:
+                            requests.post(
+                                'http://'+ self.uris.get(solver).get('uri')+'/',
+                                json={'cnf':"c Random CNF formula\\n p cnf 1 1\\n 1 -1 0\\n"},
+                                timeout=timeout
+                            )
+                        except TimeoutError:
+                            print('Solicita de nuevo el servicio '+str(solver))
+                            self.uris.update({solver: self.get_image_uri(solver)})
+
 
                 # Registra los solvers que afirmaron la insatisfactibilidad en caso en que ninguno
                 #  haya demostrado lo contrario.
