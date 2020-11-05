@@ -58,8 +58,6 @@ class Session(metaclass=Singleton):
                     if var == i:
                         return True
             return False
-        interpretation = interpretation.split(' ')[1:]
-        cnf = [clause.split(' ')[:-1] for clause in cnf.split('\n')[2:-1]]
         for clause in cnf:
             if goodClause(clause, interpretation) == False:
                 return False
@@ -119,7 +117,7 @@ class Session(metaclass=Singleton):
                         print(response.text)
                         interpretation = response.json().get('interpretation')
                         time = int(response.elapsed.total_seconds())
-                        if interpretation == '':
+                        if interpretation == [] or interpretation is None:
                             insats.update({solver:time})
                         else:
                             if self.isGood(cnf, interpretation):
@@ -146,7 +144,7 @@ class Session(metaclass=Singleton):
                         try:
                             requests.post(
                                 'http://'+ self.uris.get(solver).get('uri')+'/',
-                                json={'cnf':"c Random CNF formula\\n p cnf 1 1\\n 1 -1 0\\n"},
+                                json={'cnf':[[1]]},
                                 timeout=timeout
                             )
                         except TimeoutError:
