@@ -21,7 +21,7 @@ class Session(metaclass=Singleton):
         while True:
             print('Intenta obtener la imagen'+str(image))
             try:
-                response = requests.get('http://'+self.gateway + '/' + image, timeout=30)
+                response = requests.get('http://'+self.gateway, timeout=30, json={'service':str(image)})
             except requests.HTTPError as e:
                 print('Error al solicitar solver, ', image, e)
                 pass
