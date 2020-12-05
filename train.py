@@ -43,7 +43,7 @@ class Session(metaclass=Singleton):
                 print('RESPUESTA DEL CNF --> ', response, response.text)
             except (TimeoutError, requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError, requests.HTTPError):
                 print('VAMOS A CAMBIAR EL SERVICIO DE OBTENCION DE CNFs RANDOM')
-                requests.get('http://'+self.random_cnf_token+'/', timeout=30)
+                response = requests.get('http://'+self.gateway, json={'token': str(self.random_cnf_token)})
                 self.init_random_cnf_service()
                 print('listo. ahora vamos a probar otra vez.')
             if response and response.status_code == 200 and 'cnf' in response.json():
