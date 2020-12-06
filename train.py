@@ -41,13 +41,13 @@ class Session(metaclass=Singleton):
                 print('OBTENINEDO RANDON CNF')
                 response = requests.get('http://'+self.random_uri+'/', timeout=30)
                 print('RESPUESTA DEL CNF --> ', response, response.text)
+                if response and response.status_code == 200 and 'cnf' in response.json():
+                    return response.json().get('cnf')
             except (TimeoutError, requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError, requests.HTTPError):
                 print('VAMOS A CAMBIAR EL SERVICIO DE OBTENCION DE CNFs RANDOM')
                 response = requests.get('http://'+self.gateway, json={'token': str(self.random_cnf_token)})
                 self.init_random_cnf_service()
                 print('listo. ahora vamos a probar otra vez.')
-            if response and response.status_code == 200 and 'cnf' in response.json():
-                return response.json().get('cnf')
 
     @staticmethod
     def isGood(cnf, interpretation):
