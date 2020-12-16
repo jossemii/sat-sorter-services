@@ -115,7 +115,7 @@ class Session(metaclass=Singleton):
                             timeout=timeout
                         )
                         print(response.text)
-                        interpretation = response.json().get('interpretation')
+                        interpretation = response.json().get('interpretation') or None
                         time = int(response.elapsed.total_seconds())
                         if interpretation == [] or interpretation is None:
                             insats.update({solver:time})
