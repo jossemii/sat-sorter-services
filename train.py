@@ -1,7 +1,7 @@
 import requests
 import json
 
-DIR = ''  # /satrainer/
+DIR = '/satrainer/'
 
 
 class Singleton(type):
