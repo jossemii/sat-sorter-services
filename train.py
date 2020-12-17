@@ -43,7 +43,7 @@ class Session(metaclass=Singleton):
     def random_cnf(self):
         while True:
             try:
-                print('OBTENINEDO RANDON CNF')
+                print('OBTENIENDO RANDON CNF')
                 response = requests.get('http://' + self.random_uri + '/', timeout=30)
                 print('RESPUESTA DEL CNF --> ', response, response.text)
                 if response and response.status_code == 200 and 'cnf' in response.json():
