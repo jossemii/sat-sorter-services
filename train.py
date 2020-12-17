@@ -134,7 +134,12 @@ class Session(metaclass=Singleton):
                             except Exception:
                                 break
                         print('INTERPRETACION --> ', response.text)
-                        interpretation = response.json().get('interpretation') or None
+
+                        if response.status_code == 200:
+                            interpretation = response.json().get('interpretation') or None
+                        else:
+                            interpretation = None
+
                         time = int(response.elapsed.total_seconds())
                         if interpretation == [] or interpretation is None:
                             insats.update({solver: time})
@@ -181,14 +186,14 @@ class Session(metaclass=Singleton):
                         self.updateScore(
                             cnf=cnf,
                             solver=solver,
-                            score=float(+1 / insats.get(solver))
+                            score=float(+1 / insats.get(solver)) if insats.get(solver) != 0 else 1
                         )
                 else:
                     for solver in insats:
                         self.updateScore(
                             cnf=cnf,
                             solver=solver,
-                            score=float(-1 / insats.get(solver))
+                            score=float(-1 / insats.get(solver)) if insats.get(solver) != 0 else -1
                         )
             else:
                 print('ACTUALIZA EL JSON')
