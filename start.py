@@ -5,6 +5,8 @@ import train, _get
 
 app = Flask(__name__)
 
+DIR = '/satrainer/'
+
 if __name__ == "__main__":
 
     @app.route('/select', methods=['GET', 'POST'])
@@ -15,11 +17,11 @@ if __name__ == "__main__":
 
     @app.route('/upsolver', methods=['GET', 'POST'])
     def up_solver():
-        data = json.load('/satrainer/solvers.json', 'r')
+        data = json.load(open(DIR+'solvers.json', 'r'))
         data.update({
             request.get_json()['solver']: {}
         })
-        with open('/satrainer/solvers.json', 'w') as file:
+        with open(DIR+'solvers.json', 'w') as file:
             json.dump(data, file)
         return 'DoIt'
 
