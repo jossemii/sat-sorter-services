@@ -9,9 +9,17 @@ if __name__ == "__main__":
 
     @app.route('/select', methods=['GET', 'POST'])
     def _select():
-        return { 'interpretation': _get.cnf(
+        return {'interpretation': _get.cnf(
             cnf=request.get_json()['cnf']
-        ) }
+        )}
+
+    @app.route('/upsolver', methods=['GET', 'POST'])
+    def up_solver():
+        with open('/satrainer/solvers.json', 'w') as solvers:
+            solvers.update({
+                request.get_json()['solver']: {}
+            })
+        return 'DoIt'
 
     @app.route('/train/start', methods=['GET'])
     def start_train():
