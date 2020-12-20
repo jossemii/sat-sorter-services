@@ -14,7 +14,7 @@ def regression_with_degree(degree: int, input: np.array, output: np.array):
     # Create a model of regression.
     model = LinearRegression().fit(input, output )
     return {
-        'tensor params': model.intercept_.tolist()+model.coef_[0].tolist(),
+        'tensor coefficients': model.intercept_.tolist()+model.coef_[0].tolist(),
         'coefficient of determination': model.score(input, output)
     }
 
@@ -36,6 +36,15 @@ def solver_regression(solver: dict):
             best_tensor = tensor
     return best_tensor
 
+def into_tensor(coefficients: np.array):
+    tensor = []
+    for coefficient in coefficients:
+        tensor.append({
+            'operation': None,
+            'coefficient': coefficient,
+            'variables': [0, 0]
+        })
+
 def iterate_regression():
     # Read solvers.json
     with open(DIR + 'solvers.json', 'r') as file:
@@ -50,10 +59,12 @@ def iterate_regression():
 
         print('SOLVER --> ', solver)
         print('R2 --> ', tensor['coefficient of determination'])
-        print('TENSOR --> ', tensor['tensor params'])
+        print('TENSOR --> ', tensor['tensor coefficients'])
         print(' ------ ')
 
-        tensors.update({solver: tensor['tensor params']})
+        tensors.update({
+            solver: into_tensor( coefficients=tensor['tensor coefficients '])
+            })
 
     # Write tensors.json
     with open((DIR)+'tensors.json', 'w') as file:
