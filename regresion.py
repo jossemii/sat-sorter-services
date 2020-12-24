@@ -37,10 +37,10 @@ def solver_regression(solver: dict):
         print('  R2 --> ', tensor['coefficient of determination'])
         if tensor['coefficient of determination'] > best_tensor['coefficient of determination']:
             best_tensor = tensor
-    return best_tensor, input
+    return best_tensor
 
-def into_tensor(coefficients: np.array, input: pd.DataFrame):
-    coefficients = pd.concat([pd.DataFrame(input.columns),pd.DataFrame(np.transpose(coefficients))], axis = 1)
+def into_tensor(coefficients: np.array):
+    #coefficients = pd.concat([pd.DataFrame(input.columns),pd.DataFrame(np.transpose(coefficients))], axis = 1)
     """tensor = []
     for coefficient in coefficients:
         tensor.append({
@@ -59,7 +59,7 @@ def iterate_regression():
     # Make regression for each solver.
     for solver in solvers:
         if solvers[solver]=={}: continue
-        tensor, input = solver_regression(solver=solvers[solver])
+        tensor = solver_regression(solver=solvers[solver])
 
         print('SOLVER --> ', solver)
         print('R2 --> ', tensor['coefficient of determination'])
@@ -67,7 +67,7 @@ def iterate_regression():
         print(' ------ ')
 
         tensors.update({
-            solver: into_tensor( coefficients=tensor['tensor coefficients'], input=input)
+            solver: into_tensor( coefficients=tensor['tensor coefficients'])
             })
 
     # Write tensors.json
