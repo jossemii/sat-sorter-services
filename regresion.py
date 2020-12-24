@@ -36,12 +36,13 @@ def solver_regression(solver: dict):
     for degree in range(1, MAX_DEGREE+1):
         print(' DEGREE --> ', degree)
         tensor = regression_with_degree(degree= degree, input=input.to_numpy(), output=output)
-        print('  R2 --> ', tensor['coefficient of determination'])
+        print('                R2 --> ', tensor['coefficient of determination'])
         if tensor['coefficient of determination'] > best_tensor['coefficient of determination']:
             best_tensor = tensor
     return best_tensor
 
 def into_tensor(coefficients: np.array, features):
+    print(features)
     if len(coefficients) != len(features)+1: raise Exception('Feature len error.')
     tensor = []
     for index in range(len(coefficients)):
@@ -50,13 +51,13 @@ def into_tensor(coefficients: np.array, features):
         else:
             feature = features[index-1].split(' ')
             if feature[0][0] == 'c':
-                c_exp = 1 if feature[0] == 'c' else int(feature[0][-1])
+                c_exp = 1 if feature[0] == 'c' else int(feature[0][2:])
                 if len(feature)==2:
-                    l_exp = 1 if feature[1] == 'l' else int(feature[1][-1])
+                    l_exp = 1 if feature[1] == 'l' else int(feature[1][2:])
                 else:
                     l_exp = 0
             else:
-                l_exp = 1 if feature[0] == 'l' else int(feature[0][-1])
+                l_exp = 1 if feature[0] == 'l' else int(feature[0][2:])
                 c_exp = 0
             print('Feature --> ', features[index-1], ' == ', c_exp, '--' ,l_exp)
             tensor.append({
@@ -85,6 +86,7 @@ def iterate_regression():
         tensors.update({
             solver: into_tensor( coefficients=tensor['tensor coefficients'], features=tensor['feature names'])
             })
+        print(' ****** ')
 
     # Write tensors.json
     with open((DIR)+'tensors.json', 'w') as file:
