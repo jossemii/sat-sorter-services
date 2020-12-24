@@ -41,17 +41,14 @@ def solver_regression(solver: dict):
             best_tensor = tensor
     return best_tensor
 
-def into_tensor(coefficients: np.array, feature_names):
-    print('FEATURE NAMES --> ', feature_names)
-    print('COEFFICIENTS --> ', coefficients)
-    #coefficients = pd.concat([pd.DataFrame(input.columns),pd.DataFrame(np.transpose(coefficients))], axis = 1)
-    """tensor = []
-    for coefficient in coefficients:
-        tensor.append({
-            'operation': None,
-            'coefficient': coefficient,
-            'variables': [0, 0]
-        })"""
+def into_tensor(coefficients: np.array, features):
+    print('FEATURE NAMES --> ', features, len(features))
+    print('COEFFICIENTS --> ', coefficients, len(coefficients))
+    if len(coefficients) != len(features)+1: raise Exception('Feature len error.')
+    return [ {
+        'coefficient': coefficients[index],
+        'feature': features[index-1] if index !=0 else None
+    } for index in range(len(coefficients))]
 
 def iterate_regression():
     # Read solvers.json
@@ -71,7 +68,7 @@ def iterate_regression():
         print(' ------ ')
 
         tensors.update({
-            solver: into_tensor( coefficients=tensor['tensor coefficients'], feature_names=tensor['feature names'])
+            solver: into_tensor( coefficients=tensor['tensor coefficients'], features=tensor['feature names'])
             })
 
     # Write tensors.json
