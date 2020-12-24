@@ -51,13 +51,14 @@ def into_tensor(coefficients: np.array, features):
             feature = features[index-1].split(' ')
             if feature[0][0] == 'c':
                 c_exp = 1 if feature[0] == 'c' else int(feature[0][-1])
-                if feature[1][0] == 'l':
+                if len(feature)==2:
                     l_exp = 1 if feature[1] == 'l' else int(feature[1][-1])
                 else:
                     l_exp = 0
             else:
                 l_exp = 1 if feature[0] == 'l' else int(feature[0][-1])
                 c_exp = 0
+            print('Feature --> ', features[index-1], ' == ', c_exp, '--' ,l_exp)
             tensor.append({
                 'coefficient': coefficients[index],
                 'feature': {
