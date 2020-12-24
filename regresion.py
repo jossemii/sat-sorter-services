@@ -43,10 +43,18 @@ def solver_regression(solver: dict):
 
 def into_tensor(coefficients: np.array, features):
     if len(coefficients) != len(features)+1: raise Exception('Feature len error.')
-    return [ {
-        'coefficient': coefficients[index],
-        'feature': features[index-1] if index !=0 else None
-    } for index in range(len(coefficients))]
+    tensor = []
+    for index in range(len(coefficients)):
+        c_exp = 1
+        l_exp = 1
+        tensor.append({
+            'coefficient': coefficients[index],
+            'feature': {
+                'c' : c_exp,
+                'l': l_exp
+                }
+        })
+    return tensor
 
 def iterate_regression():
     # Read solvers.json
