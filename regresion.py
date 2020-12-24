@@ -45,15 +45,26 @@ def into_tensor(coefficients: np.array, features):
     if len(coefficients) != len(features)+1: raise Exception('Feature len error.')
     tensor = []
     for index in range(len(coefficients)):
-        c_exp = 1
-        l_exp = 1
-        tensor.append({
-            'coefficient': coefficients[index],
-            'feature': {
-                'c' : c_exp,
-                'l': l_exp
-                }
-        })
+        if index == 0:
+            tensor.append({'coefficient': coefficients[index]})
+        else:
+            features = features.split(' ')
+            if features[0][0] == 'c':
+                c_exp = 1 if features[0] == 'c' else int(features[0][-1])
+                if features[1][0] == 'l':
+                    l_exp = 1 if features[1] == 'l' else int(features[1][-1])
+                else:
+                    l_exp = 0
+            else:
+                l_exp = 1 if features[0] == 'l' else int(features[0][-1])
+                c_exp = 0
+            tensor.append({
+                'coefficient': coefficients[index],
+                'feature': {
+                    'c' : c_exp,
+                    'l': l_exp
+                    }
+            })
     return tensor
 
 def iterate_regression():
