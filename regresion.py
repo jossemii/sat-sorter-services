@@ -18,7 +18,7 @@ def regression_with_degree(degree: int, input: np.array, output: np.array):
     return {
         'tensor coefficients': model.intercept_.tolist()+model.coef_[0].tolist(),
         'coefficient of determination': model.score(input, output),
-        'feature names': poly.get_feature_names()
+        'feature names': poly.get_feature_names(['c', 'l'])
     }
 
 def solver_regression(solver: dict):
@@ -42,8 +42,6 @@ def solver_regression(solver: dict):
     return best_tensor
 
 def into_tensor(coefficients: np.array, features):
-    print('FEATURE NAMES --> ', features, len(features))
-    print('COEFFICIENTS --> ', coefficients, len(coefficients))
     if len(coefficients) != len(features)+1: raise Exception('Feature len error.')
     return [ {
         'coefficient': coefficients[index],
@@ -62,9 +60,6 @@ def iterate_regression():
         if solvers[solver]=={}: continue
         print('SOLVER --> ', solver)
         tensor = solver_regression(solver=solvers[solver])
-   
-        print(' R2 --> ', tensor['coefficient of determination'])
-        print(' TENSOR --> ', tensor['tensor coefficients'])
         print(' ------ ')
 
         tensors.update({
