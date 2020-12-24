@@ -1,5 +1,6 @@
 from time import sleep
 import numpy as np
+import pandas as pd
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 
@@ -20,9 +21,9 @@ def regression_with_degree(degree: int, input: np.array, output: np.array):
 
 def solver_regression(solver: dict):
     # Get input variables. Num of cnf variables and Num of cnf clauses.
-    input = np.array(
+    input = pd.DataFrame(
         [[int(var) for var in value.split(':')] for value in solver]
-    ).reshape(-1, 2)
+    )
 
     # Get output variable. Score.
     output = np.array(
@@ -31,19 +32,22 @@ def solver_regression(solver: dict):
 
     best_tensor = {'coefficient of determination': 0}
     for degree in range(1, MAX_DEGREE+1):
-        tensor = regression_with_degree(degree= degree, input=input, output=output)
+        print('DEGREE --> ', degree)
+        tensor = regression_with_degree(degree= degree, input=input.to_numpy(), output=output)
+        print('  R2 --> ', tensor['coefficient of determination'])
         if tensor['coefficient of determination'] > best_tensor['coefficient of determination']:
             best_tensor = tensor
-    return best_tensor
+    return best_tensor, input
 
-def into_tensor(coefficients: np.array):
-    tensor = []
+def into_tensor(coefficients: np.array, input: pd.DataFrame):
+    coefficients = pd.concat([pd.DataFrame(input.columns),pd.DataFrame(np.transpose(coefficients))], axis = 1)
+    """tensor = []
     for coefficient in coefficients:
         tensor.append({
             'operation': None,
             'coefficient': coefficient,
             'variables': [0, 0]
-        })
+        })"""
 
 def iterate_regression():
     # Read solvers.json
@@ -55,7 +59,7 @@ def iterate_regression():
     # Make regression for each solver.
     for solver in solvers:
         if solvers[solver]=={}: continue
-        tensor = solver_regression(solver=solvers[solver])
+        tensor, input = solver_regression(solver=solvers[solver])
 
         print('SOLVER --> ', solver)
         print('R2 --> ', tensor['coefficient of determination'])
@@ -63,7 +67,7 @@ def iterate_regression():
         print(' ------ ')
 
         tensors.update({
-            solver: into_tensor( coefficients=tensor['tensor coefficients '])
+            solver: into_tensor( coefficients=tensor['tensor coefficients'], input=input)
             })
 
     # Write tensors.json
