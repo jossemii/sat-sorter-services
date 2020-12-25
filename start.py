@@ -25,6 +25,11 @@ if __name__ == "__main__":
             json.dump(data, file)
         return 'DoIt'
 
+    @app.route('/tensor', methods=['GET'])
+    def get_tensor():
+        with open(DIR+'tensors.json', 'w') as file:
+            return json.load(file)
+
     @app.route('/train/start', methods=['GET'])
     def start_train():
         train.Session.__call__().init(os.environ['GATEWAY']) # subprocess
