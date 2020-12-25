@@ -3,9 +3,9 @@ def get_score(tensor: dict, cnf: dict):
 
 def data(cnf: dict):
     for clause in cnf:
-            for literal in clause:
-                if abs(literal) > num_literals:
-                    num_literals = abs(literal)
+        for literal in clause:
+            if abs(literal) > num_literals:
+                num_literals = abs(literal)
     return {'clauses': len(cnf), 'literals': num_literals}
 
 def cnf(cnf: dict):
