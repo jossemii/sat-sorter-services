@@ -1,7 +1,7 @@
 import os
 import json
 from flask import Flask, request
-import train, _get
+import train, _get, regresion
 
 app = Flask(__name__)
 
@@ -11,6 +11,7 @@ if __name__ == "__main__":
 
     @app.route('/select', methods=['GET', 'POST'])
     def _select():
+        regresion.iterate_regression()
         return {'interpretation': _get.cnf(
             cnf=request.get_json()['cnf']
         )}
