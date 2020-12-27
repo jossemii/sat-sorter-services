@@ -36,7 +36,7 @@ class Session(metaclass=Singleton):
                     return content
 
     def init_random_cnf_service(self):
-        random_dict = self.get_image_uri('3d67d9ded8d0abe00bdaa9a3ae83d552351afebe617f4e7b0653b5d49eb4e67a')
+        random_dict = self.get_image_uri('07a9852b10c5bbc9c55180d43d70561854f6a8f5fc8a28483bf893cac0871e0b')
         self.random_uri = random_dict.get('uri')
         self.random_cnf_token = random_dict.get('token')
 
