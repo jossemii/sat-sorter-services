@@ -28,7 +28,7 @@ if __name__ == "__main__":
 
     @app.route('/tensor', methods=['GET'])
     def get_tensor():
-        with open(DIR+'tensors.json', 'w') as file:
+        with open(DIR+'tensors.json', 'r') as file:
             return json.load(file)
 
     @app.route('/train/start', methods=['GET'])
