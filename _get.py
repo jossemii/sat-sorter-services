@@ -1,6 +1,6 @@
 import json
 
-DIR = ''#'/satrainer/'
+DIR = '/satrainer/'
 
 def get_score(tensor: list, _cnf: dict):
     score = tensor[0]['coefficient']

@@ -5,7 +5,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 
 import json
-DIR = '' # /satrainer/
+DIR = '/satrainer/'
 MAX_DEGREE = 100
 
 
@@ -89,7 +89,7 @@ def iterate_regression():
         print(' ****** ')
 
     # Write tensors.json
-    with open((DIR)+'tensors.json', 'w') as file:
+    with open(DIR+'tensors.json', 'w') as file:
         json.dump(tensors, file)
 
 if __name__ == "__main__":
