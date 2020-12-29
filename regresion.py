@@ -11,9 +11,6 @@ def regression_with_degree(degree: int, input: np.array, output: np.array):
     poly = PolynomialFeatures(degree= degree, include_bias=False)
     input = poly.fit_transform(input)
 
-    print('INPUT --> ', input, type(input))
-    print('OUTPUT --> ', output, type(output))
-
     # Create a model of regression.
     model = LinearRegression().fit(input, output)
     return {
@@ -30,8 +27,11 @@ def solver_regression(solver: dict):
 
     # Get output variable. Score.
     output = np.array(
-        [value.get('score') or None for value in solver.values()]
+        [value['score'] for value in solver.values() if type(value.get('score') or None) is float]
     ).reshape(-1, 1)
+
+    if len(input) != len(output):
+        raise Exception('Error en solvers.json, faltan scores.')
 
     best_tensor = {'coefficient of determination': 0}
     for degree in range(1, MAX_DEGREE+1):
