@@ -1,5 +1,7 @@
 DIR = '' #'/satrainer/'
 MAX_REGRESSION_DEGREE = 100
+GATEWAY = '192.168.1.64:8000'
+SAVE_TRAIN_DATA = 2
 
 if __name__ == "__main__":
     
@@ -9,6 +11,10 @@ if __name__ == "__main__":
     import train, _get, regresion
 
     app = Flask(__name__)
+    
+    try:
+        GATEWAY = os.environ['GATEWAY']
+    except KeyError: pass
 
     @app.route('/select', methods=['GET', 'POST'])
     def _select():
@@ -34,7 +40,7 @@ if __name__ == "__main__":
 
     @app.route('/train/start', methods=['GET'])
     def start_train():
-        train.Session.__call__().init(os.environ['GATEWAY']) # subprocess
+        train.Session.__call__().init() # subprocess
         # return 'DoIt'
 
     @app.route('/train/stop', methods=['GET'])

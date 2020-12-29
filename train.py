@@ -1,5 +1,7 @@
 import requests, json
 from start import DIR
+from start import GATEWAY as GATEWAY
+from start import SAVE_TRAIN_DATA as REFRESH
 
 class Singleton(type):
     _instances = {}
@@ -23,7 +25,7 @@ class Session(metaclass=Singleton):
         while True:
             print('Intenta obtener la imagen' + str(image))
             try:
-                response = requests.get('http://' + self.gateway, json={'service': str(image)})
+                response = requests.get('http://' + GATEWAY, json={'service': str(image)})
             except requests.HTTPError as e:
                 print('Error al solicitar solver, ', image, e)
                 pass
@@ -49,7 +51,7 @@ class Session(metaclass=Singleton):
                 pass
             except (TimeoutError, requests.exceptions.ReadTimeout, requests.HTTPError):
                 print('VAMOS A CAMBIAR EL SERVICIO DE OBTENCION DE CNFs RANDOM')
-                requests.get('http://' + self.gateway, json={'token': str(self.random_cnf_token)})
+                requests.get('http://' + GATEWAY, json={'token': str(self.random_cnf_token)})
                 self.init_random_cnf_service()
                 print('listo. ahora vamos a probar otra vez.')
 
@@ -91,10 +93,8 @@ class Session(metaclass=Singleton):
             }
         })
 
-    def init(self, gateway, refresh=2):
+    def init(self):
         self.working = True
-        self.refresh = int(refresh)
-        self.gateway = gateway
         self.solvers = json.load(open(DIR + 'solvers.json', 'r'))
         print('OBTENIENDO IMAGENES..')
         self.uris = {solver: self.get_image_uri(solver) for solver in self.solvers}
@@ -105,7 +105,7 @@ class Session(metaclass=Singleton):
         self.init_random_cnf_service()
         print('hecho.')
         while self.working:
-            if refresh < self.refresh:
+            if refresh < REFRESH:
                 print('REFRESH ES MENOR')
                 refresh = refresh + 1
                 cnf = self.random_cnf()

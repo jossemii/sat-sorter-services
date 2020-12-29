@@ -25,9 +25,9 @@ def regression_with_degree(degree: int, input: np.array, output: np.array):
 
 def solver_regression(solver: dict):
     # Get input variables. Num of cnf variables and Num of cnf clauses.
-    input = pd.DataFrame(
+    input = np.array(
         [[int(var) for var in value.split(':')] for value in solver]
-    )
+    ).reshape(-1, 2)
 
     # Get output variable. Score.
     output = np.array(
@@ -37,7 +37,7 @@ def solver_regression(solver: dict):
     best_tensor = {'coefficient of determination': 0}
     for degree in range(1, MAX_DEGREE+1):
         print(' DEGREE --> ', degree)
-        tensor = regression_with_degree(degree= degree, input=input.to_numpy(), output=output)
+        tensor = regression_with_degree(degree= degree, input=input, output=output)
         print('                R2 --> ', tensor['coefficient of determination'])
         if tensor['coefficient of determination'] > best_tensor['coefficient of determination']:
             best_tensor = tensor
