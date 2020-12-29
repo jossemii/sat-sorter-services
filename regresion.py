@@ -3,18 +3,20 @@ import numpy as np
 import pandas as pd
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
-
 import json
-DIR = '/satrainer/'
-MAX_DEGREE = 100
+from start import DIR
+from start import MAX_REGRESSION_DEGREE as MAX_DEGREE
 
 
 def regression_with_degree(degree: int, input: np.array, output: np.array):
     poly = PolynomialFeatures(degree= degree, include_bias=False)
     input = poly.fit_transform(input)
 
+    print('INPUT --> ', input, type(input))
+    print('OUTPUT --> ', output, type(output))
+
     # Create a model of regression.
-    model = LinearRegression().fit(input, output )
+    model = LinearRegression().fit(input, output)
     return {
         'tensor coefficients': model.intercept_.tolist()+model.coef_[0].tolist(),
         'coefficient of determination': model.score(input, output),

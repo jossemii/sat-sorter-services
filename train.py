@@ -1,8 +1,5 @@
-import requests
-import json
-
-DIR = '/satrainer/'
-
+import requests, json
+from start import DIR
 
 class Singleton(type):
     _instances = {}

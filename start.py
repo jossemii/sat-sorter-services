@@ -1,13 +1,14 @@
-import os
-import json
-from flask import Flask, request
-import train, _get, regresion
-
-app = Flask(__name__)
-
-DIR = '/satrainer/'
+DIR = '' #'/satrainer/'
+MAX_REGRESSION_DEGREE = 100
 
 if __name__ == "__main__":
+    
+    import os
+    import json
+    from flask import Flask, request
+    import train, _get, regresion
+
+    app = Flask(__name__)
 
     @app.route('/select', methods=['GET', 'POST'])
     def _select():
