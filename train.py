@@ -15,6 +15,9 @@ class Singleton(type):
 class Session(metaclass=Singleton):
 
     def stop(self):
+        requests.get('http://' + GATEWAY, json={'token': str(self.random_cnf_token)})
+        for solver in self.uris:
+            requests.get('http://' + GATEWAY, json={'token': str(self.uris.get(solver).get('token'))})
         self.working = False
 
     def load_solver(self, solver):
