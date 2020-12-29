@@ -2,43 +2,20 @@ import requests, json
 from start import DIR
 from start import GATEWAY as GATEWAY
 from start import SAVE_TRAIN_DATA as REFRESH
-
-class Singleton(type):
-    _instances = {}
-
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
-        return cls._instances[cls]
-
+from singleton import Singleton
+import _solve
 
 class Session(metaclass=Singleton):
 
     def stop(self):
         requests.get('http://' + GATEWAY, json={'token': str(self.random_cnf_token)})
-        for solver in self.uris:
-            requests.get('http://' + GATEWAY, json={'token': str(self.uris.get(solver).get('token'))})
         self.working = False
 
     def load_solver(self, solver):
         self.solvers.update({solver: {}})
-        self.uris.update({solver: self.get_image_uri(solver)})
-
-    def get_image_uri(self, image):
-        while True:
-            print('Intenta obtener la imagen' + str(image))
-            try:
-                response = requests.get('http://' + GATEWAY, json={'service': str(image)})
-            except requests.HTTPError as e:
-                print('Error al solicitar solver, ', image, e)
-                pass
-            if response and response.status_code == 200:
-                content = response.json()
-                if 'uri' in content and 'token' in content:
-                    return content
 
     def init_random_cnf_service(self):
-        random_dict = self.get_image_uri('07a9852b10c5bbc9c55180d43d70561854f6a8f5fc8a28483bf893cac0871e0b')
+        random_dict = _solve.get_image_uri('07a9852b10c5bbc9c55180d43d70561854f6a8f5fc8a28483bf893cac0871e0b')
         self.random_uri = random_dict.get('uri')
         self.random_cnf_token = random_dict.get('token')
 
@@ -46,7 +23,7 @@ class Session(metaclass=Singleton):
         while True:
             try:
                 print('OBTENIENDO RANDON CNF')
-                response = requests.get('http://' + self.random_uri + '/', timeout=30)
+                response = requests.get('http://' + self.random_uri + '/', timeout=self._solver.avr_time)
                 print('RESPUESTA DEL CNF --> ', response, response.text)
                 if response and response.status_code == 200 and 'cnf' in response.json():
                     return response.json().get('cnf')
@@ -94,14 +71,12 @@ class Session(metaclass=Singleton):
                 'index': solver_cnf['index'] + 1,
                 'score': (solver_cnf['score'] * solver_cnf['index'] + score) / (solver_cnf['index'] + 1)
             }
-        })
+        }) 
 
     def init(self):
+        self._solver = _solve.Session.__call__()
         self.working = True
         self.solvers = json.load(open(DIR + 'solvers.json', 'r'))
-        print('OBTENIENDO IMAGENES..')
-        self.uris = {solver: self.get_image_uri(solver) for solver in self.solvers}
-        print('listo')
         refresh = 0
         timeout = 30
         print('INICIANDO SERVICIO DE RANDOM CNF')
@@ -120,27 +95,7 @@ class Session(metaclass=Singleton):
                     try:
                         # El timeout se podria calcular a partir del resto ...
                         # Tambien podria ser asincrono ...
-                        print('RESPUESTA DEL SOLVER -->')
-                        while True:
-                            try:
-                                response = requests.post(
-                                    'http://' + self.uris.get(solver).get('uri') + '/',
-                                    json={'cnf': cnf},
-                                    timeout=timeout
-                                )
-                                break
-                            except requests.exceptions.ConnectionError:
-                                pass
-                            except Exception:
-                                break
-                        print('INTERPRETACION --> ', response.text)
-
-                        if response.status_code == 200:
-                            interpretation = response.json().get('interpretation') or None
-                        else:
-                            interpretation = None
-
-                        time = int(response.elapsed.total_seconds())
+                        interpretation, time = self._solver.cnf(cnf=cnf, solver=solver, timeout=timeout)
                         if interpretation == [] or interpretation is None:
                             insats.update({solver: time})
                         else:
@@ -168,16 +123,6 @@ class Session(metaclass=Singleton):
                             solver=solver,
                             score=score
                         )
-                        # Check if service is alive.
-                        try:
-                            requests.post(
-                                'http://' + self.uris.get(solver).get('uri') + '/',
-                                json={'cnf': [[1]]},
-                                timeout=timeout
-                            )
-                        except TimeoutError:
-                            print('Solicita de nuevo el servicio ' + str(solver))
-                            self.uris.update({solver: self.get_image_uri(solver)})
 
                 # Registra los solvers que afirmaron la insatisfactibilidad en caso en que ninguno
                 #  haya demostrado lo contrario.

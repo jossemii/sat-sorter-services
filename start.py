@@ -7,31 +7,32 @@ if __name__ == "__main__":
     
     import os
     import json
+    import requests
     from flask import Flask, request
-    import train, _get, regresion
+    import train, _get, regresion, _solve
 
     app = Flask(__name__)
+    trainer = train.Session.__call__()
+    _solver = _solve.Session()
     
     try:
         GATEWAY = os.environ['GATEWAY']
     except KeyError: pass
 
-    @app.route('/select', methods=['GET', 'POST'])
-    def _select():
-        regresion.iterate_regression()
-        return {'interpretation': _get.cnf(
-            cnf=request.get_json()['cnf']
-        )}
+    @app.route('/solve', methods=['GET', 'POST'])
+    def solve():
+        cnf = request.get_json()['cnf']
+        solver = _get.cnf(
+            cnf= cnf
+        )
+        return {
+            'interpretation': _solver.cnf(cnf = cnf, solver = solver)[0]
+        }
+
 
     @app.route('/upsolver', methods=['GET', 'POST'])
     def up_solver():
-        data = json.load(open(DIR+'solvers.json', 'r'))
-        data.update({
-            request.get_json()['solver']: {}
-        })
-        with open(DIR+'solvers.json', 'w') as file:
-            json.dump(data, file)
-        return 'DoIt'
+        trainer.load_solver(request.get_json()['solver'])
 
     @app.route('/tensor', methods=['GET'])
     def get_tensor():
@@ -40,12 +41,12 @@ if __name__ == "__main__":
 
     @app.route('/train/start', methods=['GET'])
     def start_train():
-        train.Session.__call__().init() # subprocess
+        trainer.init() # subprocess
         # return 'DoIt'
 
     @app.route('/train/stop', methods=['GET'])
     def stop_train():
-        train.Session.__call__().stop()
+        trainer.stop()
         return 'DoIt'
 
     app.run(host='0.0.0.0', port=8080)
