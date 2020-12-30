@@ -74,7 +74,7 @@ class Session(metaclass=Singleton):
         }) 
 
     def init(self):
-        self._solver = _solve.Session.__call__()
+        self._solver = _solve.Session()
         self.working = True
         self.solvers = json.load(open(DIR + 'solvers.json', 'r'))
         refresh = 0

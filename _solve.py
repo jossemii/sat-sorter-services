@@ -2,6 +2,7 @@ import requests
 from singleton import Singleton
 from start import GATEWAY as GATEWAY
 
+
 def get_image_uri(image):
     print('Obteniendo solver --> ', str(image))
     while True:
@@ -15,6 +16,7 @@ def get_image_uri(image):
             content = response.json()
             if 'uri' in content and 'token' in content:
                 return content
+
 
 class Session(metaclass=Singleton):
 
@@ -37,14 +39,15 @@ class Session(metaclass=Singleton):
                 pass
             except Exception:
                 break
-        print('INTERPRETACION --> ', response.text)
-
-        if response.status_code == 200:
-            interpretation = response.json().get('interpretation') or None
-        else:
-            interpretation = None
-
-        time = int(response.elapsed.total_seconds())
+        try:
+            if response and response.status_code == 200:
+                print('INTERPRETACION --> ', response.text)
+                interpretation = response.json().get('interpretation') or None
+                time = int(response.elapsed.total_seconds())
+            else:
+                interpretation, time = None, 0
+        except UnboundLocalError:
+            interpretation, time = None, 0
 
         return interpretation, time
 
@@ -58,7 +61,7 @@ class Session(metaclass=Singleton):
             requests.post(
                 'http://' + self.uris.get(solver).get('uri') + '/',
                 json={'cnf': [[1]]},
-                timeout=2*self.avr_time
+                timeout=2 * self.avr_time
             )
         except TimeoutError:
             print('Solicita de nuevo el servicio ' + str(solver))

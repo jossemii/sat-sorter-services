@@ -7,12 +7,11 @@ if __name__ == "__main__":
     
     import os
     import json
-    import requests
     from flask import Flask, request
-    import train, _get, regresion, _solve
+    import train, _get, _solve
 
     app = Flask(__name__)
-    trainer = train.Session.__call__()
+    trainer = train.Session()
     _solver = _solve.Session()
     
     try:
