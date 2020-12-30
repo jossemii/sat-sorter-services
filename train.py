@@ -7,10 +7,10 @@ from singleton import Singleton
 import _solve
 
 
-class Session(metaclass=Singleton, threading.Thread):
+class Session(metaclass=Singleton):
 
     def __init__(self):
-        threading.Thread.__init__(self)
+        self.thread = None
         self.random_service_instance = None
         self.solvers = json.load(open(DIR + 'solvers.json', 'r'))
         self.working = True
@@ -19,6 +19,7 @@ class Session(metaclass=Singleton, threading.Thread):
     def stop(self):
         self.random_service_instance.stop()
         self.working = False
+        self.thread.join()
 
     def load_solver(self, solver):
         self.solvers.update({solver: {}})
@@ -82,6 +83,10 @@ class Session(metaclass=Singleton, threading.Thread):
                 'score': (solver_cnf['score'] * solver_cnf['index'] + score) / (solver_cnf['index'] + 1)
             }
         })
+
+    def start(self):
+        self.thread = threading.Thread(target=self.init, name='Trainer', daemon=True)
+        self.thread.start()
 
     def init(self):
         refresh = 0

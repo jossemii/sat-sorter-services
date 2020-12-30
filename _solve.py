@@ -7,13 +7,13 @@ from start import GATEWAY as GATEWAY
 
 
 def get_image_uri(image: str):
-    print('Obteniendo solver --> ', str(image))
+    print('\nOBTENIENDO EL SOLVER  --> ', str(image))
     while True:
-        print('Intenta obtener la imagen' + str(image))
+        print(' Intenta obtener la imagen' + str(image))
         try:
             response = requests.get('http://' + GATEWAY, json={'service': str(image)})
         except requests.HTTPError as e:
-            print('Error al solicitar solver, ', image, e)
+            print(' Error al solicitar solver, ', image, e)
             pass
         if response and response.status_code == 200:
             content = response.json()
