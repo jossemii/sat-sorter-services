@@ -1,14 +1,16 @@
+import threading
+
 import requests, json
 from start import DIR
-from start import GATEWAY as GATEWAY
 from start import SAVE_TRAIN_DATA as REFRESH
 from singleton import Singleton
 import _solve
 
 
-class Session(metaclass=Singleton):
+class Session(metaclass=Singleton, threading.Thread):
 
     def __init__(self):
+        threading.Thread.__init__(self)
         self.random_service_instance = None
         self.solvers = json.load(open(DIR + 'solvers.json', 'r'))
         self.working = True

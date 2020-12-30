@@ -1,3 +1,5 @@
+from threading import Thread
+
 DIR = ''  # '/satrainer/'
 MAX_REGRESSION_DEGREE = 100
 GATEWAY = '192.168.1.64:8000'
@@ -44,8 +46,8 @@ if __name__ == "__main__":
 
     @app.route('/train/start', methods=['GET'])
     def start_train():
-        trainer.init()  # subprocess
-        # return 'DoIt'
+        trainer.init()
+        return 'DoIt'
 
 
     @app.route('/train/stop', methods=['GET'])

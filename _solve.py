@@ -1,5 +1,6 @@
 from time import sleep
 from datetime import datetime, timedelta
+from threading import Thread
 import requests
 from singleton import Singleton
 from start import GATEWAY as GATEWAY
@@ -53,7 +54,7 @@ class Session(metaclass=Singleton):
         print('INIT SOLVE SESSION ....')
         self.avr_time = 30
         self.solvers = {}
-        self.maintenance()  # open other threath
+        Thread(target=self.maintenance, name='Maintainer', daemon=False).start()
 
     def cnf(self, cnf, solver: str, timeout=None):
         if solver not in self.solvers:
