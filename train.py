@@ -5,25 +5,33 @@ from start import SAVE_TRAIN_DATA as REFRESH
 from singleton import Singleton
 import _solve
 
+
 class Session(metaclass=Singleton):
 
+    def __init__(self):
+        self.random_service_instance = None
+        self.solvers = json.load(open(DIR + 'solvers.json', 'r'))
+        self.working = True
+        self._solver = _solve.Session()
+
     def stop(self):
-        requests.get('http://' + GATEWAY, json={'token': str(self.random_cnf_token)})
+        self.random_service_instance.stop()
         self.working = False
 
     def load_solver(self, solver):
         self.solvers.update({solver: {}})
 
     def init_random_cnf_service(self):
-        random_dict = _solve.get_image_uri('07a9852b10c5bbc9c55180d43d70561854f6a8f5fc8a28483bf893cac0871e0b')
-        self.random_uri = random_dict.get('uri')
-        self.random_cnf_token = random_dict.get('token')
+        self.random_service_instance = _solve.get_image_uri('07a9852b10c5bbc9c55180d43d70561854f6a8f5fc8a28483bf893cac0871e0b')
 
     def random_cnf(self):
         while True:
             try:
                 print('OBTENIENDO RANDON CNF')
-                response = requests.get('http://' + self.random_uri + '/', timeout=self._solver.avr_time)
+                response = requests.get(
+                    'http://' + self.random_service_instance.uri + '/',
+                    timeout=self._solver.avr_time
+                )
                 print('RESPUESTA DEL CNF --> ', response, response.text)
                 if response and response.status_code == 200 and 'cnf' in response.json():
                     return response.json().get('cnf')
@@ -31,7 +39,7 @@ class Session(metaclass=Singleton):
                 pass
             except (TimeoutError, requests.exceptions.ReadTimeout, requests.HTTPError):
                 print('VAMOS A CAMBIAR EL SERVICIO DE OBTENCION DE CNFs RANDOM')
-                requests.get('http://' + GATEWAY, json={'token': str(self.random_cnf_token)})
+                self.random_service_instance.stop()
                 self.init_random_cnf_service()
                 print('listo. ahora vamos a probar otra vez.')
 
@@ -71,12 +79,9 @@ class Session(metaclass=Singleton):
                 'index': solver_cnf['index'] + 1,
                 'score': (solver_cnf['score'] * solver_cnf['index'] + score) / (solver_cnf['index'] + 1)
             }
-        }) 
+        })
 
     def init(self):
-        self._solver = _solve.Session()
-        self.working = True
-        self.solvers = json.load(open(DIR + 'solvers.json', 'r'))
         refresh = 0
         timeout = 30
         print('INICIANDO SERVICIO DE RANDOM CNF')
