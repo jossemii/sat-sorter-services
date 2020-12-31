@@ -1,9 +1,10 @@
 from time import sleep
 from datetime import datetime, timedelta
-from threading import Thread
+from threading import Thread, Lock
 import requests
 from singleton import Singleton
 from start import GATEWAY as GATEWAY
+from start import MAINTENANCE_SLEEP_TIME, SOLVER_PASS_TIMEOUT_TIMES, SOLVER_FAILED_ATTEMPTS
 
 
 def get_image_uri(image: str):
@@ -54,12 +55,16 @@ class Session(metaclass=Singleton):
         print('INIT SOLVE SESSION ....')
         self.avr_time = 30
         self.solvers = {}
+        self.solvers_lock = Lock()
         Thread(target=self.maintenance, name='Maintainer', daemon=False).start()
 
     def cnf(self, cnf, solver: str, timeout=None):
+        self.solvers_lock.acquire()
+
         if solver not in self.solvers:
             self.add_or_update_solver(solver=solver)
         solver = self.get(solver)
+        self.solvers_lock.release()
         solver.mark_time()
         while True:
             try:
@@ -78,13 +83,18 @@ class Session(metaclass=Singleton):
             print('INTERPRETACION --> ', response.text)
             interpretation = response.json().get('interpretation') or None
             time = int(response.elapsed.total_seconds())
-            return interpretation, time
+
         else:
-            return None, 0
+            interpretation, time = None, 0
+
+        self.solvers_lock.release()
+        return interpretation, time
 
     def maintenance(self):
         while True:
-            sleep(100)
+            sleep(MAINTENANCE_SLEEP_TIME)
+            self.solvers_lock.acquire()
+
             for solver in self.solvers.values():
                 # En caso de que lleve mas de dos minutos sin usarse.
                 if datetime.now() - solver.use_datetime > timedelta(minutes=2):
@@ -92,9 +102,11 @@ class Session(metaclass=Singleton):
                     continue
                 # En caso de que tarde en dar respuesta a cnf's reales,
                 #  comprueba si la instancia sigue funcionando.
-                if solver.pass_timeout > 5 and not self.check_if_service_is_alive(solver=solver) \
-                        or solver.failed_attempts > 5:
+                if solver.pass_timeout > SOLVER_PASS_TIMEOUT_TIMES and not self.check_if_service_is_alive(solver=solver) \
+                        or solver.failed_attempts > SOLVER_FAILED_ATTEMPTS:
                     self.add_or_update_solver(solver=solver.service)
+
+            self.solvers_lock.release()
 
     def stop_solver(self, solver: SolverInstance):
         solver.stop()
