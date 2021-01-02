@@ -2,6 +2,8 @@ from time import sleep
 from datetime import datetime, timedelta
 from threading import Thread, Lock, get_native_id
 import requests
+from typing import List
+
 from singleton import Singleton
 from start import GATEWAY as GATEWAY, STOP_SOLVER_TIME_DELTA_MINUTES
 from start import MAINTENANCE_SLEEP_TIME, SOLVER_PASS_TIMEOUT_TIMES, SOLVER_FAILED_ATTEMPTS
@@ -93,10 +95,16 @@ class Session(metaclass=Singleton):
         while True:
             print('MAINTEANCE THREAD IS ', get_native_id())
             sleep(MAINTENANCE_SLEEP_TIME)
-            self.solvers_lock.acquire()
 
-            for solver in self.solvers.values():
+            index = 0
+            while True:
+                self.solvers_lock.acquire()
+                try:
+                    solver = self.solvers[List[self.solvers][index]]
+                except IndexError:
+                    break
                 print('      maintain solver --> ', solver)
+
                 # En caso de que lleve mas de dos minutos sin usarse.
                 if datetime.now() - solver.use_datetime > timedelta(minutes=STOP_SOLVER_TIME_DELTA_MINUTES):
                     self.stop_solver(solver=solver)
@@ -107,7 +115,9 @@ class Session(metaclass=Singleton):
                         or solver.failed_attempts > SOLVER_FAILED_ATTEMPTS:
                     self.add_or_update_solver(solver=solver.service)
 
-            self.solvers_lock.release()
+                index = +1
+                self.solvers_lock.release()
+                sleep(MAINTENANCE_SLEEP_TIME/index)
 
     def stop_solver(self, solver: SolverInstance):
         solver.stop()
