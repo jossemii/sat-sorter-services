@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from threading import Thread, Lock, get_native_id
 import requests
 from singleton import Singleton
-from start import GATEWAY as GATEWAY
+from start import GATEWAY as GATEWAY, STOP_SOLVER_TIME_DELTA_MINUTES
 from start import MAINTENANCE_SLEEP_TIME, SOLVER_PASS_TIMEOUT_TIMES, SOLVER_FAILED_ATTEMPTS
 
 
@@ -98,8 +98,8 @@ class Session(metaclass=Singleton):
             for solver in self.solvers.values():
                 print('      maintain solver --> ', solver)
                 # En caso de que lleve mas de dos minutos sin usarse.
-                if datetime.now() - solver.use_datetime > timedelta(minutes=2):
-                    self.stop_solver(solver=solver.service)
+                if datetime.now() - solver.use_datetime > timedelta(minutes=STOP_SOLVER_TIME_DELTA_MINUTES):
+                    self.stop_solver(solver=solver)
                     continue
                 # En caso de que tarde en dar respuesta a cnf's reales,
                 #  comprueba si la instancia sigue funcionando.
