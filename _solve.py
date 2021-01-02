@@ -1,6 +1,6 @@
 from time import sleep
 from datetime import datetime, timedelta
-from threading import Thread, Lock
+from threading import Thread, Lock, get_native_id
 import requests
 from singleton import Singleton
 from start import GATEWAY as GATEWAY
@@ -56,7 +56,7 @@ class Session(metaclass=Singleton):
         self.avr_time = 30
         self.solvers = {}
         self.solvers_lock = Lock()
-        Thread(target=self.maintenance, name='Maintainer', daemon=False).start()
+        Thread(target=self.maintenance, name='Maintainer').start()
 
     def cnf(self, cnf, solver: str, timeout=None):
         self.solvers_lock.acquire()
@@ -64,7 +64,6 @@ class Session(metaclass=Singleton):
         if solver not in self.solvers:
             self.add_or_update_solver(solver=solver)
         solver = self.get(solver)
-        self.solvers_lock.release()
         solver.mark_time()
         while True:
             try:
@@ -92,10 +91,12 @@ class Session(metaclass=Singleton):
 
     def maintenance(self):
         while True:
+            print('MAINTEANCE THREAD IS ', get_native_id())
             sleep(MAINTENANCE_SLEEP_TIME)
             self.solvers_lock.acquire()
 
             for solver in self.solvers.values():
+                print('      maintain solver --> ', solver)
                 # En caso de que lleve mas de dos minutos sin usarse.
                 if datetime.now() - solver.use_datetime > timedelta(minutes=2):
                     self.stop_solver(solver=solver.service)

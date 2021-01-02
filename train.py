@@ -1,5 +1,4 @@
-import threading
-
+from threading import get_native_id, Thread
 import requests, json
 from start import DIR
 from start import SAVE_TRAIN_DATA as REFRESH
@@ -10,7 +9,7 @@ import _solve
 class Session(metaclass=Singleton):
 
     def __init__(self):
-        self.thread = None
+        self.thread = Thread(target=self.init, name='Trainer')
         self.random_service_instance = None
         self.solvers = json.load(open(DIR + 'solvers.json', 'r'))
         self.working = True
@@ -56,7 +55,7 @@ class Session(metaclass=Singleton):
             return False
 
         for clause in cnf:
-            if goodClause(clause, interpretation) == False:
+            if not goodClause(clause, interpretation):
                 return False
         return True
 
@@ -85,10 +84,13 @@ class Session(metaclass=Singleton):
         })
 
     def start(self):
-        self.thread = threading.Thread(target=self.init, name='Trainer', daemon=True)
-        self.thread.start()
+        try:
+            self.thread.start()
+        except RuntimeError:
+            print('Error: train thread was started and have an error.')
 
     def init(self):
+        print('TRAINER THREAD IS ', get_native_id())
         refresh = 0
         timeout = 30
         print('INICIANDO SERVICIO DE RANDOM CNF')

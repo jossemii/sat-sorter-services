@@ -12,7 +12,9 @@ if __name__ == "__main__":
     import json
     from flask import Flask, request
     import train, _get, _solve
+    from threading import get_native_id
 
+    print('INIT START THREAD ', get_native_id())
     app = Flask(__name__)
     trainer = train.Session()
     _solver = _solve.Session()
