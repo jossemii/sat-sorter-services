@@ -1,6 +1,6 @@
 from threading import get_native_id, Thread
 import requests, json
-from start import DIR
+from start import DIR, TRAIN_SOLVERS_TIMEOUT
 from start import SAVE_TRAIN_DATA as REFRESH
 from singleton import Singleton
 import _solve
@@ -92,7 +92,7 @@ class Session(metaclass=Singleton):
     def init(self):
         print('TRAINER THREAD IS ', get_native_id())
         refresh = 0
-        timeout = 30
+        timeout = TRAIN_SOLVERS_TIMEOUT
         print('INICIANDO SERVICIO DE RANDOM CNF')
         self.init_random_cnf_service()
         print('hecho.')
@@ -107,8 +107,6 @@ class Session(metaclass=Singleton):
                 for solver in self.solvers:
                     print('SOVLER --> ', solver)
                     try:
-                        # El timeout se podria calcular a partir del resto ...
-                        # Tambien podria ser asincrono ...
                         interpretation, time = self._solver.cnf(cnf=cnf, solver=solver, timeout=timeout)
                         if interpretation == [] or interpretation is None:
                             insats.update({solver: time})
