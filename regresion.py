@@ -3,7 +3,7 @@ import numpy as np
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 import json
-from start import DIR, LOGGER
+from start import DIR, LOGGER, TIME_FOR_EACH_REGRESSION_LOOP
 from start import MAX_REGRESSION_DEGREE as MAX_DEGREE
 
 
@@ -94,4 +94,4 @@ def iterate_regression():
 if __name__ == "__main__":
     while True:
         iterate_regression()
-        sleep(9999)
+        sleep(TIME_FOR_EACH_REGRESSION_LOOP)

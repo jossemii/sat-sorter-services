@@ -11,6 +11,7 @@ SOLVER_FAILED_ATTEMPTS = 5
 STOP_SOLVER_TIME_DELTA_MINUTES = 2
 TRAIN_SOLVERS_TIMEOUT = 30
 MAX_REGRESSION_DEGREE = 100
+TIME_FOR_EACH_REGRESSION_LOOP = 9999
 
 if __name__ == "__main__":
 
@@ -51,6 +52,10 @@ if __name__ == "__main__":
         pass
     try:
         MAX_REGRESSION_DEGREE = os.environ['MAX_REGRESSION_DEGREE']
+    except KeyError:
+        pass
+    try:
+        TIME_FOR_EACH_REGRESSION_LOOP = os.environ['TIME_FOR_EACH_REGRESSION_LOOP']
     except KeyError:
         pass
 
