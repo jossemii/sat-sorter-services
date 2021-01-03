@@ -1,6 +1,6 @@
 import logging
-logging.basicConfig(filename='app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
-LOGGER = lambda message: logging.getLogger(__name__).debug(message)
+logging.basicConfig(filename='app.log', level=logging.DEBUG)
+LOGGER = lambda message: logging.getLogger().debug(message)
 
 DIR = ''  # '/satrainer/'
 GATEWAY = '192.168.1.65:8000'
