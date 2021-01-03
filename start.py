@@ -90,6 +90,7 @@ if __name__ == "__main__":
     @app.route('/upsolver', methods=['GET', 'POST'])
     def up_solver():
         trainer.load_solver(request.get_json()['solver'])
+        return 'DoIt'
 
 
     @app.route('/tensor', methods=['GET'])
