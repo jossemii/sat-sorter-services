@@ -27,9 +27,8 @@ def solver_regression(solver: dict):
 
     # Get output variable. Score.
     output = np.array(
-        [value['score'] for value in solver.values() if type(value.get('score') or None) is float]
+        [value['score'] for value in solver.values()]
     ).reshape(-1, 1)
-
     if len(input) != len(output):
         raise Exception('Error en solvers.json, faltan scores.')
 
