@@ -12,7 +12,7 @@ class Session(metaclass=Singleton):
         self.thread = Thread(target=self.init, name='Trainer')
         self.random_service_instance = None
         self.solvers = json.load(open(DIR + 'solvers.json', 'r'))
-        self.working = True
+        self.working = False
         self._solver = _solve.Session()
 
     def stop(self):
@@ -24,7 +24,8 @@ class Session(metaclass=Singleton):
         self.solvers.update({solver: {}})
 
     def init_random_cnf_service(self):
-        self.random_service_instance = _solve.get_image_uri('07a9852b10c5bbc9c55180d43d70561854f6a8f5fc8a28483bf893cac0871e0b')
+        self.random_service_instance = _solve.get_image_uri(
+            '07a9852b10c5bbc9c55180d43d70561854f6a8f5fc8a28483bf893cac0871e0b')
 
     def random_cnf(self):
         while True:
@@ -90,6 +91,7 @@ class Session(metaclass=Singleton):
             print('Error: train thread was started and have an error.')
 
     def init(self):
+        self.working = True
         print('TRAINER THREAD IS ', get_native_id())
         refresh = 0
         timeout = TRAIN_SOLVERS_TIMEOUT
