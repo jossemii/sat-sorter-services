@@ -54,7 +54,7 @@ if __name__ == "__main__":
     except KeyError:
         pass
 
-    LOGGER('INIT START THREAD ', get_native_id())
+    LOGGER('INIT START THREAD ' + str(get_native_id()))
     app = Flask(__name__)
     trainer = train.Session()
     _solver = _solve.Session()
