@@ -106,7 +106,7 @@ class Session(metaclass=Singleton):
                 except IndexError:
                     self.solvers_lock.release()
                     break
-                print('      maintain solver --> ', solver, self.solvers)
+                print('      maintain solver --> ', solver, ' of ', len(self.solvers))
 
                 # En caso de que lleve mas de dos minutos sin usarse.
                 if datetime.now() - solver.use_datetime > timedelta(minutes=STOP_SOLVER_TIME_DELTA_MINUTES):
