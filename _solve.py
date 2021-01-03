@@ -115,8 +115,9 @@ class Session(metaclass=Singleton):
                     continue
                 # En caso de que tarde en dar respuesta a cnf's reales,
                 #  comprueba si la instancia sigue funcionando.
-                if solver.pass_timeout > SOLVER_PASS_TIMEOUT_TIMES and not self.check_if_service_is_alive(solver=solver) \
-                        or solver.failed_attempts > SOLVER_FAILED_ATTEMPTS:
+                if solver.pass_timeout > SOLVER_PASS_TIMEOUT_TIMES and \
+                        not self.check_if_service_is_alive(solver=solver) or \
+                        solver.failed_attempts > SOLVER_FAILED_ATTEMPTS:
                     self.add_or_update_solver(solver=solver.service)
 
                 self.solvers_lock.release()
