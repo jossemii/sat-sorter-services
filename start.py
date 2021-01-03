@@ -19,7 +19,7 @@ if __name__ == "__main__":
     import json
     from flask import Flask, request
     import train, _get, _solve
-    from threading import get_native_id
+    from threading import get_ident
 
     try:
         GATEWAY = os.environ['GATEWAY']
@@ -54,7 +54,7 @@ if __name__ == "__main__":
     except KeyError:
         pass
 
-    LOGGER('INIT START THREAD ' + str(get_native_id()))
+    LOGGER('INIT START THREAD ' + str(get_ident()))
     app = Flask(__name__)
     trainer = train.Session()
     _solver = _solve.Session()

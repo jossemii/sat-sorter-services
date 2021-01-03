@@ -1,6 +1,6 @@
 from time import sleep
 from datetime import datetime, timedelta
-from threading import Thread, Lock, get_native_id
+from threading import Thread, Lock, get_ident
 import requests
 
 from singleton import Singleton
@@ -93,7 +93,7 @@ class Session(metaclass=Singleton):
 
     def maintenance(self):
         while True:
-            LOGGER('MAINTEANCE THREAD IS ' + str(get_native_id()))
+            LOGGER('MAINTEANCE THREAD IS ' + str(get_ident()))
             sleep(MAINTENANCE_SLEEP_TIME)
 
             index = 0

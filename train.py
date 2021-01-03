@@ -1,4 +1,4 @@
-from threading import get_native_id, Thread, Lock
+from threading import get_ident, Thread, Lock
 import requests, json
 from start import DIR, TRAIN_SOLVERS_TIMEOUT, LOGGER
 from start import SAVE_TRAIN_DATA as REFRESH
@@ -95,7 +95,7 @@ class Session(metaclass=Singleton):
 
     def init(self):
         self.working = True
-        LOGGER('TRAINER THREAD IS ' + str(get_native_id()))
+        LOGGER('TRAINER THREAD IS ' + str(get_ident()))
         refresh = 0
         timeout = TRAIN_SOLVERS_TIMEOUT
         LOGGER('INICIANDO SERVICIO DE RANDOM CNF')
