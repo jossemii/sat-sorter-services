@@ -38,7 +38,7 @@ class Session(metaclass=Singleton):
                     'http://' + self.random_service_instance.uri + '/',
                     timeout=self._solver.avr_time
                 )
-                LOGGER('RESPUESTA DEL CNF --> ', response, response.text)
+                LOGGER('RESPUESTA DEL CNF --> ' + str(response) + str(response.text))
                 if response and response.status_code == 200 and 'cnf' in response.json():
                     return response.json().get('cnf')
             except requests.exceptions.ConnectionError:
@@ -95,7 +95,7 @@ class Session(metaclass=Singleton):
 
     def init(self):
         self.working = True
-        LOGGER('TRAINER THREAD IS ', get_native_id())
+        LOGGER('TRAINER THREAD IS ' + str(get_native_id()))
         refresh = 0
         timeout = TRAIN_SOLVERS_TIMEOUT
         LOGGER('INICIANDO SERVICIO DE RANDOM CNF')
@@ -111,7 +111,7 @@ class Session(metaclass=Singleton):
                 LOGGER('VAMOS A PROBAR LOS SOLVERS')
                 self.solvers_lock.acquire()
                 for solver in self.solvers:
-                    LOGGER('SOVLER --> ', solver)
+                    LOGGER('SOVLER --> ' + str(solver))
                     try:
                         interpretation, time = self._solver.cnf(cnf=cnf, solver=solver, timeout=timeout)
                         if interpretation == [] or interpretation is None:
