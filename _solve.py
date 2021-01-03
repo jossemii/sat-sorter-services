@@ -61,6 +61,7 @@ class Session(metaclass=Singleton):
         Thread(target=self.maintenance, name='Maintainer').start()
 
     def cnf(self, cnf, solver: str, timeout=None):
+        print('cnf want solvers lock', self.solvers_lock.locked())
         self.solvers_lock.acquire()
 
         if solver not in self.solvers:
@@ -98,17 +99,19 @@ class Session(metaclass=Singleton):
 
             index = 0
             while True:
+                print('maintainer want solvers lock', self.solvers_lock.locked())
                 self.solvers_lock.acquire()
                 try:
-                    print('...')
                     solver = self.solvers[list(self.solvers)[index]]
                 except IndexError:
+                    self.solvers_lock.release()
                     break
-                print('      maintain solver --> ', solver)
+                print('      maintain solver --> ', solver, self.solvers)
 
                 # En caso de que lleve mas de dos minutos sin usarse.
                 if datetime.now() - solver.use_datetime > timedelta(minutes=STOP_SOLVER_TIME_DELTA_MINUTES):
                     self.stop_solver(solver=solver)
+                    self.solvers_lock.release()
                     continue
                 # En caso de que tarde en dar respuesta a cnf's reales,
                 #  comprueba si la instancia sigue funcionando.
