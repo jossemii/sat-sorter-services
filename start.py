@@ -1,5 +1,4 @@
 DIR = ''  # '/satrainer/'
-MAX_REGRESSION_DEGREE = 100
 GATEWAY = '192.168.1.64:8000'
 SAVE_TRAIN_DATA = 2
 MAINTENANCE_SLEEP_TIME = 10
@@ -7,6 +6,7 @@ SOLVER_PASS_TIMEOUT_TIMES = 5
 SOLVER_FAILED_ATTEMPTS = 5
 STOP_SOLVER_TIME_DELTA_MINUTES = 2
 TRAIN_SOLVERS_TIMEOUT = 30
+MAX_REGRESSION_DEGREE = 100
 
 if __name__ == "__main__":
 
@@ -16,15 +16,43 @@ if __name__ == "__main__":
     import train, _get, _solve
     from threading import get_native_id
 
-    print('INIT START THREAD ', get_native_id())
-    app = Flask(__name__)
-    trainer = train.Session()
-    _solver = _solve.Session()
-
     try:
         GATEWAY = os.environ['GATEWAY']
     except KeyError:
         pass
+    try:
+        SAVE_TRAIN_DATA = os.environ['SAVE_TRAIN_DATA']
+    except KeyError:
+        pass
+    try:
+        MAINTENANCE_SLEEP_TIME = os.environ['MAINTENANCE_SLEEP_TIME']
+    except KeyError:
+        pass
+    try:
+        SOLVER_PASS_TIMEOUT_TIMES = os.environ['SOLVER_PASS_TIMEOUT_TIMES']
+    except KeyError:
+        pass
+    try:
+        SOLVER_FAILED_ATTEMPTS = os.environ['SOLVER_FAILED_ATTEMPTS']
+    except KeyError:
+        pass
+    try:
+        STOP_SOLVER_TIME_DELTA_MINUTES = os.environ['STOP_SOLVER_TIME_DELTA_MINUTES']
+    except KeyError:
+        pass
+    try:
+        TRAIN_SOLVERS_TIMEOUT = os.environ['TRAIN_SOLVERS_TIMEOUT']
+    except KeyError:
+        pass
+    try:
+        MAX_REGRESSION_DEGREE = os.environ['MAX_REGRESSION_DEGREE']
+    except KeyError:
+        pass
+
+    print('INIT START THREAD ', get_native_id())
+    app = Flask(__name__)
+    trainer = train.Session()
+    _solver = _solve.Session()
 
 
     @app.route('/solve', methods=['GET', 'POST'])
