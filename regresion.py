@@ -3,7 +3,7 @@ import numpy as np
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 import json
-from start import DIR
+from start import DIR, LOGGER
 from start import MAX_REGRESSION_DEGREE as MAX_DEGREE
 
 
@@ -35,15 +35,15 @@ def solver_regression(solver: dict):
 
     best_tensor = {'coefficient of determination': 0}
     for degree in range(1, MAX_DEGREE+1):
-        print(' DEGREE --> ', degree)
+        LOGGER(' DEGREE --> ', degree)
         tensor = regression_with_degree(degree= degree, input=input, output=output)
-        print('                R2 --> ', tensor['coefficient of determination'])
+        LOGGER('                R2 --> ', tensor['coefficient of determination'])
         if tensor['coefficient of determination'] > best_tensor['coefficient of determination']:
             best_tensor = tensor
     return best_tensor
 
 def into_tensor(coefficients: np.array, features):
-    print(features)
+    LOGGER(features)
     if len(coefficients) != len(features)+1: raise Exception('Feature len error.')
     tensor = []
     for index in range(len(coefficients)):
@@ -60,7 +60,7 @@ def into_tensor(coefficients: np.array, features):
             else:
                 l_exp = 1 if feature[0] == 'l' else int(feature[0][2:])
                 c_exp = 0
-            print('Feature --> ', features[index-1], ' == ', c_exp, '--' ,l_exp)
+            LOGGER('Feature --> ', features[index-1], ' == ', c_exp, '--' ,l_exp)
             tensor.append({
                 'coefficient': coefficients[index],
                 'feature': {
@@ -80,14 +80,14 @@ def iterate_regression():
     # Make regression for each solver.
     for solver in solvers:
         if solvers[solver]=={}: continue
-        print('SOLVER --> ', solver)
+        LOGGER('SOLVER --> ', solver)
         tensor = solver_regression(solver=solvers[solver])
-        print(' ------ ')
+        LOGGER(' ------ ')
 
         tensors.update({
             solver: into_tensor( coefficients=tensor['tensor coefficients'], features=tensor['feature names'])
             })
-        print(' ****** ')
+        LOGGER(' ****** ')
 
     # Write tensors.json
     with open(DIR+'tensors.json', 'w') as file:

@@ -1,6 +1,6 @@
 from threading import get_native_id, Thread, Lock
 import requests, json
-from start import DIR, TRAIN_SOLVERS_TIMEOUT
+from start import DIR, TRAIN_SOLVERS_TIMEOUT, LOGGER
 from start import SAVE_TRAIN_DATA as REFRESH
 from singleton import Singleton
 import _solve
@@ -33,21 +33,21 @@ class Session(metaclass=Singleton):
     def random_cnf(self):
         while True:
             try:
-                print('OBTENIENDO RANDON CNF')
+                LOGGER('OBTENIENDO RANDON CNF')
                 response = requests.get(
                     'http://' + self.random_service_instance.uri + '/',
                     timeout=self._solver.avr_time
                 )
-                print('RESPUESTA DEL CNF --> ', response, response.text)
+                LOGGER('RESPUESTA DEL CNF --> ', response, response.text)
                 if response and response.status_code == 200 and 'cnf' in response.json():
                     return response.json().get('cnf')
             except requests.exceptions.ConnectionError:
                 pass
             except (TimeoutError, requests.exceptions.ReadTimeout, requests.HTTPError):
-                print('VAMOS A CAMBIAR EL SERVICIO DE OBTENCION DE CNFs RANDOM')
+                LOGGER('VAMOS A CAMBIAR EL SERVICIO DE OBTENCION DE CNFs RANDOM')
                 self.random_service_instance.stop()
                 self.init_random_cnf_service()
-                print('listo. ahora vamos a probar otra vez.')
+                LOGGER('listo. ahora vamos a probar otra vez.')
 
     @staticmethod
     def isGood(cnf, interpretation):
@@ -91,27 +91,27 @@ class Session(metaclass=Singleton):
         try:
             self.thread.start()
         except RuntimeError:
-            print('Error: train thread was started and have an error.')
+            LOGGER('Error: train thread was started and have an error.')
 
     def init(self):
         self.working = True
-        print('TRAINER THREAD IS ', get_native_id())
+        LOGGER('TRAINER THREAD IS ', get_native_id())
         refresh = 0
         timeout = TRAIN_SOLVERS_TIMEOUT
-        print('INICIANDO SERVICIO DE RANDOM CNF')
+        LOGGER('INICIANDO SERVICIO DE RANDOM CNF')
         self.init_random_cnf_service()
-        print('hecho.')
+        LOGGER('hecho.')
         while self.working:
             if refresh < REFRESH:
-                print('REFRESH ES MENOR')
+                LOGGER('REFRESH ES MENOR')
                 refresh = refresh + 1
                 cnf = self.random_cnf()
                 is_insat = True  # En caso en que se demuestre lo contrario.
                 insats = {}  # Solvers que afirman la insatisfactibilidad junto con su respectivo tiempo.
-                print('VAMOS A PROBAR LOS SOLVERS')
+                LOGGER('VAMOS A PROBAR LOS SOLVERS')
                 self.solvers_lock.acquire()
                 for solver in self.solvers:
-                    print('SOVLER --> ', solver)
+                    LOGGER('SOVLER --> ', solver)
                     try:
                         interpretation, time = self._solver.cnf(cnf=cnf, solver=solver, timeout=timeout)
                         if interpretation == [] or interpretation is None:
@@ -131,7 +131,7 @@ class Session(metaclass=Singleton):
                                 score=score
                             )
                     except (TimeoutError, requests.exceptions.ReadTimeout):
-                        print('TIME OUT NO SUPERADO.')
+                        LOGGER('TIME OUT NO SUPERADO.')
                         if timeout == 0:
                             score = -1
                         else:
@@ -159,7 +159,7 @@ class Session(metaclass=Singleton):
                             score=float(-1 / insats.get(solver)) if insats.get(solver) != 0 else -1
                         )
             else:
-                print('ACTUALIZA EL JSON')
+                LOGGER('ACTUALIZA EL JSON')
                 refresh = 0
                 with open(DIR + 'solvers.json', 'w') as file:
                     json.dump(self.solvers, file)

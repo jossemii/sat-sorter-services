@@ -2,21 +2,20 @@ from time import sleep
 from datetime import datetime, timedelta
 from threading import Thread, Lock, get_native_id
 import requests
-from typing import List
 
 from singleton import Singleton
-from start import GATEWAY as GATEWAY, STOP_SOLVER_TIME_DELTA_MINUTES
+from start import GATEWAY as GATEWAY, STOP_SOLVER_TIME_DELTA_MINUTES, LOGGER
 from start import MAINTENANCE_SLEEP_TIME, SOLVER_PASS_TIMEOUT_TIMES, SOLVER_FAILED_ATTEMPTS
 
 
 def get_image_uri(image: str):
-    print('\nOBTENIENDO EL SOLVER  --> ', str(image))
+    LOGGER('\nOBTENIENDO EL SOLVER  --> ', str(image))
     while True:
-        print(' Intenta obtener la imagen' + str(image))
+        LOGGER(' Intenta obtener la imagen' + str(image))
         try:
             response = requests.get('http://' + GATEWAY, json={'service': str(image)})
         except requests.HTTPError as e:
-            print(' Error al solicitar solver, ', image, e)
+            LOGGER(' Error al solicitar solver, ', image, e)
             pass
         if response and response.status_code == 200:
             content = response.json()
@@ -54,14 +53,14 @@ class SolverInstance(object):
 class Session(metaclass=Singleton):
 
     def __init__(self):
-        print('INIT SOLVE SESSION ....')
+        LOGGER('INIT SOLVE SESSION ....')
         self.avr_time = 30
         self.solvers = {}
         self.solvers_lock = Lock()
         Thread(target=self.maintenance, name='Maintainer').start()
 
     def cnf(self, cnf, solver: str, timeout=None):
-        print('cnf want solvers lock', self.solvers_lock.locked())
+        LOGGER('cnf want solvers lock', self.solvers_lock.locked())
         self.solvers_lock.acquire()
 
         if solver not in self.solvers:
@@ -82,7 +81,7 @@ class Session(metaclass=Singleton):
                 solver.error()
         if response and response.status_code == 200:
             solver.reset_timers()
-            print('INTERPRETACION --> ', response.text)
+            LOGGER('INTERPRETACION --> ', response.text)
             interpretation = response.json().get('interpretation') or None
             time = int(response.elapsed.total_seconds())
 
@@ -94,19 +93,19 @@ class Session(metaclass=Singleton):
 
     def maintenance(self):
         while True:
-            print('MAINTEANCE THREAD IS ', get_native_id())
+            LOGGER('MAINTEANCE THREAD IS ', get_native_id())
             sleep(MAINTENANCE_SLEEP_TIME)
 
             index = 0
             while True:
-                print('maintainer want solvers lock', self.solvers_lock.locked())
+                LOGGER('maintainer want solvers lock', self.solvers_lock.locked())
                 self.solvers_lock.acquire()
                 try:
                     solver = self.solvers[list(self.solvers)[index]]
                 except IndexError:
                     self.solvers_lock.release()
                     break
-                print('      maintain solver --> ', solver, ' of ', len(self.solvers))
+                LOGGER('      maintain solver --> ', solver, ' of ', len(self.solvers))
 
                 # En caso de que lleve mas de dos minutos sin usarse.
                 if datetime.now() - solver.use_datetime > timedelta(minutes=STOP_SOLVER_TIME_DELTA_MINUTES):
@@ -129,7 +128,7 @@ class Session(metaclass=Singleton):
         del self.solvers[solver.service]
 
     def check_if_service_is_alive(self, solver: SolverInstance) -> bool:
-        print('Check if serlvice ', solver.service, ' is alive.')
+        LOGGER('Check if serlvice ', solver.service, ' is alive.')
         try:
             requests.post(
                 'http://' + solver.uri + '/',

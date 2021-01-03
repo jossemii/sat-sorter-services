@@ -1,3 +1,7 @@
+import logging
+logging.basicConfig(filename='app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+LOGGER = lambda message: logging.getLogger(__name__).debug(message)
+
 DIR = ''  # '/satrainer/'
 GATEWAY = '192.168.1.65:8000'
 SAVE_TRAIN_DATA = 2
@@ -10,6 +14,7 @@ MAX_REGRESSION_DEGREE = 100
 
 if __name__ == "__main__":
 
+    from time import sleep
     import os
     import json
     from flask import Flask, request
@@ -64,6 +69,17 @@ if __name__ == "__main__":
         return {
             'interpretation': _solver.cnf(cnf=cnf, solver=solver)[0]
         }
+
+
+    @app.route('/stream', methods=['GET'])
+    def stream():
+        def generate():
+            with open('app.log') as f:
+                while True:
+                    yield f.read()
+                    sleep(1)
+
+        return app.response_class(generate(), mimetype='text/plain')
 
 
     @app.route('/upsolver', methods=['GET', 'POST'])
