@@ -100,9 +100,10 @@ class Session(metaclass=Singleton):
             while True:
                 self.solvers_lock.acquire()
                 try:
+                    print('...')
                     solver = self.solvers[list(self.solvers)[index]]
                 except IndexError:
-                    continue
+                    break
                 print('      maintain solver --> ', solver)
 
                 # En caso de que lleve mas de dos minutos sin usarse.
