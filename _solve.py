@@ -102,7 +102,7 @@ class Session(metaclass=Singleton):
                 try:
                     solver = self.solvers[list(self.solvers)[index]]
                 except IndexError:
-                    break
+                    continue
                 print('      maintain solver --> ', solver)
 
                 # En caso de que lleve mas de dos minutos sin usarse.
