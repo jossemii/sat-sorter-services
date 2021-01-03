@@ -99,12 +99,8 @@ class Session(metaclass=Singleton):
             index = 0
             while True:
                 self.solvers_lock.acquire()
-                print('sdf')
                 try:
-                    print(list[self.solvers])
-                    key = list[self.solvers][index]
-                    print(key)
-                    solver = self.solvers[key]
+                    solver = self.solvers[list(self.solvers)[index]]
                 except IndexError:
                     break
                 print('      maintain solver --> ', solver)
@@ -122,7 +118,7 @@ class Session(metaclass=Singleton):
 
                 self.solvers_lock.release()
                 index = +1
-                sleep(MAINTENANCE_SLEEP_TIME/index)
+                sleep(MAINTENANCE_SLEEP_TIME / index)
 
     def stop_solver(self, solver: SolverInstance):
         solver.stop()
