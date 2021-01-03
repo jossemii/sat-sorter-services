@@ -1,4 +1,4 @@
-from threading import get_native_id, Thread
+from threading import get_native_id, Thread, Lock
 import requests, json
 from start import DIR, TRAIN_SOLVERS_TIMEOUT
 from start import SAVE_TRAIN_DATA as REFRESH
@@ -12,6 +12,7 @@ class Session(metaclass=Singleton):
         self.thread = Thread(target=self.init, name='Trainer')
         self.random_service_instance = None
         self.solvers = json.load(open(DIR + 'solvers.json', 'r'))
+        self.solvers_lock = Lock()
         self.working = False
         self._solver = _solve.Session()
 
@@ -21,7 +22,9 @@ class Session(metaclass=Singleton):
         self.thread.join()
 
     def load_solver(self, solver):
+        self.solvers_lock.acquire()
         self.solvers.update({solver: {}})
+        self.solvers_lock.release()
 
     def init_random_cnf_service(self):
         self.random_service_instance = _solve.get_image_uri(
@@ -106,6 +109,7 @@ class Session(metaclass=Singleton):
                 is_insat = True  # En caso en que se demuestre lo contrario.
                 insats = {}  # Solvers que afirman la insatisfactibilidad junto con su respectivo tiempo.
                 print('VAMOS A PROBAR LOS SOLVERS')
+                self.solvers_lock.acquire()
                 for solver in self.solvers:
                     print('SOVLER --> ', solver)
                     try:
@@ -137,7 +141,7 @@ class Session(metaclass=Singleton):
                             solver=solver,
                             score=score
                         )
-
+                self.solvers_lock.release()
                 # Registra los solvers que afirmaron la insatisfactibilidad en caso en que ninguno
                 #  haya demostrado lo contrario.
                 if is_insat:
