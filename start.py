@@ -5,13 +5,14 @@ LOGGER = lambda message: logging.getLogger().debug(message)
 DIR = ''  # '/satrainer/'
 GATEWAY = '192.168.1.65:8000'
 SAVE_TRAIN_DATA = 2
-MAINTENANCE_SLEEP_TIME = 10
+MAINTENANCE_SLEEP_TIME = 100
 SOLVER_PASS_TIMEOUT_TIMES = 5
 SOLVER_FAILED_ATTEMPTS = 5
 STOP_SOLVER_TIME_DELTA_MINUTES = 2
 TRAIN_SOLVERS_TIMEOUT = 30
 MAX_REGRESSION_DEGREE = 100
 TIME_FOR_EACH_REGRESSION_LOOP = 9999
+CONNECTION_ERRORS = 5
 
 if __name__ == "__main__":
 
@@ -56,6 +57,10 @@ if __name__ == "__main__":
         pass
     try:
         TIME_FOR_EACH_REGRESSION_LOOP = os.environ['TIME_FOR_EACH_REGRESSION_LOOP']
+    except KeyError:
+        pass
+    try:
+        CONNECTION_ERRORS = os.environ['CONNECTION_ERRORS']
     except KeyError:
         pass
 

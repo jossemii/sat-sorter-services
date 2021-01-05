@@ -1,6 +1,6 @@
 from threading import get_ident, Thread, Lock
 import requests, json
-from start import DIR, TRAIN_SOLVERS_TIMEOUT, LOGGER
+from start import DIR, TRAIN_SOLVERS_TIMEOUT, LOGGER, CONNECTION_ERRORS
 from start import SAVE_TRAIN_DATA as REFRESH
 from singleton import Singleton
 import _solve
@@ -31,6 +31,7 @@ class Session(metaclass=Singleton):
             '07a9852b10c5bbc9c55180d43d70561854f6a8f5fc8a28483bf893cac0871e0b')
 
     def random_cnf(self):
+        connection_errors = 0
         while True:
             try:
                 LOGGER('OBTENIENDO RANDON CNF')
@@ -42,7 +43,10 @@ class Session(metaclass=Singleton):
                 if response and response.status_code == 200 and 'cnf' in response.json():
                     return response.json().get('cnf')
             except requests.exceptions.ConnectionError:
-                pass
+                if connection_errors < CONNECTION_ERRORS:
+                    connection_errors = connection_errors +1
+                else:
+                    raise requests.HTTPError
             except (TimeoutError, requests.exceptions.ReadTimeout, requests.HTTPError):
                 LOGGER('VAMOS A CAMBIAR EL SERVICIO DE OBTENCION DE CNFs RANDOM')
                 self.random_service_instance.stop()
