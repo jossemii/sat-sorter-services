@@ -31,6 +31,11 @@ class Session(metaclass=Singleton):
             '07a9852b10c5bbc9c55180d43d70561854f6a8f5fc8a28483bf893cac0871e0b')
 
     def random_cnf(self):
+        def new_instance():
+            LOGGER('VAMOS A CAMBIAR EL SERVICIO DE OBTENCION DE CNFs RANDOM')
+            self.random_service_instance.stop()
+            self.init_random_cnf_service()
+            LOGGER('listo. ahora vamos a probar otra vez.')
         connection_errors = 0
         while True:
             try:
@@ -46,12 +51,10 @@ class Session(metaclass=Singleton):
                 if connection_errors < CONNECTION_ERRORS:
                     connection_errors = connection_errors +1
                 else:
-                    raise requests.HTTPError
+                    connection_errors = 0
+                    new_instance()
             except (TimeoutError, requests.exceptions.ReadTimeout, requests.HTTPError):
-                LOGGER('VAMOS A CAMBIAR EL SERVICIO DE OBTENCION DE CNFs RANDOM')
-                self.random_service_instance.stop()
-                self.init_random_cnf_service()
-                LOGGER('listo. ahora vamos a probar otra vez.')
+                new_instance()
 
     @staticmethod
     def isGood(cnf, interpretation):
