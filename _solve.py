@@ -137,7 +137,7 @@ class Session(metaclass=Singleton):
                 timeout=2 * self.avr_time
             )
             return requests.status_codes == 200
-        except TimeoutError or requests.exceptions.ConnectionError or BaseException or requests.HTTPError:
+        except (TimeoutError, requests.exceptions.ConnectionError, BaseException, requests.HTTPError):
             return False
 
     def get(self, solver: str) -> SolverInstance or None:
