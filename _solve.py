@@ -67,6 +67,7 @@ class Session(metaclass=Singleton):
             self.add_or_update_solver(solver=solver)
         solver = self.get(solver)
         solver.mark_time()
+        response=None
         try:
             response = requests.post(
                 'http://' + solver.uri + '/',
@@ -75,7 +76,7 @@ class Session(metaclass=Singleton):
             )
         except TimeoutError:
             solver.timeout_passed()
-        except requests.exceptions.ConnectionError or BaseException or requests.HTTPError:
+        except (requests.exceptions.ConnectionError, BaseException, requests.HTTPError):
             solver.error()
         if response and response.status_code == 200:
             # Si hemos obtenido una respuesta, en caso de que nos comunique que hay una interpretacion,

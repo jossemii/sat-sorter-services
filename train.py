@@ -1,6 +1,6 @@
 from threading import get_ident, Thread, Lock
 import requests, json
-from start import DIR, TRAIN_SOLVERS_TIMEOUT, LOGGER, CONNECTION_ERRORS
+from start import DIR, TRAIN_SOLVERS_TIMEOUT, LOGGER, CONNECTION_ERRORS, START_AVR_TIMEOUT
 from start import SAVE_TRAIN_DATA as REFRESH
 from singleton import Singleton
 import _solve
@@ -42,19 +42,24 @@ class Session(metaclass=Singleton):
                 LOGGER('OBTENIENDO RANDON CNF')
                 response = requests.get(
                     'http://' + self.random_service_instance.uri + '/',
-                    timeout=self._solver.avr_time
+                    timeout = START_AVR_TIMEOUT
                 )
                 LOGGER('RESPUESTA DEL CNF --> ' + str(response) + str(response.text))
-                if response and response.status_code == 200 and 'cnf' in response.json():
-                    return response.json().get('cnf')
-            except requests.exceptions.ConnectionError:
+            except requests.exceptions.ConnectionError as e:
                 if connection_errors < CONNECTION_ERRORS:
                     connection_errors = connection_errors +1
+                    continue
                 else:
                     connection_errors = 0
+                    LOGGER('  ERROR OCCURS OBTAINING THE CNF --> '+ str(e))
                     new_instance()
-            except (TimeoutError, requests.exceptions.ReadTimeout, requests.HTTPError):
+                    continue
+            except (TimeoutError, requests.exceptions.ReadTimeout, requests.HTTPError) as e:
+                LOGGER('  ERROR OCCURS OBTAINING THE CNF --> '+ str(e))
                 new_instance()
+                continue
+            if response and response.status_code == 200 and 'cnf' in response.json():
+                    return response.json().get('cnf')
 
     @staticmethod
     def isGood(cnf, interpretation):

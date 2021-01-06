@@ -1,5 +1,5 @@
 import logging
-logging.basicConfig(filename='app.log', level=logging.DEBUG)
+logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s')
 LOGGER = lambda message: logging.getLogger().debug(message)
 
 DIR = ''  # '/satrainer/'
@@ -13,6 +13,7 @@ TRAIN_SOLVERS_TIMEOUT = 30
 MAX_REGRESSION_DEGREE = 100
 TIME_FOR_EACH_REGRESSION_LOOP = 9999
 CONNECTION_ERRORS = 5
+START_AVR_TIMEOUT = 30
 
 if __name__ == "__main__":
 
@@ -61,6 +62,10 @@ if __name__ == "__main__":
         pass
     try:
         CONNECTION_ERRORS = os.environ['CONNECTION_ERRORS']
+    except KeyError:
+        pass
+    try:
+        START_AVR_TIMEOUT = os.environ['START_AVR_TIMEOUT']
     except KeyError:
         pass
 
