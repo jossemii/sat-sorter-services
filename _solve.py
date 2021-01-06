@@ -67,26 +67,26 @@ class Session(metaclass=Singleton):
             self.add_or_update_solver(solver=solver)
         solver = self.get(solver)
         solver.mark_time()
-        while True:
-            try:
-                response = requests.post(
-                    'http://' + solver.uri + '/',
-                    json={'cnf': cnf},
-                    timeout=timeout or self.avr_time
-                )
-                break
-            except TimeoutError:
-                solver.timeout_passed()
-            except requests.exceptions.ConnectionError or BaseException or requests.HTTPError:
-                solver.error()
+        try:
+            response = requests.post(
+                'http://' + solver.uri + '/',
+                json={'cnf': cnf},
+                timeout=timeout or self.avr_time
+            )
+        except TimeoutError:
+            solver.timeout_passed()
+        except requests.exceptions.ConnectionError or BaseException or requests.HTTPError:
+            solver.error()
         if response and response.status_code == 200:
+            # Si hemos obtenido una respuesta, en caso de que nos comunique que hay una interpretacion,
+            #  si no nos da interpretacion asumimos que lo identifica como insatisfactible.
             solver.reset_timers()
             LOGGER('INTERPRETACION --> ' + response.text)
             interpretation = response.json().get('interpretation') or None
             time = int(response.elapsed.total_seconds())
-
         else:
-            interpretation, time = None, 0
+            # Si ha habido un error o no ha respondido en el tiempo esperado (timeout)
+            interpretation, time = None, timeout
 
         self.solvers_lock.release()
         return interpretation, time
