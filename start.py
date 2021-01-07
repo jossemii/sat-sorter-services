@@ -81,8 +81,10 @@ if __name__ == "__main__":
         solver = _get.cnf(
             cnf=cnf
         )
+        LOGGER('USING SOLVER --> '+ str(solver))
+        interpretation = _solver.cnf(cnf=cnf, solver=solver)[0]
         return {
-            'interpretation': _solver.cnf(cnf=cnf, solver=solver)[0]
+            'interpretation': interpretation
         }
 
 
