@@ -1,3 +1,4 @@
+from flask import Response, stream_with_context
 import logging
 logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s')
 LOGGER = lambda message: logging.getLogger().debug(message)
@@ -96,7 +97,7 @@ if __name__ == "__main__":
                     yield f.read()
                     sleep(1)
 
-        return app.response_class(generate(), mimetype='text/plain')
+        return Response(stream_with_context(generate()))
 
 
     @app.route('/upsolver', methods=['GET', 'POST'])
