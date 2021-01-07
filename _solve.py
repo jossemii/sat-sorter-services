@@ -10,7 +10,12 @@ from start import MAINTENANCE_SLEEP_TIME, SOLVER_PASS_TIMEOUT_TIMES, SOLVER_FAIL
 
 def get_image_uri(image: str):
     LOGGER('\nOBTENIENDO EL SOLVER  --> ' + str(image))
+    # Se debe modificar para que envie la especificacion de la imagen ...
+    attemps = 0
     while True:
+        if attemps < 30:
+            attemps = attemps +1
+        else: break
         LOGGER(' Intenta obtener la imagen' + str(image))
         try:
             response = requests.get('http://' + GATEWAY, json={'service': str(image)})

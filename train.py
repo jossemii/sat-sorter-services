@@ -103,6 +103,7 @@ class Session(metaclass=Singleton):
         })
 
     def start(self):
+        if self.exit_event and self.thread: return None
         try:
             self.exit_event = Event()
             self.thread = Thread(target=self.init, name='Trainer')
