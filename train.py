@@ -1,4 +1,4 @@
-from threading import get_ident, Thread, Lock
+from threading import get_ident, Thread, Lock, Event
 import requests, json
 from start import DIR, TRAIN_SOLVERS_TIMEOUT, LOGGER, CONNECTION_ERRORS, START_AVR_TIMEOUT
 from start import SAVE_TRAIN_DATA as REFRESH
@@ -9,17 +9,20 @@ import _solve
 class Session(metaclass=Singleton):
 
     def __init__(self):
-        self.thread = Thread(target=self.init, name='Trainer')
+        self.thread = None
         self.random_service_instance = None
         self.solvers = json.load(open(DIR + 'solvers.json', 'r'))
         self.solvers_lock = Lock()
-        self.working = False
+        self.exit_event = None
         self._solver = _solve.Session()
 
     def stop(self):
-        self.random_service_instance.stop()
-        self.working = False
-        self.thread.join()
+        if self.exit_event and self.thread:
+            self.exit_event.set()
+            self.thread.join()
+            self.random_service_instance.stop()
+            self.exit_event = None
+            self.thread = None
 
     def load_solver(self, solver):
         self.solvers_lock.acquire()
@@ -101,19 +104,21 @@ class Session(metaclass=Singleton):
 
     def start(self):
         try:
+            self.exit_event = Event()
+            self.thread = Thread(target=self.init, name='Trainer')
             self.thread.start()
         except RuntimeError:
             LOGGER('Error: train thread was started and have an error.')
 
     def init(self):
-        self.working = True
         LOGGER('TRAINER THREAD IS ' + str(get_ident()))
         refresh = 0
         timeout = TRAIN_SOLVERS_TIMEOUT
         LOGGER('INICIANDO SERVICIO DE RANDOM CNF')
         self.init_random_cnf_service()
         LOGGER('hecho.')
-        while self.working:
+        while True:
+            if self.exit_event.is_set(): break
             if refresh < REFRESH:
                 LOGGER('REFRESH ES MENOR')
                 refresh = refresh + 1
