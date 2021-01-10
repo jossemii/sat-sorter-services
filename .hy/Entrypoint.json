@@ -1,1 +1,1 @@
-"/usr/local/bin/tini -- /satrainer/init.sh"
+"./satrainer/init.sh"
