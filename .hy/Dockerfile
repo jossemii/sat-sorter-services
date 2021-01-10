@@ -1,4 +1,4 @@
-FROM krallin/ubuntu-tini
+FROM ubuntu
 RUN apt-get update --fix-missing && apt-get -y install python3.6 && apt-get clean
 RUN apt-get update --fix-missing && apt-get -y install python3-tk && apt-get clean
 RUN apt-get update --fix-missing && apt-get -y install python3-pip && apt-get clean
