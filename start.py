@@ -23,7 +23,8 @@ if __name__ == "__main__":
     import json
     from flask import Flask, request
     import train, _get, _solve
-    from threading import get_ident
+    from threading import get_ident, Thread
+    import regresion
 
     try:
         GATEWAY = os.environ['GATEWAY']
@@ -72,6 +73,7 @@ if __name__ == "__main__":
 
     LOGGER('INIT START THREAD ' + str(get_ident()))
     app = Flask(__name__)
+    Thread(target=regresion.init, name='Regression').start()
     trainer = train.Session()
     _solver = _solve.Session()
 

@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 import json
+from threading import get_ident
 from start import DIR, LOGGER, TIME_FOR_EACH_REGRESSION_LOOP
 from start import MAX_REGRESSION_DEGREE as MAX_DEGREE
 
@@ -91,7 +92,8 @@ def iterate_regression():
     with open(DIR+'tensors.json', 'w') as file:
         json.dump(tensors, file)
 
-if __name__ == "__main__":
+def init():
+    LOGGER('INIT REGRESSION THREAD '+ str(get_ident()))
     while True:
-        iterate_regression()
         sleep(TIME_FOR_EACH_REGRESSION_LOOP)
+        iterate_regression()
