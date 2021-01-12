@@ -4,7 +4,7 @@ logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s
 LOGGER = lambda message: logging.getLogger().debug(message)
 
 DIR = '/satrainer/'
-GATEWAY = 'localhost:8000'
+GATEWAY = '172.17.0.1:8000'
 SAVE_TRAIN_DATA = 2
 MAINTENANCE_SLEEP_TIME = 100
 SOLVER_PASS_TIMEOUT_TIMES = 5
