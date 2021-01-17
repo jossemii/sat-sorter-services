@@ -5,6 +5,7 @@ from threading import Thread, Lock, get_ident
 import grpc
 import requests
 
+import instances_pb2
 import instances_pb2_grpc
 from singleton import Singleton
 from start import GATEWAY as GATEWAY, STOP_SOLVER_TIME_DELTA_MINUTES, LOGGER
@@ -138,14 +139,18 @@ class Session(metaclass=Singleton):
 
     def check_if_service_is_alive(self, solver: SolverInstance) -> bool:
         LOGGER('Check if serlvice ' + str(solver.service) + ' is alive.')
+        cnf = instances_pb2.Cnf()
+        clause = cnf.clause.add()
+        clause.literal = 1
         try:
-            requests.post(
-                'http://' + solver.uri + '/',
-                json={'cnf': [[1]]},
-                timeout=2 * self.avr_time
+            instances_pb2_grpc.Solver(
+                grpc.insecure_channel(solver.uri)
+            ).Solve(
+                request=cnf,
+                timeout=self.avr_time
             )
-            return requests.status_codes == 200
-        except (TimeoutError, requests.exceptions.ConnectionError, BaseException, requests.HTTPError):
+            return True
+        except (TimeoutError, grpc.RpcError):
             return False
 
     def get(self, solver: str) -> SolverInstance or None:
