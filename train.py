@@ -134,7 +134,7 @@ class Session(metaclass=Singleton):
                     LOGGER('SOVLER --> ' + str(solver))
                     try:
                         interpretation, time = self._solver.cnf(cnf=cnf, solver=solver, timeout=timeout)
-                        if not interpretation.variable:
+                        if not interpretation or not interpretation.variable:
                             insats.update({solver: time})
                         else:
                             if self.is_good(cnf, interpretation):
