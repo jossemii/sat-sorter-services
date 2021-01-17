@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+message Clause {
+    repeated int32 literal = 1;
+}
+
+message Cnf {
+    repeated Clause clause = 1;
+}
+
+message Interpretation {
+    repeated int32 variable = 1;
+}
+
+// The reason this is required is so that if you later need to add an optional parameter,
+// you can do so without breaking existing code.
+// https://stackoverflow.com/questions/29687243/protobuf-rpc-service-method-without-parameters
+message WhoAreYourParams {}
+
+service Service {
+    // port 8000
+    rpc RandomCnf(WhoAreYourParams) returns (Cnf) {}
+}
+
+service Solver {
+    // port 8080
+    rpc Solve(Cnf) returns (Interpretation) {}
+}

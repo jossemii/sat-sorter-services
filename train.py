@@ -47,6 +47,7 @@ class Session(metaclass=Singleton):
                     'http://' + self.random_service_instance.uri + '/',
                     timeout = START_AVR_TIMEOUT
                 )
+
                 LOGGER('RESPUESTA DEL CNF --> ' + str(response) + str(response.text))
             except requests.exceptions.ConnectionError as e:
                 if connection_errors < CONNECTION_ERRORS:
