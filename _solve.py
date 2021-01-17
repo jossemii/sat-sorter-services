@@ -1,8 +1,11 @@
-from time import sleep
+from time import sleep, time as time_now
 from datetime import datetime, timedelta
 from threading import Thread, Lock, get_ident
+
+import grpc
 import requests
 
+import instances_pb2_grpc
 from singleton import Singleton
 from start import GATEWAY as GATEWAY, STOP_SOLVER_TIME_DELTA_MINUTES, LOGGER
 from start import MAINTENANCE_SLEEP_TIME, SOLVER_PASS_TIMEOUT_TIMES, SOLVER_FAILED_ATTEMPTS
@@ -72,28 +75,26 @@ class Session(metaclass=Singleton):
             self.add_or_update_solver(solver=solver)
         solver = self.get(solver)
         solver.mark_time()
-        response=None
         try:
-            response = requests.post(
-                'http://' + solver.uri + '/',
-                json={'cnf': cnf},
-                timeout=timeout or self.avr_time
+            # Tiene en cuenta el tiempo de respuesta y deserializacion del buffer.
+            start_time = time_now()
+            interpretacion = instances_pb2_grpc.Solver(
+                grpc.insecure_channel(solver.uri)
+            ).Solve(
+                request=cnf,
+                timeout=self.avr_time
             )
-        except TimeoutError:
-            solver.timeout_passed()
-        except (requests.exceptions.ConnectionError, BaseException, requests.HTTPError):
-            solver.error()
-        if response and response.status_code == 200:
+            time = time_now() - start_time
             # Si hemos obtenido una respuesta, en caso de que nos comunique que hay una interpretacion,
             #  si no nos da interpretacion asumimos que lo identifica como insatisfactible.
             solver.reset_timers()
-            LOGGER('INTERPRETACION --> ' + response.text)
-            interpretation = response.json().get('interpretation') or None
-            time = int(response.elapsed.total_seconds())
-        else:
-            # Si ha habido un error o no ha respondido en el tiempo esperado (timeout)
+            LOGGER('INTERPRETACION --> ' + interpretacion)
+        except TimeoutError:
+            solver.timeout_passed()
             interpretation, time = None, timeout
-
+        except grpc.RpcError:
+            solver.error()
+            interpretation, time = None, timeout
         self.solvers_lock.release()
         return interpretation, time
 
