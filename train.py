@@ -68,24 +68,24 @@ class Session(metaclass=Singleton):
     @staticmethod
     def isGood(cnf, interpretation):
         def goodClause(clause, interpretation):
-            for var in clause:
+            for var in clause.literal:
                 for i in interpretation:
                     if var == i:
                         return True
             return False
 
-        for clause in cnf:
+        for clause in cnf.clause:
             if not goodClause(clause, interpretation):
                 return False
         return True
 
     def updateScore(self, cnf, solver, score):
         num_clauses, num_literals = (
-            len(cnf),
+            len(cnf.clause),
             0,
         )
-        for clause in cnf:
-            for literal in clause:
+        for clause in cnf.clause:
+            for literal in clause.literal:
                 if abs(literal) > num_literals:
                     num_literals = abs(literal)
         type_of_cnf = str(num_clauses) + ':' + str(num_literals)
