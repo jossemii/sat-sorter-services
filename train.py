@@ -1,12 +1,12 @@
 from threading import get_ident, Thread, Lock, Event
 
 import grpc
-import requests, json
+import json
 
 import instances_pb2
 import instances_pb2_grpc
 from start import DIR, TRAIN_SOLVERS_TIMEOUT, LOGGER, CONNECTION_ERRORS, START_AVR_TIMEOUT
-from start import SAVE_TRAIN_DATA as REFRESH
+from start import SAVE_TRAIN_DATA as REFRESH, RANDOM_SERVICE
 from singleton import Singleton
 import _solve
 
@@ -36,7 +36,7 @@ class Session(metaclass=Singleton):
 
     def init_random_cnf_service(self):
         self.random_service_instance = _solve.get_image_uri(
-            '07a9852b10c5bbc9c55180d43d70561854f6a8f5fc8a28483bf893cac0871e0b')
+            RANDOM_SERVICE)
 
     def random_cnf(self):
         def new_instance():
