@@ -132,30 +132,18 @@ class Session(metaclass=Singleton):
                 self.solvers_lock.acquire()
                 for solver in self.solvers:
                     LOGGER('SOVLER --> ' + str(solver))
-                    try:
-                        interpretation, time = self._solver.cnf(cnf=cnf, solver=solver, timeout=timeout)
-                        if not interpretation or not interpretation.variable:
-                            insats.update({solver: time})
+                    interpretation, time = self._solver.cnf(cnf=cnf, solver=solver, timeout=timeout)
+                    if not interpretation or not interpretation.variable:
+                        insats.update({solver: time})
+                    else:
+                        if self.is_good(cnf, interpretation):
+                            is_insat = False
                         else:
-                            if self.is_good(cnf, interpretation):
-                                is_insat = False
-                            else:
-                                pass
-                            if time == 0:
-                                score = +1
-                            else:
-                                score = float(-1 / time)
-                            self.updateScore(
-                                cnf=cnf,
-                                solver=solver,
-                                score=score
-                            )
-                    except (TimeoutError, requests.exceptions.ReadTimeout):
-                        LOGGER('TIME OUT NO SUPERADO.')
-                        if timeout == 0:
-                            score = -1
+                            pass
+                        if time == 0:
+                            score = +1
                         else:
-                            score = float(-1 / timeout)
+                            score = float(-1 / time)
                         self.updateScore(
                             cnf=cnf,
                             solver=solver,

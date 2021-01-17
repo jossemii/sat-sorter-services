@@ -90,9 +90,11 @@ class Session(metaclass=Singleton):
             solver.reset_timers()
             LOGGER('INTERPRETACION --> ' + interpretacion)
         except TimeoutError:
+            LOGGER('TIME OUT NO SUPERADO.')
             solver.timeout_passed()
             interpretation, time = None, timeout
-        except grpc.RpcError:
+        except grpc.RpcError as e:
+            LOGGER('GRPC ERROR.'+ str(e))
             solver.error()
             interpretation, time = None, timeout
         self.solvers_lock.release()
