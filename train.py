@@ -1,5 +1,10 @@
 from threading import get_ident, Thread, Lock, Event
+
+import grpc
 import requests, json
+
+import instances_pb2
+import instances_pb2_grpc
 from start import DIR, TRAIN_SOLVERS_TIMEOUT, LOGGER, CONNECTION_ERRORS, START_AVR_TIMEOUT
 from start import SAVE_TRAIN_DATA as REFRESH
 from singleton import Singleton
@@ -39,31 +44,26 @@ class Session(metaclass=Singleton):
             self.random_service_instance.stop()
             self.init_random_cnf_service()
             LOGGER('listo. ahora vamos a probar otra vez.')
+
         connection_errors = 0
         while True:
             try:
                 LOGGER('OBTENIENDO RANDON CNF')
-                response = requests.get(
-                    'http://' + self.random_service_instance.uri + '/',
-                    timeout = START_AVR_TIMEOUT
+                return instances_pb2_grpc.Service(
+                    grpc.insecure_channel(self.random_service_instance.uri)
+                ).RandomCnf(
+                    request=instances_pb2.WhoAreYourParams(),
+                    timeout=START_AVR_TIMEOUT
                 )
-
-                LOGGER('RESPUESTA DEL CNF --> ' + str(response) + str(response.text))
-            except requests.exceptions.ConnectionError as e:
+            except (grpc.RpcError, TimeoutError) as e:
                 if connection_errors < CONNECTION_ERRORS:
-                    connection_errors = connection_errors +1
+                    connection_errors = connection_errors + 1
                     continue
                 else:
                     connection_errors = 0
-                    LOGGER('  ERROR OCCURS OBTAINING THE CNF --> '+ str(e))
+                    LOGGER('  ERROR OCCURS OBTAINING THE CNF --> ' + str(e))
                     new_instance()
                     continue
-            except (TimeoutError, requests.exceptions.ReadTimeout, requests.HTTPError) as e:
-                LOGGER('  ERROR OCCURS OBTAINING THE CNF --> '+ str(e))
-                new_instance()
-                continue
-            if response and response.status_code == 200 and 'cnf' in response.json():
-                    return response.json().get('cnf')
 
     @staticmethod
     def isGood(cnf, interpretation):
@@ -125,6 +125,7 @@ class Session(metaclass=Singleton):
                 LOGGER('REFRESH ES MENOR')
                 refresh = refresh + 1
                 cnf = self.random_cnf()
+                LOGGER('RESPUESTA DEL CNF --> ' + str(cnf))
                 is_insat = True  # En caso en que se demuestre lo contrario.
                 insats = {}  # Solvers que afirman la insatisfactibilidad junto con su respectivo tiempo.
                 LOGGER('VAMOS A PROBAR LOS SOLVERS')
