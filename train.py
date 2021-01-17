@@ -66,16 +66,16 @@ class Session(metaclass=Singleton):
                     continue
 
     @staticmethod
-    def isGood(cnf, interpretation):
-        def goodClause(clause, interpretation):
+    def is_good(cnf, interpretation):
+        def good_clause(clause, interpretation):
             for var in clause.literal:
-                for i in interpretation:
+                for i in interpretation.variable:
                     if var == i:
                         return True
             return False
 
         for clause in cnf.clause:
-            if not goodClause(clause, interpretation):
+            if not good_clause(clause, interpretation):
                 return False
         return True
 
@@ -134,10 +134,10 @@ class Session(metaclass=Singleton):
                     LOGGER('SOVLER --> ' + str(solver))
                     try:
                         interpretation, time = self._solver.cnf(cnf=cnf, solver=solver, timeout=timeout)
-                        if interpretation == [] or interpretation is None:
+                        if not interpretation.variable:
                             insats.update({solver: time})
                         else:
-                            if self.isGood(cnf, interpretation):
+                            if self.is_good(cnf, interpretation):
                                 is_insat = False
                             else:
                                 pass
