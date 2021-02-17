@@ -79,7 +79,7 @@ class Session(metaclass=Singleton):
         try:
             # Tiene en cuenta el tiempo de respuesta y deserializacion del buffer.
             start_time = time_now()
-            interpretacion = instances_pb2_grpc.Solver(
+            interpretacion = instances_pb2_grpc.SolverStub(
                 grpc.insecure_channel(solver.uri)
             ).Solve(
                 request=cnf,

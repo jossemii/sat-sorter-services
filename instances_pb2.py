@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0finstances.proto\"\x19\n\x06\x43lause\x12\x0f\n\x07literal\x18\x01 \x03(\x05\"\x1e\n\x03\x43nf\x12\x17\n\x06\x63lause\x18\x01 \x03(\x0b\x32\x07.Clause\"\"\n\x0eInterpretation\x12\x10\n\x08variable\x18\x01 \x03(\x05\"\x12\n\x10WhoAreYourParams21\n\x07Service\x12&\n\tRandomCnf\x12\x11.WhoAreYourParams\x1a\x04.Cnf\"\x00\x32*\n\x06Solver\x12 \n\x05Solve\x12\x04.Cnf\x1a\x0f.Interpretation\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\x0finstances.proto\"\x19\n\x06\x43lause\x12\x0f\n\x07literal\x18\x01 \x03(\x05\"\x1e\n\x03\x43nf\x12\x17\n\x06\x63lause\x18\x01 \x03(\x0b\x32\x07.Clause\"\"\n\x0eInterpretation\x12\x10\n\x08variable\x18\x01 \x03(\x05\"\x12\n\x10WhoAreYourParams20\n\x06Random\x12&\n\tRandomCnf\x12\x11.WhoAreYourParams\x1a\x04.Cnf\"\x00\x32*\n\x06Solver\x12 \n\x05Solve\x12\x04.Cnf\x1a\x0f.Interpretation\"\x00\x62\x06proto3'
 )
 
 
@@ -182,19 +182,19 @@ _sym_db.RegisterMessage(WhoAreYourParams)
 
 
 
-_SERVICE = _descriptor.ServiceDescriptor(
-  name='Service',
-  full_name='Service',
+_RANDOM = _descriptor.ServiceDescriptor(
+  name='Random',
+  full_name='Random',
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
   serialized_start=134,
-  serialized_end=183,
+  serialized_end=182,
   methods=[
   _descriptor.MethodDescriptor(
     name='RandomCnf',
-    full_name='Service.RandomCnf',
+    full_name='Random.RandomCnf',
     index=0,
     containing_service=None,
     input_type=_WHOAREYOURPARAMS,
@@ -203,9 +203,9 @@ _SERVICE = _descriptor.ServiceDescriptor(
     create_key=_descriptor._internal_create_key,
   ),
 ])
-_sym_db.RegisterServiceDescriptor(_SERVICE)
+_sym_db.RegisterServiceDescriptor(_RANDOM)
 
-DESCRIPTOR.services_by_name['Service'] = _SERVICE
+DESCRIPTOR.services_by_name['Random'] = _RANDOM
 
 
 _SOLVER = _descriptor.ServiceDescriptor(
@@ -215,8 +215,8 @@ _SOLVER = _descriptor.ServiceDescriptor(
   index=1,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=185,
-  serialized_end=227,
+  serialized_start=184,
+  serialized_end=226,
   methods=[
   _descriptor.MethodDescriptor(
     name='Solve',

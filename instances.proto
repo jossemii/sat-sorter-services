@@ -17,12 +17,10 @@ message Interpretation {
 // https://stackoverflow.com/questions/29687243/protobuf-rpc-service-method-without-parameters
 message WhoAreYourParams {}
 
-service Service {
-    // port 8000
+service Random {
     rpc RandomCnf(WhoAreYourParams) returns (Cnf) {}
 }
 
 service Solver {
-    // port 8080
     rpc Solve(Cnf) returns (Interpretation) {}
 }

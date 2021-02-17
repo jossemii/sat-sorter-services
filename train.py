@@ -49,7 +49,8 @@ class Session(metaclass=Singleton):
         while True:
             try:
                 LOGGER('OBTENIENDO RANDON CNF')
-                return instances_pb2_grpc.Service(
+                LOGGER(self.random_service_instance.uri)
+                return instances_pb2_grpc.RandomStub(
                     grpc.insecure_channel(self.random_service_instance.uri)
                 ).RandomCnf(
                     request=instances_pb2.WhoAreYourParams(),

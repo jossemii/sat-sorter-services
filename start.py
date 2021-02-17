@@ -3,8 +3,8 @@ import logging
 logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s')
 LOGGER = lambda message: logging.getLogger().debug(message)
 
-DIR = '/satrainer/'
-GATEWAY = '172.17.0.1:8000'
+DIR = ''#'/satrainer/'
+GATEWAY = '192.168.1.250:8000' #'172.17.0.1:8000'
 SAVE_TRAIN_DATA = 2
 MAINTENANCE_SLEEP_TIME = 100
 SOLVER_PASS_TIMEOUT_TIMES = 5
@@ -15,7 +15,7 @@ MAX_REGRESSION_DEGREE = 100
 TIME_FOR_EACH_REGRESSION_LOOP = 999
 CONNECTION_ERRORS = 5
 START_AVR_TIMEOUT = 30
-RANDOM_SERVICE = '03a773f255e9eb1bc9e6528f73d18b79c339b0cc3f5bd0cc0f07befbb9a83c22'
+RANDOM_SERVICE = '8bfd0b85bed96797064ce0e93d742aabfc293e5c156036d034500e241c00fb2a'
 
 if __name__ == "__main__":
 
