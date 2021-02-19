@@ -79,7 +79,7 @@ class Session(metaclass=Singleton):
         try:
             # Tiene en cuenta el tiempo de respuesta y deserializacion del buffer.
             start_time = time_now()
-            interpretacion = instances_pb2_grpc.SolverStub(
+            interpretation = instances_pb2_grpc.SolverStub(
                 grpc.insecure_channel(solver.uri)
             ).Solve(
                 request=cnf,
@@ -89,7 +89,7 @@ class Session(metaclass=Singleton):
             # Si hemos obtenido una respuesta, en caso de que nos comunique que hay una interpretacion,
             #  si no nos da interpretacion asumimos que lo identifica como insatisfactible.
             solver.reset_timers()
-            LOGGER('INTERPRETACION --> ' + str(interpretacion.variable))
+            LOGGER('INTERPRETACION --> ' + str(interpretation.variable))
         except TimeoutError:
             LOGGER('TIME OUT NO SUPERADO.')
             solver.timeout_passed()
