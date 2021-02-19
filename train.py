@@ -35,8 +35,10 @@ class Session(metaclass=Singleton):
         self.solvers_lock.release()
 
     def init_random_cnf_service(self):
-        self.random_service_instance = _solve.get_image_uri(
-            RANDOM_SERVICE)
+        self.random_service_instance = _solve.get_solver_instance(RANDOM_SERVICE)
+        self.random_service_instance.stub = instances_pb2_grpc.RandomStub(
+                grpc.insecure_channel(self.random_service_instance.uri)
+            )
 
     def random_cnf(self):
         def new_instance():
@@ -51,9 +53,7 @@ class Session(metaclass=Singleton):
             try:
                 LOGGER('OBTENIENDO RANDON CNF')
                 LOGGER(self.random_service_instance.uri)
-                return instances_pb2_grpc.RandomStub(
-                    grpc.insecure_channel(self.random_service_instance.uri)
-                ).RandomCnf(
+                return self.random_service_instance.stub.RandomCnf(
                     request=instances_pb2.WhoAreYourParams(),
                     timeout=START_AVR_TIMEOUT
                 )

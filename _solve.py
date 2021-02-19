@@ -12,7 +12,7 @@ from start import GATEWAY as GATEWAY, STOP_SOLVER_TIME_DELTA_MINUTES, LOGGER
 from start import MAINTENANCE_SLEEP_TIME, SOLVER_PASS_TIMEOUT_TIMES, SOLVER_FAILED_ATTEMPTS
 
 
-def get_image_uri(image: str):
+def get_solver_instance(image: str):
     LOGGER('\nOBTENIENDO EL SOLVER  --> ' + str(image))
     # Se debe modificar para que envie la especificacion de la imagen ...
     attemps = 0
@@ -29,12 +29,17 @@ def get_image_uri(image: str):
         if response and response.status_code == 200:
             content = response.json()
             if 'uri' in content and 'token' in content:
-                return SolverInstance(service=image, content=content)
+                instance = SolverInstance(service=image, content=content)
+                instance.stub = instances_pb2_grpc.SolverStub(
+                    grpc.insecure_channel(instance.uri)
+                )
+                return instance
 
 
 class SolverInstance(object):
     def __init__(self, service: str, content: dict):
         self.service = service
+        self.stub = None
         self.uri = content.get('uri') or None
         self.token = content.get('token') or None
         self.creation_datetime = datetime.now()
@@ -79,9 +84,7 @@ class Session(metaclass=Singleton):
         try:
             # Tiene en cuenta el tiempo de respuesta y deserializacion del buffer.
             start_time = time_now()
-            interpretation = instances_pb2_grpc.SolverStub(
-                grpc.insecure_channel(solver.uri)
-            ).Solve(
+            interpretation = solver.stub.Solve(
                 request=cnf,
                 timeout=self.avr_time
             )
@@ -159,4 +162,4 @@ class Session(metaclass=Singleton):
     def add_or_update_solver(self, solver: str):
         if solver in self.solvers:
             self.get(solver).stop()
-        self.solvers.update({solver: get_image_uri(solver)})
+        self.solvers.update({solver: get_solver_instance(solver)})
