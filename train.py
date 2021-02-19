@@ -47,6 +47,7 @@ class Session(metaclass=Singleton):
 
         connection_errors = 0
         while True:
+            if self.random_service_instance is None: new_instance()
             try:
                 LOGGER('OBTENIENDO RANDON CNF')
                 LOGGER(self.random_service_instance.uri)
