@@ -1,4 +1,3 @@
-from flask import Response, stream_with_context
 import logging
 logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s')
 LOGGER = lambda message: logging.getLogger().debug(message)
@@ -26,6 +25,7 @@ if __name__ == "__main__":
     import train, _get, _solve
     from threading import get_ident, Thread
     import regresion
+    import grpc, service_pb2, service_pb2_grpc, futures
 
     try:
         GATEWAY = os.environ['GATEWAY']
@@ -73,58 +73,54 @@ if __name__ == "__main__":
         pass
 
     LOGGER('INIT START THREAD ' + str(get_ident()))
-    app = Flask(__name__)
     Thread(target=regresion.init, name='Regression').start()
     trainer = train.Session()
     _solver = _solve.Session()
 
+    class SolverServicer(service_pb2_grpc.SolverServicer): 
 
-    @app.route('/solve', methods=['GET', 'POST'])
-    def solve():
-        cnf = request.get_json()['cnf']
-        solver = _get.cnf(
-            cnf=cnf
-        )
-        LOGGER('USING SOLVER --> '+ str(solver))
-        interpretation = _solver.cnf(cnf=cnf, solver=solver)[0]
-        return {
-            'interpretation': interpretation
-        }
+        def Solve(self, request, context):
+            cnf = request.get_json()['cnf']
+            solver = _get.cnf(
+                cnf=request
+            )
+            LOGGER('USING SOLVER --> '+ str(solver))
+            return _solver.cnf(cnf=cnf, solver=solver)[0]
 
-
-    @app.route('/stream', methods=['GET'])
-    def stream():
-        def generate():
-            with open('app.log') as f:
+        def StreamLogs(self, request, context):
+            with open('app.log') as file:
                 while True:
-                    yield f.read()
+                    f = service_pb2.File()
+                    f.file = file.read()
+                    yield f
                     sleep(1)
+            
+        def UploadSolver(self, request, context):
+            trainer.load_solver(request)
+            return service_pb2.WhoAreYourParams()
 
-        return Response(stream_with_context(generate()))
+        def GetTensor(self, request, context):
+            with open(DIR + 'tensors', 'r') as file:
+                while True:
+                    yield file
 
+        def StartTrain(self, request, context):
+            trainer.start()
+            return service_pb2.WhoAreYourParams()
 
-    @app.route('/upsolver', methods=['GET', 'POST'])
-    def up_solver():
-        trainer.load_solver(request.get_json()['solver'])
-        return 'DoIt'
-
-
-    @app.route('/tensor', methods=['GET'])
-    def get_tensor():
-        with open(DIR + 'tensors.json', 'r') as file:
-            return json.load(file)
-
-
-    @app.route('/train/start', methods=['GET'])
-    def start_train():
-        trainer.start()
-        return 'DoIt'
+        def StopTrain(self, request, context):
+            trainer.stop()
+            return service_pb2.WhoAreYourParams()
 
 
-    @app.route('/train/stop', methods=['GET'])
-    def stop_train():
-        trainer.stop()
-        return 'DoIt'
+    # create a gRPC server
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+    
+    service_pb2_grpc.add_SolverServicer_to_server(
+            SolverServicer(), server)
 
-
-    app.run(host='0.0.0.0', port=8080)
+    # listen on port 8080
+    LOGGER('Starting server. Listening on port 8080.')
+    server.add_insecure_port('[::]:8080')
+    server.start()
+    server.wait_for_termination()
