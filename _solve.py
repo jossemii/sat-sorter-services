@@ -89,7 +89,7 @@ class Session(metaclass=Singleton):
             # Si hemos obtenido una respuesta, en caso de que nos comunique que hay una interpretacion,
             #  si no nos da interpretacion asumimos que lo identifica como insatisfactible.
             solver.reset_timers()
-            LOGGER('INTERPRETACION --> ' + interpretacion)
+            LOGGER('INTERPRETACION --> ' + interpretacion.variable)
         except TimeoutError:
             LOGGER('TIME OUT NO SUPERADO.')
             solver.timeout_passed()
