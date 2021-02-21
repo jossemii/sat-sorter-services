@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-import instances_pb2 as instances__pb2
+from protobufs import instances_pb2 as protobufs_dot_instances__pb2
 
 
 class RandomStub(object):
@@ -15,9 +15,9 @@ class RandomStub(object):
             channel: A grpc.Channel.
         """
         self.RandomCnf = channel.unary_unary(
-                '/Random/RandomCnf',
-                request_serializer=instances__pb2.WhoAreYourParams.SerializeToString,
-                response_deserializer=instances__pb2.Cnf.FromString,
+                '/protobufs.instances.Random/RandomCnf',
+                request_serializer=protobufs_dot_instances__pb2.WhoAreYourParams.SerializeToString,
+                response_deserializer=protobufs_dot_instances__pb2.Cnf.FromString,
                 )
 
 
@@ -35,12 +35,12 @@ def add_RandomServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'RandomCnf': grpc.unary_unary_rpc_method_handler(
                     servicer.RandomCnf,
-                    request_deserializer=instances__pb2.WhoAreYourParams.FromString,
-                    response_serializer=instances__pb2.Cnf.SerializeToString,
+                    request_deserializer=protobufs_dot_instances__pb2.WhoAreYourParams.FromString,
+                    response_serializer=protobufs_dot_instances__pb2.Cnf.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'Random', rpc_method_handlers)
+            'protobufs.instances.Random', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
@@ -59,9 +59,9 @@ class Random(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/Random/RandomCnf',
-            instances__pb2.WhoAreYourParams.SerializeToString,
-            instances__pb2.Cnf.FromString,
+        return grpc.experimental.unary_unary(request, target, '/protobufs.instances.Random/RandomCnf',
+            protobufs_dot_instances__pb2.WhoAreYourParams.SerializeToString,
+            protobufs_dot_instances__pb2.Cnf.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -76,9 +76,9 @@ class SolverStub(object):
             channel: A grpc.Channel.
         """
         self.Solve = channel.unary_unary(
-                '/Solver/Solve',
-                request_serializer=instances__pb2.Cnf.SerializeToString,
-                response_deserializer=instances__pb2.Interpretation.FromString,
+                '/protobufs.instances.Solver/Solve',
+                request_serializer=protobufs_dot_instances__pb2.Cnf.SerializeToString,
+                response_deserializer=protobufs_dot_instances__pb2.Interpretation.FromString,
                 )
 
 
@@ -96,12 +96,12 @@ def add_SolverServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'Solve': grpc.unary_unary_rpc_method_handler(
                     servicer.Solve,
-                    request_deserializer=instances__pb2.Cnf.FromString,
-                    response_serializer=instances__pb2.Interpretation.SerializeToString,
+                    request_deserializer=protobufs_dot_instances__pb2.Cnf.FromString,
+                    response_serializer=protobufs_dot_instances__pb2.Interpretation.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'Solver', rpc_method_handlers)
+            'protobufs.instances.Solver', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
@@ -120,8 +120,8 @@ class Solver(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/Solver/Solve',
-            instances__pb2.Cnf.SerializeToString,
-            instances__pb2.Interpretation.FromString,
+        return grpc.experimental.unary_unary(request, target, '/protobufs.instances.Solver/Solve',
+            protobufs_dot_instances__pb2.Cnf.SerializeToString,
+            protobufs_dot_instances__pb2.Interpretation.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

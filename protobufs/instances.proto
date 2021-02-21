@@ -1,4 +1,5 @@
 syntax = "proto3";
+package protobufs.instances;
 
 message Clause {
     repeated int32 literal = 1;

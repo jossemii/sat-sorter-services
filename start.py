@@ -25,7 +25,8 @@ if __name__ == "__main__":
     import train, _get, _solve
     from threading import get_ident, Thread
     import regresion
-    import grpc, service_pb2, service_pb2_grpc, futures
+    import grpc, protobufs.service_pb2 as service_pb2, protobufs.service_pb2_grpc as service_pb2_grpc
+    from concurrent import futures
 
     try:
         GATEWAY = os.environ['GATEWAY']

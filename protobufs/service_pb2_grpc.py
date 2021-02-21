@@ -2,7 +2,9 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-import service_pb2 as service__pb2
+from protobufs import instances_pb2 as protobufs_dot_instances__pb2
+from protobufs import ipss_pb2 as protobufs_dot_ipss__pb2
+from protobufs import service_pb2 as protobufs_dot_service__pb2
 
 
 class SolverStub(object):
@@ -15,34 +17,34 @@ class SolverStub(object):
             channel: A grpc.Channel.
         """
         self.StartTrain = channel.unary_unary(
-                '/Solver/StartTrain',
-                request_serializer=service__pb2.WhoAreYourParams.SerializeToString,
-                response_deserializer=service__pb2.WhoAreYourParams.FromString,
+                '/protobufs.service.Solver/StartTrain',
+                request_serializer=protobufs_dot_service__pb2.WhoAreYourParams.SerializeToString,
+                response_deserializer=protobufs_dot_service__pb2.WhoAreYourParams.FromString,
                 )
         self.StopTrain = channel.unary_unary(
-                '/Solver/StopTrain',
-                request_serializer=service__pb2.WhoAreYourParams.SerializeToString,
-                response_deserializer=service__pb2.WhoAreYourParams.FromString,
+                '/protobufs.service.Solver/StopTrain',
+                request_serializer=protobufs_dot_service__pb2.WhoAreYourParams.SerializeToString,
+                response_deserializer=protobufs_dot_service__pb2.WhoAreYourParams.FromString,
                 )
         self.GetTensor = channel.unary_stream(
-                '/Solver/GetTensor',
-                request_serializer=service__pb2.WhoAreYourParams.SerializeToString,
-                response_deserializer=service__pb2.Tensor.FromString,
+                '/protobufs.service.Solver/GetTensor',
+                request_serializer=protobufs_dot_service__pb2.WhoAreYourParams.SerializeToString,
+                response_deserializer=protobufs_dot_ipss__pb2.Tensor.FromString,
                 )
         self.UploadSolver = channel.unary_unary(
-                '/Solver/UploadSolver',
-                request_serializer=service__pb2.Service.SerializeToString,
-                response_deserializer=service__pb2.WhoAreYourParams.FromString,
+                '/protobufs.service.Solver/UploadSolver',
+                request_serializer=protobufs_dot_service__pb2.ServiceExtended.SerializeToString,
+                response_deserializer=protobufs_dot_service__pb2.WhoAreYourParams.FromString,
                 )
         self.StreamLogs = channel.unary_stream(
-                '/Solver/StreamLogs',
-                request_serializer=service__pb2.WhoAreYourParams.SerializeToString,
-                response_deserializer=service__pb2.File.FromString,
+                '/protobufs.service.Solver/StreamLogs',
+                request_serializer=protobufs_dot_service__pb2.WhoAreYourParams.SerializeToString,
+                response_deserializer=protobufs_dot_service__pb2.File.FromString,
                 )
         self.Solve = channel.unary_unary(
-                '/Solver/Solve',
-                request_serializer=service__pb2.Cnf.SerializeToString,
-                response_deserializer=service__pb2.Interpretation.FromString,
+                '/protobufs.service.Solver/Solve',
+                request_serializer=protobufs_dot_instances__pb2.Cnf.SerializeToString,
+                response_deserializer=protobufs_dot_instances__pb2.Interpretation.FromString,
                 )
 
 
@@ -90,37 +92,37 @@ def add_SolverServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'StartTrain': grpc.unary_unary_rpc_method_handler(
                     servicer.StartTrain,
-                    request_deserializer=service__pb2.WhoAreYourParams.FromString,
-                    response_serializer=service__pb2.WhoAreYourParams.SerializeToString,
+                    request_deserializer=protobufs_dot_service__pb2.WhoAreYourParams.FromString,
+                    response_serializer=protobufs_dot_service__pb2.WhoAreYourParams.SerializeToString,
             ),
             'StopTrain': grpc.unary_unary_rpc_method_handler(
                     servicer.StopTrain,
-                    request_deserializer=service__pb2.WhoAreYourParams.FromString,
-                    response_serializer=service__pb2.WhoAreYourParams.SerializeToString,
+                    request_deserializer=protobufs_dot_service__pb2.WhoAreYourParams.FromString,
+                    response_serializer=protobufs_dot_service__pb2.WhoAreYourParams.SerializeToString,
             ),
             'GetTensor': grpc.unary_stream_rpc_method_handler(
                     servicer.GetTensor,
-                    request_deserializer=service__pb2.WhoAreYourParams.FromString,
-                    response_serializer=service__pb2.Tensor.SerializeToString,
+                    request_deserializer=protobufs_dot_service__pb2.WhoAreYourParams.FromString,
+                    response_serializer=protobufs_dot_ipss__pb2.Tensor.SerializeToString,
             ),
             'UploadSolver': grpc.unary_unary_rpc_method_handler(
                     servicer.UploadSolver,
-                    request_deserializer=service__pb2.Service.FromString,
-                    response_serializer=service__pb2.WhoAreYourParams.SerializeToString,
+                    request_deserializer=protobufs_dot_service__pb2.ServiceExtended.FromString,
+                    response_serializer=protobufs_dot_service__pb2.WhoAreYourParams.SerializeToString,
             ),
             'StreamLogs': grpc.unary_stream_rpc_method_handler(
                     servicer.StreamLogs,
-                    request_deserializer=service__pb2.WhoAreYourParams.FromString,
-                    response_serializer=service__pb2.File.SerializeToString,
+                    request_deserializer=protobufs_dot_service__pb2.WhoAreYourParams.FromString,
+                    response_serializer=protobufs_dot_service__pb2.File.SerializeToString,
             ),
             'Solve': grpc.unary_unary_rpc_method_handler(
                     servicer.Solve,
-                    request_deserializer=service__pb2.Cnf.FromString,
-                    response_serializer=service__pb2.Interpretation.SerializeToString,
+                    request_deserializer=protobufs_dot_instances__pb2.Cnf.FromString,
+                    response_serializer=protobufs_dot_instances__pb2.Interpretation.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'Solver', rpc_method_handlers)
+            'protobufs.service.Solver', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
@@ -139,9 +141,9 @@ class Solver(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/Solver/StartTrain',
-            service__pb2.WhoAreYourParams.SerializeToString,
-            service__pb2.WhoAreYourParams.FromString,
+        return grpc.experimental.unary_unary(request, target, '/protobufs.service.Solver/StartTrain',
+            protobufs_dot_service__pb2.WhoAreYourParams.SerializeToString,
+            protobufs_dot_service__pb2.WhoAreYourParams.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -156,9 +158,9 @@ class Solver(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/Solver/StopTrain',
-            service__pb2.WhoAreYourParams.SerializeToString,
-            service__pb2.WhoAreYourParams.FromString,
+        return grpc.experimental.unary_unary(request, target, '/protobufs.service.Solver/StopTrain',
+            protobufs_dot_service__pb2.WhoAreYourParams.SerializeToString,
+            protobufs_dot_service__pb2.WhoAreYourParams.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -173,9 +175,9 @@ class Solver(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_stream(request, target, '/Solver/GetTensor',
-            service__pb2.WhoAreYourParams.SerializeToString,
-            service__pb2.Tensor.FromString,
+        return grpc.experimental.unary_stream(request, target, '/protobufs.service.Solver/GetTensor',
+            protobufs_dot_service__pb2.WhoAreYourParams.SerializeToString,
+            protobufs_dot_ipss__pb2.Tensor.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -190,9 +192,9 @@ class Solver(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/Solver/UploadSolver',
-            service__pb2.Service.SerializeToString,
-            service__pb2.WhoAreYourParams.FromString,
+        return grpc.experimental.unary_unary(request, target, '/protobufs.service.Solver/UploadSolver',
+            protobufs_dot_service__pb2.ServiceExtended.SerializeToString,
+            protobufs_dot_service__pb2.WhoAreYourParams.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -207,9 +209,9 @@ class Solver(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_stream(request, target, '/Solver/StreamLogs',
-            service__pb2.WhoAreYourParams.SerializeToString,
-            service__pb2.File.FromString,
+        return grpc.experimental.unary_stream(request, target, '/protobufs.service.Solver/StreamLogs',
+            protobufs_dot_service__pb2.WhoAreYourParams.SerializeToString,
+            protobufs_dot_service__pb2.File.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -224,8 +226,8 @@ class Solver(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/Solver/Solve',
-            service__pb2.Cnf.SerializeToString,
-            service__pb2.Interpretation.FromString,
+        return grpc.experimental.unary_unary(request, target, '/protobufs.service.Solver/Solve',
+            protobufs_dot_instances__pb2.Cnf.SerializeToString,
+            protobufs_dot_instances__pb2.Interpretation.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

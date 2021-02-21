@@ -1,10 +1,8 @@
 from threading import get_ident, Thread, Lock, Event
 
-import grpc
-import json
+import grpc, json
 
-import instances_pb2
-import instances_pb2_grpc
+import protobufs.instances_pb2 as instances_pb2, protobufs.instances_pb2_grpc as instances_pb2_grpc
 from start import DIR, TRAIN_SOLVERS_TIMEOUT, LOGGER, CONNECTION_ERRORS, START_AVR_TIMEOUT
 from start import SAVE_TRAIN_DATA as REFRESH, RANDOM_SERVICE
 from singleton import Singleton

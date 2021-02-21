@@ -5,8 +5,7 @@ from threading import Thread, Lock, get_ident
 import grpc
 import requests
 
-import instances_pb2
-import instances_pb2_grpc
+import protobufs.instances_pb2 as instances_pb2, protobufs.instances_pb2_grpc as instances_pb2_grpc
 from singleton import Singleton
 from start import GATEWAY as GATEWAY, STOP_SOLVER_TIME_DELTA_MINUTES, LOGGER
 from start import MAINTENANCE_SLEEP_TIME, SOLVER_PASS_TIMEOUT_TIMES, SOLVER_FAILED_ATTEMPTS
