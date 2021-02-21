@@ -14,6 +14,11 @@ message Interpretation {
 
 message WhoAreYourParams {}
 
+message ServiceExtended {
+    Multihash multihash = 1;
+    Service service = 2;
+}
+
 message File {
     string file = 1;
 }
@@ -29,7 +34,7 @@ service Solver {
     rpc StartTrain ( WhoAreYourParams) returns (WhoAreYourParams) {}
     rpc StopTrain ( WhoAreYourParams) returns (WhoAreYourParams) {}
     rpc GetTensor ( WhoAreYourParams) returns (stream Tensor) {}
-    rpc UploadSolver (Service) returns (WhoAreYourParams) {}
+    rpc UploadSolver (ServiceExtended) returns (WhoAreYourParams) {}
     rpc StreamLogs (WhoAreYourParams) returns (stream File){}
     rpc Solve(Cnf) returns (Interpretation) {}
 }

@@ -103,6 +103,7 @@ if __name__ == "__main__":
             with open(DIR + 'tensors', 'r') as file:
                 while True:
                     yield file
+                    sleep(1)
 
         def StartTrain(self, request, context):
             trainer.start()
