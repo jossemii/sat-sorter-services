@@ -2,7 +2,7 @@ from threading import get_ident, Thread, Lock, Event
 
 import grpc, json
 
-import protobufs.instances_pb2 as instances_pb2, protobufs.instances_pb2_grpc as instances_pb2_grpc
+import api_pb2, api_pb2_grpc
 from start import DIR, TRAIN_SOLVERS_TIMEOUT, LOGGER, CONNECTION_ERRORS, START_AVR_TIMEOUT
 from start import SAVE_TRAIN_DATA as REFRESH, RANDOM_SERVICE
 from singleton import Singleton
@@ -34,7 +34,7 @@ class Session(metaclass=Singleton):
 
     def init_random_cnf_service(self):
         self.random_service_instance = _solve.get_solver_instance(RANDOM_SERVICE)
-        self.random_service_instance.stub = instances_pb2_grpc.RandomStub(
+        self.random_service_instance.stub = api_pb2_grpc.RandomStub(
                 grpc.insecure_channel(self.random_service_instance.uri)
             )
 
@@ -52,7 +52,7 @@ class Session(metaclass=Singleton):
                 LOGGER('OBTENIENDO RANDON CNF')
                 LOGGER(self.random_service_instance.uri)
                 return self.random_service_instance.stub.RandomCnf(
-                    request=instances_pb2.WhoAreYourParams(),
+                    request=api_pb2.WhoAreYourParams(),
                     timeout=START_AVR_TIMEOUT
                 )
             except (grpc.RpcError, TimeoutError) as e:

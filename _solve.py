@@ -5,7 +5,7 @@ from threading import Thread, Lock, get_ident
 import grpc
 import requests
 
-import protobufs.instances_pb2 as instances_pb2, protobufs.instances_pb2_grpc as instances_pb2_grpc
+import api_pb2, api_pb2_grpc
 from singleton import Singleton
 from start import GATEWAY as GATEWAY, STOP_SOLVER_TIME_DELTA_MINUTES, LOGGER
 from start import MAINTENANCE_SLEEP_TIME, SOLVER_PASS_TIMEOUT_TIMES, SOLVER_FAILED_ATTEMPTS
@@ -29,7 +29,7 @@ def get_solver_instance(image: str):
             content = response.json()
             if 'uri' in content and 'token' in content:
                 instance = SolverInstance(service=image, content=content)
-                instance.stub = instances_pb2_grpc.SolverStub(
+                instance.stub = api_pb2_grpc.SolverStub(
                     grpc.insecure_channel(instance.uri)
                 )
                 return instance
@@ -141,11 +141,11 @@ class Session(metaclass=Singleton):
 
     def check_if_service_is_alive(self, solver: SolverInstance) -> bool:
         LOGGER('Check if serlvice ' + str(solver.service) + ' is alive.')
-        cnf = instances_pb2.Cnf()
+        cnf = api_pb2.Cnf()
         clause = cnf.clause.add()
         clause.literal = 1
         try:
-            instances_pb2_grpc.Solver(
+            api_pb2_grpc.Solver(
                 grpc.insecure_channel(solver.uri)
             ).Solve(
                 request=cnf,
