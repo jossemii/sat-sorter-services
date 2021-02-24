@@ -1,6 +1,49 @@
 syntax = "proto3";
-package protobufs.ipss;
 
+
+// Solver
+message Interpretation {
+    repeated int32 variable = 1;
+}
+
+
+// Random
+message Clause {
+    repeated int32 literal = 1;
+}
+
+message Cnf {
+    repeated Clause clause = 1;
+}
+
+message WhoAreYourParams {}
+
+service Random {
+    rpc RandomCnf(WhoAreYourParams) returns (Cnf) {}
+}
+
+
+// Service
+message ServiceExtended {
+    Multihash multihash = 1;
+    Service service = 2;
+}
+
+message File {
+    string file = 1;
+}
+
+service Solver {
+    rpc StartTrain ( WhoAreYourParams) returns (WhoAreYourParams) {}
+    rpc StopTrain ( WhoAreYourParams) returns (WhoAreYourParams) {}
+    rpc GetTensor ( WhoAreYourParams) returns (stream Tensor) {}
+    rpc UploadSolver (ServiceExtended) returns (WhoAreYourParams) {}
+    rpc StreamLogs (WhoAreYourParams) returns (stream File){}
+    rpc Solve(Cnf) returns (Interpretation) {}
+}
+
+
+// IPSS
 // Hash Table ( IPDL ?)
 message Multihash {
     map<string, string> hashes = 1;
