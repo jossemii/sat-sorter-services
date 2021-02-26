@@ -7,7 +7,6 @@ from threading import get_ident
 from start import DIR, LOGGER, TIME_FOR_EACH_REGRESSION_LOOP
 from start import MAX_REGRESSION_DEGREE as MAX_DEGREE
 
-
 def regression_with_degree(degree: int, input: np.array, output: np.array):
     poly = PolynomialFeatures(degree= degree, include_bias=False)
     input = poly.fit_transform(input)
@@ -74,23 +73,21 @@ def iterate_regression():
     with open(DIR + 'solvers.json', 'r') as file:
         solvers = json.load(file)
 
-    tensors = {}
+    tensor = api_pb2.Tensor()
 
     # Make regression for each solver.
     for solver in solvers:
         if solvers[solver]=={}: continue
         LOGGER('SOLVER --> ' + str(solver))
-        tensor = solver_regression(solver=solvers[solver])
+        t = solver_regression(solver=solvers[solver])
         LOGGER(' ------ ')
 
-        tensors.update({
-            solver: into_tensor(coefficients=tensor['tensor coefficients'], features=tensor['feature names'])
-            })
+        tensor.append( into_tensor(coefficients=t['tensor coefficients'], features=t['feature names']) )
         LOGGER(' ****** ')
 
-    # Write tensors.json
-    with open(DIR+'tensors.json', 'w') as file:
-        json.dump(tensors, file)
+    # Write tensors
+    with open(DIR+'tensors.onnx', 'wb') as file:
+        file.write(tensor.SerializeToString())
 
 def init():
     LOGGER('INIT REGRESSION THREAD '+ str(get_ident()))

@@ -101,9 +101,11 @@ if __name__ == "__main__":
             return api_pb2.WhoAreYourParams()
 
         def GetTensor(self, request, context):
-            with open(DIR + 'tensors', 'r') as file:
+            with open(DIR + 'tensor.onnx', 'rb') as file:
                 while True:
-                    yield file
+                    tensor = api_pb2.Tensor()
+                    tensor.ParseFromString(file.read())
+                    yield tensor
                     sleep(1)
 
         def StartTrain(self, request, context):
