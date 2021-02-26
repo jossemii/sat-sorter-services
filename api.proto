@@ -1,5 +1,6 @@
 syntax = "proto3";
 import "google/protobuf/descriptor.proto";
+import "google/protobuf/any.proto";
 import "onnx/onnx.proto";
 
 // Solver
@@ -37,15 +38,30 @@ message File {
 service Solver {
     rpc StartTrain ( WhoAreYourParams) returns (WhoAreYourParams) {}
     rpc StopTrain ( WhoAreYourParams) returns (WhoAreYourParams) {}
-    rpc GetTensor ( WhoAreYourParams) returns (stream onnx.ModelProto) {}
+    rpc GetTensor ( WhoAreYourParams) returns (stream ONNX) {}
     rpc UploadSolver (ServiceExtended) returns (WhoAreYourParams) {}
     rpc StreamLogs (WhoAreYourParams) returns (stream File){}
     rpc Solve(Cnf) returns (Interpretation) {}
 }
 
+// --------
+// ONNX
+// ---------
+message ONNX {
+    Tensor specification = 1;
+    message ONNXTensor {
+        oneof oneof {
+            onnx.ModelProto model = 2;
+            map<Any, ONNXTensor> matrix = 3;
+        }    
+    }
+    ONNXTensor tensor = 2;
+}
 
+
+//  --------------------
 // IPSS
-// IPSS
+//  --------------------
 // Hash Table ( IPDL ?)
 message Multihash {
     map<string, string> hash = 1;
