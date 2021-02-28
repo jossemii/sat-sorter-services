@@ -43,10 +43,7 @@ def solver_regression(solver: dict):
             best_tensor = tensor
     
     # Convert into ONNX format
-    return convert_sklearn(
-        best_tensor['model'], 
-        initial_types=[('float_input', FloatTensorType([None, 4]))]
-        )
+    return convert_sklearn(best_tensor['model'])
 
 def iterate_regression():
     # Read solvers.json
