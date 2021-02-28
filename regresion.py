@@ -2,10 +2,13 @@ from time import sleep
 import numpy as np
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
+from skl2onnx import convert_sklearn
+from skl2onnx.common.data_types import FloatTensorType
 import json
 from threading import get_ident
 from start import DIR, LOGGER, TIME_FOR_EACH_REGRESSION_LOOP
 from start import MAX_REGRESSION_DEGREE as MAX_DEGREE
+TENSOR_SPECIFICATION = None
 
 def regression_with_degree(degree: int, input: np.array, output: np.array):
     poly = PolynomialFeatures(degree= degree, include_bias=False)
@@ -14,9 +17,8 @@ def regression_with_degree(degree: int, input: np.array, output: np.array):
     # Create a model of regression.
     model = LinearRegression().fit(input, output)
     return {
-        'tensor coefficients': model.intercept_.tolist()+model.coef_[0].tolist(),
-        'coefficient of determination': model.score(input, output),
-        'feature names': poly.get_feature_names(['c', 'l'])
+        'coefficient': model.score(input, output),
+        'model': model
     }
 
 def solver_regression(solver: dict):
@@ -32,65 +34,67 @@ def solver_regression(solver: dict):
     if len(input) != len(output):
         raise Exception('Error en solvers.json, faltan scores.')
 
-    best_tensor = {'coefficient of determination': 0}
+    best_tensor = {'coefficient': 0}
     for degree in range(1, MAX_DEGREE+1):
         LOGGER(' DEGREE --> ' + str(degree))
         tensor = regression_with_degree(degree= degree, input=input, output=output)
-        LOGGER('                R2 --> ' + str(tensor['coefficient of determination']))
-        if tensor['coefficient of determination'] > best_tensor['coefficient of determination']:
+        LOGGER('                R2 --> ' + str(tensor['coefficient']))
+        if tensor['coefficient'] > best_tensor['coefficient']:
             best_tensor = tensor
-    return best_tensor
-
-def into_tensor(coefficients: np.array, features):
-    if len(coefficients) != len(features)+1: raise Exception('Feature len error.')
-    tensor = []
-    for index in range(len(coefficients)):
-        if index == 0:
-            tensor.append({'coefficient': coefficients[index]})
-        else:
-            feature = features[index-1].split(' ')
-            if feature[0][0] == 'c':
-                c_exp = 1 if feature[0] == 'c' else int(feature[0][2:])
-                if len(feature)==2:
-                    l_exp = 1 if feature[1] == 'l' else int(feature[1][2:])
-                else:
-                    l_exp = 0
-            else:
-                l_exp = 1 if feature[0] == 'l' else int(feature[0][2:])
-                c_exp = 0
-            LOGGER('Feature --> ' + str(features[index-1]) + ' == ' + str(c_exp) + '--' + str(l_exp))
-            tensor.append({
-                'coefficient': coefficients[index],
-                'feature': {
-                    'c' : c_exp,
-                    'l': l_exp
-                    }
-            })
-    return tensor
+    
+    # Convert into ONNX format
+    return convert_sklearn(
+        best_tensor['model'], 
+        initial_types=[('float_input', FloatTensorType([None, 4]))]
+        )
 
 def iterate_regression():
     # Read solvers.json
     with open(DIR + 'solvers.json', 'r') as file:
         solvers = json.load(file)
 
-    tensor = api_pb2.Tensor()
+    onnx = api_pb2.ONNX()
+    onnx.specification.CopyFrom(TENSOR_SPECIFICATION)
 
     # Make regression for each solver.
     for solver in solvers:
         if solvers[solver]=={}: continue
         LOGGER('SOLVER --> ' + str(solver))
-        t = solver_regression(solver=solvers[solver])
-        LOGGER(' ------ ')
-
-        tensor.append( into_tensor(coefficients=t['tensor coefficients'], features=t['feature names']) )
+        # ONNXTensor
+        tensor = api_pb2.ONNX.ONNXTensor()
+        tensor.element.CopyFrom(solver)
+        tensor.model.CopyFrom(solver_regression(solver=solvers[solver]))
+        onnx.tensor.append( tensor )
         LOGGER(' ****** ')
 
     # Write tensors
     with open(DIR+'tensors.onnx', 'wb') as file:
-        file.write(tensor.SerializeToString())
+        file.write(onnx.SerializeToString())
 
 def init():
+    def generate_tensor_spec():
+        # Performance
+        p = api_pb2.Variable()
+        p.id = "p"
+        p.tag.extend(["performance"])
+        p.field = google.protobuf.types.Float
+        # Number clauses
+        c = api_pb2.Variable()
+        c.id = "c"
+        c.tag.extend(["number of clauses"])
+        c.field = google.protobuf.types.Float
+        # Number of literals
+        l = api_pb2.Variable()
+        l.id = "l"
+        l.tag.extend(["number of literals"])
+        l.field = google.protobuf.types.Float
+
+        TENSOR_SPECIFICATION = api_pb2.Tensor()
+        TENSOR_SPECIFICATION.output_variable.append(p)
+        TENSOR_SPECIFICATION.input_varaible.extend([c, l])
+
     LOGGER('INIT REGRESSION THREAD '+ str(get_ident()))
+    generate_tensor_spec()
     while True:
         sleep(TIME_FOR_EACH_REGRESSION_LOOP)
         iterate_regression()
