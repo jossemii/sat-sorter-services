@@ -10,13 +10,13 @@ syntax = "proto2";
 import "google/protobuf/any.proto";
 import "ipss.proto";
 
-package onnx;
+package tensor_onnx;
 
 message ONNX {
   required ipss.Tensor specification = 1;
   message ONNXTensor {
       optional google.protobuf.Any element = 1;
-      required onnx.ModelProto model = 2;
+      required ModelProto model = 2;
   }
   repeated ONNXTensor tensor = 2;
 }

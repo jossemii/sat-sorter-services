@@ -8,6 +8,7 @@ import json
 from threading import get_ident
 from start import DIR, LOGGER, TIME_FOR_EACH_REGRESSION_LOOP
 from start import MAX_REGRESSION_DEGREE as MAX_DEGREE
+import api_pb2
 TENSOR_SPECIFICATION = None
 
 def regression_with_degree(degree: int, input: np.array, output: np.array):
@@ -88,7 +89,7 @@ def init():
 
         TENSOR_SPECIFICATION = api_pb2.ipss__pb2.Tensor()
         TENSOR_SPECIFICATION.output_variable.append(p)
-        TENSOR_SPECIFICATION.input_varaible.extend([c, l])
+        TENSOR_SPECIFICATION.input_variable.extend([c, l])
 
     LOGGER('INIT REGRESSION THREAD '+ str(get_ident()))
     generate_tensor_spec()

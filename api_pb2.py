@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\tapi.proto\x1a\nonnx.proto\x1a\nipss.proto\"\"\n\x0eInterpretation\x12\x10\n\x08variable\x18\x01 \x03(\x05\"\x19\n\x06\x43lause\x12\x0f\n\x07literal\x18\x01 \x03(\x05\"\x1e\n\x03\x43nf\x12\x17\n\x06\x63lause\x18\x01 \x03(\x0b\x32\x07.Clause\"\x12\n\x10WhoAreYourParams\"U\n\x0fServiceExtended\x12\"\n\tmultihash\x18\x01 \x01(\x0b\x32\x0f.ipss.Multihash\x12\x1e\n\x07service\x18\x02 \x01(\x0b\x32\r.ipss.Service\"\x14\n\x04\x46ile\x12\x0c\n\x04\x66ile\x18\x01 \x01(\t20\n\x06Random\x12&\n\tRandomCnf\x12\x11.WhoAreYourParams\x1a\x04.Cnf\"\x00\x32\xa8\x02\n\x06Solver\x12\x34\n\nStartTrain\x12\x11.WhoAreYourParams\x1a\x11.WhoAreYourParams\"\x00\x12\x33\n\tStopTrain\x12\x11.WhoAreYourParams\x1a\x11.WhoAreYourParams\"\x00\x12.\n\tGetTensor\x12\x11.WhoAreYourParams\x1a\n.onnx.ONNX\"\x00\x30\x01\x12\x35\n\x0cUploadSolver\x12\x10.ServiceExtended\x1a\x11.WhoAreYourParams\"\x00\x12*\n\nStreamLogs\x12\x11.WhoAreYourParams\x1a\x05.File\"\x00\x30\x01\x12 \n\x05Solve\x12\x04.Cnf\x1a\x0f.Interpretation\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\tapi.proto\x1a\nonnx.proto\x1a\nipss.proto\"\"\n\x0eInterpretation\x12\x10\n\x08variable\x18\x01 \x03(\x05\"\x19\n\x06\x43lause\x12\x0f\n\x07literal\x18\x01 \x03(\x05\"\x1e\n\x03\x43nf\x12\x17\n\x06\x63lause\x18\x01 \x03(\x0b\x32\x07.Clause\"\x12\n\x10WhoAreYourParams\"U\n\x0fServiceExtended\x12\"\n\tmultihash\x18\x01 \x01(\x0b\x32\x0f.ipss.Multihash\x12\x1e\n\x07service\x18\x02 \x01(\x0b\x32\r.ipss.Service\"\x14\n\x04\x46ile\x12\x0c\n\x04\x66ile\x18\x01 \x01(\t20\n\x06Random\x12&\n\tRandomCnf\x12\x11.WhoAreYourParams\x1a\x04.Cnf\"\x00\x32\xaf\x02\n\x06Solver\x12\x34\n\nStartTrain\x12\x11.WhoAreYourParams\x1a\x11.WhoAreYourParams\"\x00\x12\x33\n\tStopTrain\x12\x11.WhoAreYourParams\x1a\x11.WhoAreYourParams\"\x00\x12\x35\n\tGetTensor\x12\x11.WhoAreYourParams\x1a\x11.tensor_onnx.ONNX\"\x00\x30\x01\x12\x35\n\x0cUploadSolver\x12\x10.ServiceExtended\x1a\x11.WhoAreYourParams\"\x00\x12*\n\nStreamLogs\x12\x11.WhoAreYourParams\x1a\x05.File\"\x00\x30\x01\x12 \n\x05Solve\x12\x04.Cnf\x1a\x0f.Interpretation\"\x00\x62\x06proto3'
   ,
   dependencies=[onnx__pb2.DESCRIPTOR,ipss__pb2.DESCRIPTOR,])
 
@@ -308,7 +308,7 @@ _SOLVER = _descriptor.ServiceDescriptor(
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
   serialized_start=312,
-  serialized_end=608,
+  serialized_end=615,
   methods=[
   _descriptor.MethodDescriptor(
     name='StartTrain',

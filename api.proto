@@ -38,7 +38,7 @@ message File {
 service Solver {
     rpc StartTrain ( WhoAreYourParams) returns (WhoAreYourParams) {}
     rpc StopTrain ( WhoAreYourParams) returns (WhoAreYourParams) {}
-    rpc GetTensor ( WhoAreYourParams) returns (stream onnx.ONNX) {}
+    rpc GetTensor ( WhoAreYourParams) returns (stream tensor_onnx.ONNX) {}
     rpc UploadSolver (ServiceExtended) returns (WhoAreYourParams) {}
     rpc StreamLogs (WhoAreYourParams) returns (stream File){}
     rpc Solve(Cnf) returns (Interpretation) {}
