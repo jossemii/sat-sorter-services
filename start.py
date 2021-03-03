@@ -2,8 +2,8 @@ import logging
 logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s')
 LOGGER = lambda message: logging.getLogger().debug(message)
 
-DIR = ''#'/satrainer/'
-GATEWAY = '192.168.1.250:8000' #'172.17.0.1:8000'
+DIR = '/satrainer/'
+GATEWAY = '172.17.0.1:8000'
 SAVE_TRAIN_DATA = 2
 MAINTENANCE_SLEEP_TIME = 100
 SOLVER_PASS_TIMEOUT_TIMES = 5
