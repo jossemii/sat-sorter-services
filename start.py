@@ -21,7 +21,6 @@ if __name__ == "__main__":
     from time import sleep
     import os
     import json
-    from flask import Flask, request
     import train, _get, _solve
     from threading import get_ident, Thread
     import regresion
