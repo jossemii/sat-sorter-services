@@ -50,7 +50,7 @@ def iterate_regression():
     with open(DIR + 'solvers.json', 'r') as file:
         solvers = json.load(file)
 
-    onnx = api_pb2.ONNX()
+    onnx = api_pb2.onnx__pb2.ONNX()
     onnx.specification.CopyFrom(TENSOR_SPECIFICATION)
 
     # Make regression for each solver.
@@ -58,7 +58,7 @@ def iterate_regression():
         if solvers[solver]=={}: continue
         LOGGER('SOLVER --> ' + str(solver))
         # ONNXTensor
-        tensor = api_pb2.ONNX.ONNXTensor()
+        tensor = api_pb2.onnx__pb2.ONNX.ONNXTensor()
         tensor.element.CopyFrom(solver)
         tensor.model.CopyFrom(solver_regression(solver=solvers[solver]))
         onnx.tensor.append( tensor )
@@ -71,22 +71,22 @@ def iterate_regression():
 def init():
     def generate_tensor_spec():
         # Performance
-        p = api_pb2.Variable()
+        p = api_pb2.ipss__pb2.Tensor.Variable()
         p.id = "p"
         p.tag.extend(["performance"])
-        p.field = google.protobuf.types.Float
+        p.type_field = "FLOAT"
         # Number clauses
-        c = api_pb2.Variable()
+        c = api_pb2.ipss__pb2.Tensor.Variable()
         c.id = "c"
         c.tag.extend(["number of clauses"])
-        c.field = google.protobuf.types.Float
+        c.type_field = "FLOAT"
         # Number of literals
-        l = api_pb2.Variable()
+        l = api_pb2.ipss__pb2.Tensor.Variable()
         l.id = "l"
         l.tag.extend(["number of literals"])
-        l.field = google.protobuf.types.Float
+        l.type_field = "FLOAT"
 
-        TENSOR_SPECIFICATION = api_pb2.Tensor()
+        TENSOR_SPECIFICATION = api_pb2.ipss__pb2.Tensor()
         TENSOR_SPECIFICATION.output_variable.append(p)
         TENSOR_SPECIFICATION.input_varaible.extend([c, l])
 

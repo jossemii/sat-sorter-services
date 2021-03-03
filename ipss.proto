@@ -1,0 +1,88 @@
+syntax = "proto3";
+
+import "google/protobuf/descriptor.proto";
+
+package ipss;
+
+//  --------------------
+// IPSS
+//  --------------------
+// Hash Table ( IPDL ?)
+message Multihash {
+    map<string, string> hash = 1;
+}
+
+// API: Defines how you can interact with the service, the ports where it listens, the communication protocols that it supports, methods and the different errors and responses that it can give.
+message ProtocolMesh {
+    string something = 1;
+}
+
+message Slot {
+    int32 port = 1;
+    google.protobuf.FileDescriptorSet aplication_protocol = 2;
+    ProtocolMesh transport_protocol = 3;
+}
+
+message Api {
+    repeated Slot slot = 1;
+}
+
+// Container: Specifies the container where the service runs, microarchitecture, entry point and filesystem (DAG?), and environment variables.
+message Architecture {
+    string something = 1;
+}
+
+message Container {
+    Architecture architecture = 1;
+    Multihash filesystem = 2;
+    repeated string enviroment_variables = 3;
+    string entrypoint = 4;
+}
+
+// Tensor: Defines “intelligence” that the service can provide, I think it would be a description of a polynomial (without coefficients and describing the variables).
+message Tensor {
+    message Variable {
+        string id = 1;
+        repeated string tag = 2;
+        oneof oneof {
+            string type_field = 3;
+            google.protobuf.DescriptorProto message_field = 4;     // exemple: service.DESCRIPTOR.CopyToProto(variable.message_field)      
+        }
+    }
+    repeated Variable output_variable = 1;
+    repeated Variable input_variable = 2;
+}
+
+// Ledger: Defines the database used by the service, it would be a class diagram and a consensus algorithm.
+message Ledger {
+    string tag = 1;
+}
+
+message Service {
+    google.protobuf.FileDescriptorSet syntax = 1;
+    Container container = 2;
+    Api api = 3;
+    Tensor tensor = 4;
+    Ledger ledger = 5;
+    repeated Multihash depencencies = 6;
+}
+
+message ExtendedService {
+    oneof oneof{
+        Multihash multihash = 1;
+        Service service = 2;        
+    }
+    optional Configuration config = 3;
+}
+
+// The __config__ file is mounted on each service on the filesystem's root.
+message Gateway {
+    string ip = 1;
+    Api api = 2;
+}
+
+message Configuration{
+    Gateway host_gateway = 1;
+    repeated string enviroment_variables = 2;
+    repeated Slot slot = 3; // Only some of the specified ports and the protocol submesh for each slot.
+}

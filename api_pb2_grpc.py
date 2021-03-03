@@ -3,6 +3,7 @@
 import grpc
 
 import api_pb2 as api__pb2
+import onnx_pb2 as onnx__pb2
 
 
 class RandomStub(object):
@@ -88,7 +89,7 @@ class SolverStub(object):
         self.GetTensor = channel.unary_stream(
                 '/Solver/GetTensor',
                 request_serializer=api__pb2.WhoAreYourParams.SerializeToString,
-                response_deserializer=api__pb2.Tensor.FromString,
+                response_deserializer=onnx__pb2.ONNX.FromString,
                 )
         self.UploadSolver = channel.unary_unary(
                 '/Solver/UploadSolver',
@@ -162,7 +163,7 @@ def add_SolverServicer_to_server(servicer, server):
             'GetTensor': grpc.unary_stream_rpc_method_handler(
                     servicer.GetTensor,
                     request_deserializer=api__pb2.WhoAreYourParams.FromString,
-                    response_serializer=api__pb2.Tensor.SerializeToString,
+                    response_serializer=onnx__pb2.ONNX.SerializeToString,
             ),
             'UploadSolver': grpc.unary_unary_rpc_method_handler(
                     servicer.UploadSolver,
@@ -236,7 +237,7 @@ class Solver(object):
             metadata=None):
         return grpc.experimental.unary_stream(request, target, '/Solver/GetTensor',
             api__pb2.WhoAreYourParams.SerializeToString,
-            api__pb2.Tensor.FromString,
+            onnx__pb2.ONNX.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
