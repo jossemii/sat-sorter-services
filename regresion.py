@@ -66,7 +66,7 @@ def iterate_regression():
         LOGGER(' ****** ')
 
     # Write tensors
-    with open(DIR+'tensors.onnx', 'wb') as file:
+    with open(DIR+'tensor.onnx', 'wb') as file:
         file.write(onnx.SerializeToString())
 
 def init():
