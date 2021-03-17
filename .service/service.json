@@ -1,5 +1,5 @@
 {
-    "api": [{"port":8080, "protocol":["http2","grpc"]},
+    "api": [{"port":8080, "protocol":["http2","grpc"]}],
     "tensor": {
         "variables": {
             "x": "number cnf variables",
