@@ -1,5 +1,5 @@
 {
-    "api": {"Port": "8080", "Methods": [{"Params": [""], "Path": "/", "Return": "", "Type": ""}], "Type": "Rest"},
+    "api": [{"port":8080, "protocol":["http2","grpc"]}
     "tensor": {
         "variables": {
             "x": "number cnf variables",
