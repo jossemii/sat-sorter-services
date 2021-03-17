@@ -1,0 +1,16 @@
+{
+    "api": {"Port": "8080", "Methods": [{"Params": [""], "Path": "/", "Return": "", "Type": ""}], "Type": "Rest"},
+    "tensor": {
+        "variables": {
+            "x": "number cnf variables",
+            "y": "number cnf clauses",
+            "z": "score",
+            "t": "SATsolver"
+        },
+        "function": [
+            "Tz=X+Y"
+        ]
+    },
+    "architecture": "x86",
+    "entrypoint": "python3 /satrainer/start.py"
+}
