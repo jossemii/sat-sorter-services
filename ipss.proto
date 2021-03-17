@@ -15,7 +15,7 @@ message Hash {
 
 // API: Defines how you can interact with the service, the ports where it listens, the communication protocols that it supports, methods and the different errors and responses that it can give.
 message ProtocolMesh {
-    string something = 1;
+    repeated string tag = 1;
 }
 
 message Slot {
@@ -24,18 +24,14 @@ message Slot {
     google.protobuf.FileDescriptorSet aplication_protocol = 3;
 }
 
-message Api {
-    repeated Slot slot = 1;
-}
-
 // Container: Specifies the container where the service runs, microarchitecture, entry point and filesystem (DAG?), and environment variables.
 message Architecture {
-    string something = 1;
+    repeated string tag = 1;
 }
 
 message Container {
     Architecture architecture = 1;
-    Hash filesystem = 2;
+    repeated Hash filesystem = 2;
     repeated string enviroment_variables = 3;
     string entrypoint = 4;
 }
@@ -45,10 +41,7 @@ message Tensor {
     message Variable {
         string id = 1;
         repeated string tag = 2;
-        oneof oneof {
-            string type_field = 3;
-            google.protobuf.DescriptorProto message_field = 4;     // exemple: service.DESCRIPTOR.CopyToProto(variable.message_field)      
-        }
+        google.protobuf.FileDescriptorSet field = 3;
     }
     repeated Variable output_variable = 1;
     repeated Variable input_variable = 2;
@@ -62,18 +55,9 @@ message Ledger {
 message Service {
     google.protobuf.FileDescriptorSet syntax = 1;
     Container container = 2;
-    Api api = 3;
+    repeated Slot api = 3;
     Tensor tensor = 4;
     Ledger ledger = 5;
-    repeated Hash depencencies = 6;
-}
-
-message ExtendedService {
-    oneof oneof{
-        Hash hash = 1;
-        Service service = 2;        
-    }
-    optional Configuration config = 3;
 }
 
 // The __config__ file is mounted on each service on the filesystem's root.
@@ -83,7 +67,7 @@ message Gateway {
         int32 port = 2;
     }
     Uri uri = 1; // format ip:port
-    Api api = 2;
+    repeated Slot api = 2;
 }
 
 message Configuration{

@@ -24,13 +24,6 @@ service Random {
     rpc RandomCnf(WhoAreYourParams) returns (Cnf) {}
 }
 
-
-// Service
-message ServiceExtended {
-    ipss.Multihash multihash = 1;
-    ipss.Service service = 2;
-}
-
 message File {
     string file = 1;
 }
@@ -39,7 +32,7 @@ service Solver {
     rpc StartTrain ( WhoAreYourParams) returns (WhoAreYourParams) {}
     rpc StopTrain ( WhoAreYourParams) returns (WhoAreYourParams) {}
     rpc GetTensor ( WhoAreYourParams) returns (stream tensor_onnx.ONNX) {}
-    rpc UploadSolver (ServiceExtended) returns (WhoAreYourParams) {}
+    rpc UploadSolver ( ipss.Service) returns (WhoAreYourParams) {}
     rpc StreamLogs (WhoAreYourParams) returns (stream File){}
     rpc Solve(Cnf) returns (Interpretation) {}
 }

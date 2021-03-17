@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\tapi.proto\x1a\nonnx.proto\x1a\nipss.proto\"\"\n\x0eInterpretation\x12\x10\n\x08variable\x18\x01 \x03(\x05\"\x19\n\x06\x43lause\x12\x0f\n\x07literal\x18\x01 \x03(\x05\"\x1e\n\x03\x43nf\x12\x17\n\x06\x63lause\x18\x01 \x03(\x0b\x32\x07.Clause\"\x12\n\x10WhoAreYourParams\"U\n\x0fServiceExtended\x12\"\n\tmultihash\x18\x01 \x01(\x0b\x32\x0f.ipss.Multihash\x12\x1e\n\x07service\x18\x02 \x01(\x0b\x32\r.ipss.Service\"\x14\n\x04\x46ile\x12\x0c\n\x04\x66ile\x18\x01 \x01(\t20\n\x06Random\x12&\n\tRandomCnf\x12\x11.WhoAreYourParams\x1a\x04.Cnf\"\x00\x32\xaf\x02\n\x06Solver\x12\x34\n\nStartTrain\x12\x11.WhoAreYourParams\x1a\x11.WhoAreYourParams\"\x00\x12\x33\n\tStopTrain\x12\x11.WhoAreYourParams\x1a\x11.WhoAreYourParams\"\x00\x12\x35\n\tGetTensor\x12\x11.WhoAreYourParams\x1a\x11.tensor_onnx.ONNX\"\x00\x30\x01\x12\x35\n\x0cUploadSolver\x12\x10.ServiceExtended\x1a\x11.WhoAreYourParams\"\x00\x12*\n\nStreamLogs\x12\x11.WhoAreYourParams\x1a\x05.File\"\x00\x30\x01\x12 \n\x05Solve\x12\x04.Cnf\x1a\x0f.Interpretation\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\tapi.proto\x1a\nonnx.proto\x1a\nipss.proto\"\"\n\x0eInterpretation\x12\x10\n\x08variable\x18\x01 \x03(\x05\"\x19\n\x06\x43lause\x12\x0f\n\x07literal\x18\x01 \x03(\x05\"\x1e\n\x03\x43nf\x12\x17\n\x06\x63lause\x18\x01 \x03(\x0b\x32\x07.Clause\"\x12\n\x10WhoAreYourParams\"\x14\n\x04\x46ile\x12\x0c\n\x04\x66ile\x18\x01 \x01(\t20\n\x06Random\x12&\n\tRandomCnf\x12\x11.WhoAreYourParams\x1a\x04.Cnf\"\x00\x32\xac\x02\n\x06Solver\x12\x34\n\nStartTrain\x12\x11.WhoAreYourParams\x1a\x11.WhoAreYourParams\"\x00\x12\x33\n\tStopTrain\x12\x11.WhoAreYourParams\x1a\x11.WhoAreYourParams\"\x00\x12\x35\n\tGetTensor\x12\x11.WhoAreYourParams\x1a\x11.tensor_onnx.ONNX\"\x00\x30\x01\x12\x32\n\x0cUploadSolver\x12\r.ipss.Service\x1a\x11.WhoAreYourParams\"\x00\x12*\n\nStreamLogs\x12\x11.WhoAreYourParams\x1a\x05.File\"\x00\x30\x01\x12 \n\x05Solve\x12\x04.Cnf\x1a\x0f.Interpretation\"\x00\x62\x06proto3'
   ,
   dependencies=[onnx__pb2.DESCRIPTOR,ipss__pb2.DESCRIPTOR,])
 
@@ -149,45 +149,6 @@ _WHOAREYOURPARAMS = _descriptor.Descriptor(
 )
 
 
-_SERVICEEXTENDED = _descriptor.Descriptor(
-  name='ServiceExtended',
-  full_name='ServiceExtended',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='multihash', full_name='ServiceExtended.multihash', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='service', full_name='ServiceExtended.service', index=1,
-      number=2, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=152,
-  serialized_end=237,
-)
-
-
 _FILE = _descriptor.Descriptor(
   name='File',
   full_name='File',
@@ -215,18 +176,15 @@ _FILE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=239,
-  serialized_end=259,
+  serialized_start=152,
+  serialized_end=172,
 )
 
 _CNF.fields_by_name['clause'].message_type = _CLAUSE
-_SERVICEEXTENDED.fields_by_name['multihash'].message_type = ipss__pb2._MULTIHASH
-_SERVICEEXTENDED.fields_by_name['service'].message_type = ipss__pb2._SERVICE
 DESCRIPTOR.message_types_by_name['Interpretation'] = _INTERPRETATION
 DESCRIPTOR.message_types_by_name['Clause'] = _CLAUSE
 DESCRIPTOR.message_types_by_name['Cnf'] = _CNF
 DESCRIPTOR.message_types_by_name['WhoAreYourParams'] = _WHOAREYOURPARAMS
-DESCRIPTOR.message_types_by_name['ServiceExtended'] = _SERVICEEXTENDED
 DESCRIPTOR.message_types_by_name['File'] = _FILE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -258,13 +216,6 @@ WhoAreYourParams = _reflection.GeneratedProtocolMessageType('WhoAreYourParams', 
   })
 _sym_db.RegisterMessage(WhoAreYourParams)
 
-ServiceExtended = _reflection.GeneratedProtocolMessageType('ServiceExtended', (_message.Message,), {
-  'DESCRIPTOR' : _SERVICEEXTENDED,
-  '__module__' : 'api_pb2'
-  # @@protoc_insertion_point(class_scope:ServiceExtended)
-  })
-_sym_db.RegisterMessage(ServiceExtended)
-
 File = _reflection.GeneratedProtocolMessageType('File', (_message.Message,), {
   'DESCRIPTOR' : _FILE,
   '__module__' : 'api_pb2'
@@ -281,8 +232,8 @@ _RANDOM = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=261,
-  serialized_end=309,
+  serialized_start=174,
+  serialized_end=222,
   methods=[
   _descriptor.MethodDescriptor(
     name='RandomCnf',
@@ -307,8 +258,8 @@ _SOLVER = _descriptor.ServiceDescriptor(
   index=1,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=312,
-  serialized_end=615,
+  serialized_start=225,
+  serialized_end=525,
   methods=[
   _descriptor.MethodDescriptor(
     name='StartTrain',
@@ -345,7 +296,7 @@ _SOLVER = _descriptor.ServiceDescriptor(
     full_name='Solver.UploadSolver',
     index=3,
     containing_service=None,
-    input_type=_SERVICEEXTENDED,
+    input_type=ipss__pb2._SERVICE,
     output_type=_WHOAREYOURPARAMS,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
