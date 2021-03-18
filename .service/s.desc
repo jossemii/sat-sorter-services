@@ -1,0 +1,8 @@
+
+Service2
+syntax (2".google.protobuf.FileDescriptorSet"
+	container (2.ipss.Container
+api (2
+.ipss.Slot
+tensor (2.ipss.Tensor
+ledger (2.ipss.Ledger
