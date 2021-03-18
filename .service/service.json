@@ -1,10 +1,14 @@
 {
     "api": [{"port":8080, "protocol":["http2","grpc"]}],
     "tensor": {
-        "x": ["number cnf variables"],
-        "y": ["number cnf clauses"],
-        "z": ["score"],
-        "s": ["SATsolver"]
+        "input": {
+            "x": ["number cnf variables"],
+            "y": ["number cnf clauses"], 
+            "s": ["SATsolver"]         
+        },
+        "output": {
+            "z": ["score"]
+        }
     },
     "architecture": "x86",
     "entrypoint": "python3 /satrainer/start.py"
