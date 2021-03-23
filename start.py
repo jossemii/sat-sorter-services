@@ -102,7 +102,7 @@ if __name__ == "__main__":
         def GetTensor(self, request, context):
             with open(DIR + 'tensor.onnx', 'rb') as file:
                 while True:
-                    tensor = api_pb2.Tensor()
+                    tensor = api_pb2.onnx__pb2.ONNX()
                     tensor.ParseFromString(file.read())
                     yield tensor
                     sleep(1)

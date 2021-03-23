@@ -75,21 +75,24 @@ def init():
         p = api_pb2.ipss__pb2.Tensor.Variable()
         p.id = "p"
         p.tag.extend(["performance"])
-        p.type_field = "FLOAT"
         # Number clauses
         c = api_pb2.ipss__pb2.Tensor.Variable()
         c.id = "c"
         c.tag.extend(["number of clauses"])
-        c.type_field = "FLOAT"
         # Number of literals
         l = api_pb2.ipss__pb2.Tensor.Variable()
         l.id = "l"
         l.tag.extend(["number of literals"])
-        l.type_field = "FLOAT"
+        # Solver services
+        s = api_pb2.ipss__pb2.Service()
+        s.id = "s"
+        s.tag.extend(["SATsolver"])
+        with open(DIR + '.service/s.desc', 'rb') as file:
+            s.field.ParseFromString(file.read())
 
         TENSOR_SPECIFICATION = api_pb2.ipss__pb2.Tensor()
         TENSOR_SPECIFICATION.output_variable.append(p)
-        TENSOR_SPECIFICATION.input_variable.extend([c, l])
+        TENSOR_SPECIFICATION.input_variable.extend([c, l, s])
 
     LOGGER('INIT REGRESSION THREAD '+ str(get_ident()))
     generate_tensor_spec()
