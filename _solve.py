@@ -2,58 +2,93 @@ from time import sleep, time as time_now
 from datetime import datetime, timedelta
 from threading import Thread, Lock, get_ident
 
-import grpc
+import grpc, hashlib
 import requests
 
-import api_pb2, api_pb2_grpc
+import api_pb2, api_pb2_grpc, gateway_pb2, gateway_pb2_grpc, performance_data_pb2
 from singleton import Singleton
-from start import GATEWAY as GATEWAY, STOP_SOLVER_TIME_DELTA_MINUTES, LOGGER
+from start import GATEWAY_MAIN_DIR as GATEWAY_MAIN_DIR, STOP_SOLVER_TIME_DELTA_MINUTES, LOGGER
 from start import MAINTENANCE_SLEEP_TIME, SOLVER_PASS_TIMEOUT_TIMES, SOLVER_FAILED_ATTEMPTS
 
 
-def get_solver_instance(image: str):
-    LOGGER('\nOBTENIENDO EL SOLVER  --> ' + str(image))
-    # Se debe modificar para que envie la especificacion de la imagen ...
-    attemps = 0
-    while True:
-        if attemps < 30:
-            attemps = attemps +1
-        else: break
-        LOGGER(' Intenta obtener la imagen' + str(image))
-        try:
-            response = requests.get('http://' + GATEWAY, json={'service': str(image)})
-        except requests.HTTPError as e:
-            LOGGER(' Error al solicitar solver, ' + str(image) + ' ' + str(e))
-            pass
-        if response and response.status_code == 200:
-            content = response.json()
-            if 'uri' in content and 'token' in content:
-                instance = SolverInstance(service=image, content=content)
-                instance.stub = api_pb2_grpc.SolverStub(
-                    grpc.insecure_channel(instance.uri)
-                )
-                return instance
+# -- HASH FUNCTIONS --
+SHAKE_256 = lambda value: "" if value is None else hashlib.shake_256(value).hexdigest(32)
+SHA3_256 = lambda value: "" if value is None else hashlib.sha3_256(value).hexdigest(32)
 
+# ALERT: Its not async.
+SHAKE_STREAM = lambda value: "" if value is None else hashlib.shake_256(value).hexdigest(99999999)
+
+HASH_LIST = ['SHAKE256', 'SHA3_256']
+
+def calculate_service_hash(service: gateway_pb2.ipss__pb2.Service, hash_function: str):
+    aux = gateway_pb2.ipss__pb2.Service()
+    aux.CopyFrom(service)
+    aux.container.ClearField('filesystem')
+    for hash in service.container.filesystem:
+        if hash.algorithm == hash_function:
+            aux.container.filesystem.append(hash)
+    HASH = eval(hash_function)
+    return HASH(aux.SerializeToString())
 
 class SolverInstance(object):
-    def __init__(self, service: str, content: dict):
-        self.service = service
+    def __init__(self, solver_with_config: performance_data_pb2.Solver):
+        self.service_def = gateway_pb2.ipss__pb2.Service()
+        self.service_def.CopyFrom(solver_with_config.definition)
+        self.config = gateway_pb2.ipss__pb2.Configuration()
+        self.config.enviroment_variables = solver_with_config.enviroment_variables
+        slot = gateway_pb2.ipss__pb2.Configuration.SlotSpec()
+        slot.port = solver_with_config.definition.api[0].port # solo tomamos el primer slot. ¡suponemos que se encuentra alli toda la api!
+        slot.transport_protocol.tag.append('http2','grpc')
+        self.config.slot.append(slot)
+
         self.stub = None
-        self.uri = content.get('uri') or None
-        self.token = content.get('token') or None
+        self.token = None
         self.creation_datetime = datetime.now()
         self.use_datetime = None
         self.pass_timeout = 0
         self.failed_attempts = 0
+        # Calculate service hashes.
+        self.multihash = {}
+        for hash in HASH_LIST:
+            self.multihash.update({
+                hash: calculate_service_hash(
+                    service = solver_with_config.definition,
+                    hash_function = hash
+                )
+            })
+
+    def service_extended(self):
+        config = True
+        se = gateway_pb2.ServiceExtended()
+        for hash in self.multihash:
+            h = gateway_pb2.ipss__pb2.Hash()
+            h.hash = self.multihash[hash]
+            h.tag.append(hash)
+            se.hash.CopyFrom(hash)
+            if config: # Solo hace falta enviar la configuracion en el primer paquete.
+                se.config.CopyFrom(self.config)
+                config = False
+            yield se
+        se.ClearField('hash')
+        se.service.CopyFrom(self.service_def)
+        yield se
+
+    def update_solver_stub(self, instance: gateway_pb2.ipss__pb2.Instance):
+        uri = instance.instance.uri_slot[
+            self.config.slot[0].port
+        ]
+        self.stub = api_pb2_grpc.SolverStub(
+            grpc.insecure_channel(
+                uri.ip+':'+str(uri.port)
+            )
+        )
+        self.token.CopyFrom(instance.token)
 
     def error(self):
         self.failed_attempts = self.failed_attempts + 1
 
     def timeout_passed(self):
         self.pass_timeout = self.pass_timeout + 1
-
-    def stop(self):
-        requests.get('http://' + GATEWAY, json={'token': str(self.token)})
 
     def reset_timers(self):
         self.pass_timeout = 0
@@ -62,6 +97,20 @@ class SolverInstance(object):
     def mark_time(self):
         self.use_datetime = datetime.now()
 
+    def check_if_service_is_alive(self) -> bool:
+        LOGGER('Check if serlvice ' + str(self.service_def) + ' is alive.')
+        cnf = api_pb2.Cnf()
+        clause = cnf.clause.add()
+        clause.literal = 1
+        try:
+            self.stub.Solve(
+                request=cnf,
+                timeout=self.avr_time
+            )
+            return True
+        except (TimeoutError, grpc.RpcError):
+            return False
+
 
 class Session(metaclass=Singleton):
 
@@ -69,16 +118,25 @@ class Session(metaclass=Singleton):
         LOGGER('INIT SOLVE SESSION ....')
         self.avr_time = 30
         self.solvers = {}
+        self.gateway_stub = gateway_pb2_grpc.GatewayStub(grpc.insecure_channel(GATEWAY_MAIN_DIR))
         self.solvers_lock = Lock()
         Thread(target=self.maintenance, name='Maintainer').start()
 
-    def cnf(self, cnf, solver: str, timeout=None):
+    def update_solver_stub(self, solver_config_id: str):
+        solver_instance = self.solvers[solver_config_id]
+        try:
+            solver_instance.update_solver_stub(
+                self.gateway_stub.StartService(solver_instance.service_extended())
+            )
+        except grpc.RpcError as e:
+            LOGGER('GRPC ERROR.'+ str(e))
+
+    def cnf(self, cnf, solver_config_id: str, timeout=None):
         LOGGER('cnf want solvers lock' + str(self.solvers_lock.locked()))
         self.solvers_lock.acquire()
 
-        if solver not in self.solvers:
-            self.add_or_update_solver(solver=solver)
-        solver = self.get(solver)
+        if solver_config_id not in self.solvers: raise Exception
+        solver = self.solvers[solver_config_id]
         solver.mark_time()
         try:
             # Tiene en cuenta el tiempo de respuesta y deserializacion del buffer.
@@ -108,57 +166,48 @@ class Session(metaclass=Singleton):
             LOGGER('MAINTEANCE THREAD IS ' + str(get_ident()))
             sleep(MAINTENANCE_SLEEP_TIME)
 
+            
             index = 0
-            while True:
+            while True: # Si hacemos for solver in solvers habría que bloquear el bucle entero.
                 LOGGER('maintainer want solvers lock' + str(self.solvers_lock.locked()))
                 self.solvers_lock.acquire()
                 try:
-                    solver = self.solvers[list(self.solvers)[index]]
+                    solver_id = list(self.solvers)[index]
+                    solver_instance = self.solvers[solver_id]
                 except IndexError:
                     self.solvers_lock.release()
                     break
-                LOGGER('      maintain solver --> ' + str(solver))
+                LOGGER('      maintain solver --> ' + str(solver_instance))
 
                 # En caso de que lleve mas de dos minutos sin usarse.
-                if datetime.now() - solver.use_datetime > timedelta(minutes=STOP_SOLVER_TIME_DELTA_MINUTES):
-                    self.stop_solver(solver=solver)
+                if datetime.now() - solver_instance.use_datetime > timedelta(minutes=STOP_SOLVER_TIME_DELTA_MINUTES):
+                    self.stop_solver(solver=solver_id)
                     self.solvers_lock.release()
                     continue
                 # En caso de que tarde en dar respuesta a cnf's reales,
                 #  comprueba si la instancia sigue funcionando.
-                if solver.pass_timeout > SOLVER_PASS_TIMEOUT_TIMES and \
-                        not self.check_if_service_is_alive(solver=solver) or \
-                        solver.failed_attempts > SOLVER_FAILED_ATTEMPTS:
-                    self.add_or_update_solver(solver=solver.service)
+                if solver_instance.pass_timeout > SOLVER_PASS_TIMEOUT_TIMES and \
+                        not solver_instance.check_if_service_is_alive() or \
+                        solver_instance.failed_attempts > SOLVER_FAILED_ATTEMPTS:
+                    self.update_solver_stub(solver_config_id=solver_id)
 
                 self.solvers_lock.release()
                 index = +1
                 sleep(MAINTENANCE_SLEEP_TIME / index)
 
-    def stop_solver(self, solver: SolverInstance):
-        solver.stop()
-        del self.solvers[solver.service]
-
-    def check_if_service_is_alive(self, solver: SolverInstance) -> bool:
-        LOGGER('Check if serlvice ' + str(solver.service) + ' is alive.')
-        cnf = api_pb2.Cnf()
-        clause = cnf.clause.add()
-        clause.literal = 1
+    def stop_solver(self, id: str):
         try:
-            api_pb2_grpc.Solver(
-                grpc.insecure_channel(solver.uri)
-            ).Solve(
-                request=cnf,
-                timeout=self.avr_time
+            self.gateway_stub.StopService(
+                self.solvers[id].token
             )
-            return True
-        except (TimeoutError, grpc.RpcError):
-            return False
+        except grpc.RpcError as e:
+            LOGGER('GRPC ERROR.'+ str(e))
+        del self.solvers[id]
 
-    def get(self, solver: str) -> SolverInstance or None:
-        return self.solvers.get(solver) or None
-
-    def add_or_update_solver(self, solver: str):
-        if solver in self.solvers:
-            self.get(solver).stop()
-        self.solvers.update({solver: get_solver_instance(solver)})
+    def add_solver(self, solver_with_config: performance_data_pb2.Solver, solver_config_id: str):
+        self.solvers.update({
+            solver_config_id: SolverInstance(
+                    solver_with_config=solver_config_id
+                )
+            })
+        self.update_solver_stub(solver_config_id=solver_config_id)

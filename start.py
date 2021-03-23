@@ -3,7 +3,7 @@ logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s
 LOGGER = lambda message: logging.getLogger().debug(message)
 
 DIR = '/satrainer/'
-GATEWAY = '172.17.0.1:8000'
+GATEWAY_MAIN_DIR = '172.17.0.1:8000'
 SAVE_TRAIN_DATA = 2
 MAINTENANCE_SLEEP_TIME = 100
 SOLVER_PASS_TIMEOUT_TIMES = 5
@@ -19,8 +19,7 @@ RANDOM_SERVICE = '831000e8cdb4774b5ddaf85b99cfc085403f5a0f6ca595e020c30dbc75388d
 if __name__ == "__main__":
 
     from time import sleep
-    import os
-    import json
+    import os, hashlib
     import train, _get, _solve
     from threading import get_ident, Thread
     import regresion
@@ -28,7 +27,7 @@ if __name__ == "__main__":
     from concurrent import futures
 
     try:
-        GATEWAY = os.environ['GATEWAY']
+        GATEWAY_MAIN_DIR = os.environ['GATEWAY']
     except KeyError:
         pass
     try:
@@ -60,7 +59,7 @@ if __name__ == "__main__":
     except KeyError:
         pass
     try:
-        TIME_FOR_EACH_REGRESSION_LOOP = os.environ['TIME_FOR_EACH_REGRESSION_LOOP']
+        TIME_FOR_EACH_REGRESSION_LOOP = int(os.environ['TIME_FOR_EACH_REGRESSION_LOOP'])
     except KeyError:
         pass
     try:
@@ -80,12 +79,12 @@ if __name__ == "__main__":
     class SolverServicer(api_pb2_grpc.SolverServicer): 
 
         def Solve(self, request, context):
-            cnf = request.get_json()['cnf']
-            solver = _get.cnf(
+            solver_with_config = _get.cnf(
                 cnf=request
             )
-            LOGGER('USING SOLVER --> '+ str(solver))
-            return _solver.cnf(cnf=cnf, solver=solver)[0]
+            solver_config_id = hashlib.sha256(solver_with_config.SerializeToString())
+            LOGGER('USING SOLVER --> '+ str(solver_config_id))
+            return _solver.cnf(cnf=request, solver_config_id=solver_config_id)[0]
 
         def StreamLogs(self, request, context):
             with open('app.log') as file:
@@ -105,7 +104,7 @@ if __name__ == "__main__":
                     tensor = api_pb2.onnx__pb2.ONNX()
                     tensor.ParseFromString(file.read())
                     yield tensor
-                    sleep(1)
+                    sleep(TIME_FOR_EACH_REGRESSION_LOOP)
 
         def StartTrain(self, request, context):
             trainer.start()

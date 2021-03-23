@@ -4,11 +4,10 @@ from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 from skl2onnx import convert_sklearn
 from skl2onnx.common.data_types import FloatTensorType
-import json
+import performance_data_pb2, api_pb2
 from threading import get_ident
 from start import DIR, LOGGER, TIME_FOR_EACH_REGRESSION_LOOP
 from start import MAX_REGRESSION_DEGREE as MAX_DEGREE
-import api_pb2
 TENSOR_SPECIFICATION = None
 
 def regression_with_degree(degree: int, input: np.array, output: np.array):
@@ -30,7 +29,7 @@ def solver_regression(solver: dict):
 
     # Get output variable. Score.
     output = np.array(
-        [value['score'] for value in solver.values()]
+        [value.score for value in solver.values()]
     ).reshape(-1, 1)
     if len(input) != len(output):
         raise Exception('Error en solvers.json, faltan scores.')
@@ -47,21 +46,20 @@ def solver_regression(solver: dict):
     return convert_sklearn(best_tensor['model'])
 
 def iterate_regression():
-    # Read solvers.json
-    with open(DIR + 'solvers.json', 'r') as file:
-        solvers = json.load(file)
+    # Read solvers dataset
+    with open(DIR + 'solvers_dataset.bin', 'rb') as file:
+        data_set = performance_data_pb2.SolversPerformance()
 
     onnx = api_pb2.onnx__pb2.ONNX()
     onnx.specification.CopyFrom(TENSOR_SPECIFICATION)
 
     # Make regression for each solver.
-    for solver in solvers:
-        if solvers[solver]=={}: continue
-        LOGGER('SOLVER --> ' + str(solver))
+    for s in data_set.data:
+        LOGGER('SOLVER --> ' + str(s.solver.definition))
         # ONNXTensor
         tensor = api_pb2.onnx__pb2.ONNX.ONNXTensor()
-        tensor.element.CopyFrom(solver)
-        tensor.model.CopyFrom(solver_regression(solver=solvers[solver]))
+        tensor.element.CopyFrom(s.solver)
+        tensor.model.CopyFrom(solver_regression(solver=dict(s.data)))
         onnx.tensor.append( tensor )
         LOGGER(' ****** ')
 
