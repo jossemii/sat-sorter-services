@@ -5,7 +5,7 @@ from threading import Thread, Lock, get_ident
 import grpc, hashlib
 import requests
 
-import api_pb2, api_pb2_grpc, gateway_pb2, gateway_pb2_grpc, performance_data_pb2
+from proto import api_pb2, api_pb2_grpc, gateway_pb2, gateway_pb2_grpc, solvers_dataset_pb2
 from singleton import Singleton
 from start import GATEWAY_MAIN_DIR as GATEWAY_MAIN_DIR, STOP_SOLVER_TIME_DELTA_MINUTES, LOGGER
 from start import MAINTENANCE_SLEEP_TIME, SOLVER_PASS_TIMEOUT_TIMES, SOLVER_FAILED_ATTEMPTS
@@ -31,7 +31,7 @@ def calculate_service_hash(service: gateway_pb2.ipss__pb2.Service, hash_function
     return HASH(aux.SerializeToString())
 
 class SolverInstance(object):
-    def __init__(self, solver_with_config: performance_data_pb2.Solver):
+    def __init__(self, solver_with_config: solvers_dataset_pb2.SolverWithConfig):
         self.service_def = gateway_pb2.ipss__pb2.Service()
         self.service_def.CopyFrom(solver_with_config.definition)
         self.config = gateway_pb2.ipss__pb2.Configuration()
@@ -204,7 +204,7 @@ class Session(metaclass=Singleton):
             LOGGER('GRPC ERROR.'+ str(e))
         del self.solvers[id]
 
-    def add_solver(self, solver_with_config: performance_data_pb2.Solver, solver_config_id: str):
+    def add_solver(self, solver_with_config: sovlers_dataset_pb2.SolverWithConfig, solver_config_id: str):
         self.solvers.update({
             solver_config_id: SolverInstance(
                     solver_with_config=solver_config_id

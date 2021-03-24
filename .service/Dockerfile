@@ -4,5 +4,5 @@ RUN apt-get update --fix-missing && apt-get -y install python3-tk && apt-get cle
 RUN apt-get update --fix-missing && apt-get -y install python3-pip && apt-get clean
 RUN pip3 install requests numpy scikit-learn
 RUN pip3 install grpcio && pip3 install protobuf
-RUN pip3 install onnx skl2onnx
+RUN pip3 install onnxruntime skl2onnx
 RUN mkdir /satrainer && cd /satrainer && apt-get update && apt-get -y install git && git clone --branch sinapi https://github.com/josemibnf/SATrainer.git && mv SATrainer/* . && rm -rf SATrainer  && rm -rf .git

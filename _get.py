@@ -1,13 +1,16 @@
-import onnx_pb2, performance_data_pb2
+from proto import onnx_pb2, solvers_dataset_pb2
+import onnxruntime as rt
 from start import DIR
 
-def get_score(model: onnx_pb2.ModelProto, _cnf: dict):
-    score = tensor[0]['coefficient']
-    for term in tensor[1:]:
-        score = score + term['coefficient'] * (_cnf['clauses']**term['feature']['c']) * (_cnf['literals']**term['feature']['l'])
-    return score
+def get_score(model: onnx_pb2.ModelProto, _cnf: dict) -> float:
+    session = rt.InferenceSession(model.SerializeToString())
+    inname = [input.name for input in session.get_inputs()]
+    outname = [output.name for output in session.get_outputs()]
 
-def data(cnf: list):
+    print("inputs name:",inname,"|| outputs name:",outname)
+    return session.run(outname, {inname[0]: data_input})
+
+def data(cnf: list) -> dict:
     num_literals = 0
     for clause in cnf:
         for literal in clause:
@@ -15,7 +18,7 @@ def data(cnf: list):
                 num_literals = abs(literal)
     return {'clauses': len(cnf), 'literals': num_literals}
 
-def cnf(cnf: list) -> performance_data_pb2.Solver():
+def cnf(cnf: list) -> solvers_dataset_pb2.SolverWithConfig():
     with open(DIR+'tensor.onnx', 'rb') as file:
         tensors = onnx_pb2.ONNX()
         tensors.ParseFromString(file.read())

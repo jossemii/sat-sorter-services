@@ -1,8 +1,6 @@
 from threading import get_ident, Thread, Lock, Event
-
-import grpc, json
-
-import api_pb2, api_pb2_grpc, performance_data_pb2, hashlib, gateway_pb2, gateway_pb2_grpc
+import grpc, hashlib
+from proto import api_pb2, api_pb2_grpc, solvers_dataset_pb2, gateway_pb2, gateway_pb2_grpc
 from start import DIR, TRAIN_SOLVERS_TIMEOUT, LOGGER, CONNECTION_ERRORS, START_AVR_TIMEOUT
 from start import SAVE_TRAIN_DATA as REFRESH, RANDOM_SERVICE, GATEWAY_MAIN_DIR
 from singleton import Singleton
@@ -19,7 +17,7 @@ class Session(metaclass=Singleton):
             self.random_def.ParseFromString(file.read())
         self.random_stub = None
         self.random_token = None
-        self.solvers_dataset = performance_data_pb2.SolversPerformance()
+        self.solvers_dataset = solvers_dataset_pb2.DataSet()
         self.solvers = []
         self.solvers_lock = Lock()
         self.exit_event = None
@@ -36,12 +34,12 @@ class Session(metaclass=Singleton):
             self.exit_event = None
             self.thread = None
 
-    def load_solver(self, solver: performance_data_pb2.ipss__pb2.Service):
+    def load_solver(self, solver: solvers_dataset_pb2.ipss__pb2.Service):
         hash = hashlib.sha256(solver.SerializeToString())
         if hash not in self.solvers:
             self.solvers.append(hash)
             self.solvers_lock.acquire()
-            p = performance_data_pb2.Performance()
+            p = solvers_dataset_pb2.DataSetInstance()
             p.solver.definition.CopyFrom(solver)
             # p.solver.enviroment_variables (Usamos las variables de entorno por defecto).
             p.hash = hashlib.sha256(p.solver.SerializeToString())
@@ -109,7 +107,7 @@ class Session(metaclass=Singleton):
                 return False
         return True
 
-    def updateScore(self, cnf, solver: performance_data_pb2.Performance, score):
+    def updateScore(self, cnf, solver: solvers_dataset_pb2.DataSetInstance, score):
         num_clauses, num_literals = (
             len(cnf.clause),
             0,

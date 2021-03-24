@@ -4,7 +4,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 from skl2onnx import convert_sklearn
 from skl2onnx.common.data_types import FloatTensorType
-import performance_data_pb2, api_pb2
+from proto import api_pb2, solvers_dataset_pb2
 from threading import get_ident
 from start import DIR, LOGGER, TIME_FOR_EACH_REGRESSION_LOOP
 from start import MAX_REGRESSION_DEGREE as MAX_DEGREE
@@ -48,7 +48,8 @@ def solver_regression(solver: dict):
 def iterate_regression():
     # Read solvers dataset
     with open(DIR + 'solvers_dataset.bin', 'rb') as file:
-        data_set = performance_data_pb2.SolversPerformance()
+        data_set = solvers_dataset_pb2.DataSet()
+        data_set.ParseFromString(file.read())
 
     onnx = api_pb2.onnx__pb2.ONNX()
     onnx.specification.CopyFrom(TENSOR_SPECIFICATION)
