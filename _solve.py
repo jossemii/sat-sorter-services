@@ -5,7 +5,7 @@ from threading import Thread, Lock, get_ident
 import grpc, hashlib
 import requests
 
-from proto import api_pb2, api_pb2_grpc, gateway_pb2, gateway_pb2_grpc, solvers_dataset_pb2
+import api_pb2, api_pb2_grpc, gateway_pb2, gateway_pb2_grpc, solvers_dataset_pb2
 from singleton import Singleton
 from start import GATEWAY_MAIN_DIR as GATEWAY_MAIN_DIR, STOP_SOLVER_TIME_DELTA_MINUTES, LOGGER
 from start import MAINTENANCE_SLEEP_TIME, SOLVER_PASS_TIMEOUT_TIMES, SOLVER_FAILED_ATTEMPTS

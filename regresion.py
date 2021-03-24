@@ -4,7 +4,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 from skl2onnx import convert_sklearn
 from skl2onnx.common.data_types import FloatTensorType
-from proto import api_pb2, solvers_dataset_pb2
+import api_pb2, solvers_dataset_pb2
 from threading import get_ident
 from start import DIR, LOGGER, TIME_FOR_EACH_REGRESSION_LOOP
 from start import MAX_REGRESSION_DEGREE as MAX_DEGREE

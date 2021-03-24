@@ -23,7 +23,7 @@ if __name__ == "__main__":
     import train, _get, _solve
     from threading import get_ident, Thread
     import regresion
-    from proto import grpc, api_pb2, api_pb2_grpc
+    import grpc, api_pb2, api_pb2_grpc
     from concurrent import futures
 
     try:

@@ -1,4 +1,4 @@
-from proto import onnx_pb2, solvers_dataset_pb2
+import onnx_pb2, solvers_dataset_pb2
 import onnxruntime as rt
 from start import DIR
 
