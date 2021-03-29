@@ -37,7 +37,7 @@ message MethodDef {
     bool is_output_stream = 5;
 }
 
-message ServiceDef {
+message ApplicationDef {
     repeated string tag = 1;
     map<int32, MethodDef> method = 2; // Exemple of method call: 8080.1()
 }
@@ -67,7 +67,7 @@ message ProtocolMesh {
 message Slot {
     int32 port = 1;
     ProtocolMesh transport_protocol = 2;
-    ServiceDef aplication_protocol = 3;
+    ApplicationDef application_protocol = 3;
     // Cost function can be applied. <- must be optional
 }
 
