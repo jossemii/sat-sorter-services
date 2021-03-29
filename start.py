@@ -3,7 +3,7 @@ logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s
 LOGGER = lambda message: logging.getLogger().debug(message)
 
 DIR = '/satrainer/'
-GATEWAY_MAIN_DIR = '172.17.0.1:8000'
+GATEWAY_MAIN_DIR = '172.17.0.1:8000'  # Direccion del nodo por defecto.
 SAVE_TRAIN_DATA = 2
 MAINTENANCE_SLEEP_TIME = 100
 SOLVER_PASS_TIMEOUT_TIMES = 5
@@ -26,50 +26,21 @@ if __name__ == "__main__":
     import grpc, api_pb2, api_pb2_grpc
     from concurrent import futures
 
-    try:
-        GATEWAY_MAIN_DIR = os.environ['GATEWAY']
-    except KeyError:
-        pass
-    try:
-        SAVE_TRAIN_DATA = os.environ['SAVE_TRAIN_DATA']
-    except KeyError:
-        pass
-    try:
-        MAINTENANCE_SLEEP_TIME = os.environ['MAINTENANCE_SLEEP_TIME']
-    except KeyError:
-        pass
-    try:
-        SOLVER_PASS_TIMEOUT_TIMES = os.environ['SOLVER_PASS_TIMEOUT_TIMES']
-    except KeyError:
-        pass
-    try:
-        SOLVER_FAILED_ATTEMPTS = os.environ['SOLVER_FAILED_ATTEMPTS']
-    except KeyError:
-        pass
-    try:
-        STOP_SOLVER_TIME_DELTA_MINUTES = os.environ['STOP_SOLVER_TIME_DELTA_MINUTES']
-    except KeyError:
-        pass
-    try:
-        TRAIN_SOLVERS_TIMEOUT = os.environ['TRAIN_SOLVERS_TIMEOUT']
-    except KeyError:
-        pass
-    try:
-        MAX_REGRESSION_DEGREE = os.environ['MAX_REGRESSION_DEGREE']
-    except KeyError:
-        pass
-    try:
-        TIME_FOR_EACH_REGRESSION_LOOP = int(os.environ['TIME_FOR_EACH_REGRESSION_LOOP'])
-    except KeyError:
-        pass
-    try:
-        CONNECTION_ERRORS = os.environ['CONNECTION_ERRORS']
-    except KeyError:
-        pass
-    try:
-        START_AVR_TIMEOUT = os.environ['START_AVR_TIMEOUT']
-    except KeyError:
-        pass
+    # Read __config__ file.
+    config = api_pb2.ipss__pb2.ConfigurationFile()
+    config.ParseFromString(
+        open('__config__', 'rb').read()
+    )
+
+    gateway_uri = config.gateway.uri_slot[
+        config.gateway.api[0].port
+    ]
+    GATEWAY_MAIN_DIR = gateway_uri.ip+':'+str(gateway_uri.port)
+
+    for env_var in config.config.enviroment_variables:
+        locals()[env_var] = type(locals()[env_var])(
+            config.config.enviroment_variables[env_var].value
+            )
 
     LOGGER('INIT START THREAD ' + str(get_ident()))
     Thread(target=regresion.init, name='Regression').start()

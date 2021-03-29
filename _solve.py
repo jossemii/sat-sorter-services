@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 from threading import Thread, Lock, get_ident
 
 import grpc, hashlib
-import requests
 
 import api_pb2, api_pb2_grpc, gateway_pb2, gateway_pb2_grpc, solvers_dataset_pb2
 from singleton import Singleton
@@ -204,7 +203,7 @@ class Session(metaclass=Singleton):
             LOGGER('GRPC ERROR.'+ str(e))
         del self.solvers[id]
 
-    def add_solver(self, solver_with_config: sovlers_dataset_pb2.SolverWithConfig, solver_config_id: str):
+    def add_solver(self, solver_with_config: solvers_dataset_pb2.SolverWithConfig, solver_config_id: str):
         self.solvers.update({
             solver_config_id: SolverInstance(
                     solver_with_config=solver_config_id

@@ -59,7 +59,7 @@ def iterate_regression():
         LOGGER('SOLVER --> ' + str(s.solver.definition))
         # ONNXTensor
         tensor = api_pb2.onnx__pb2.ONNX.ONNXTensor()
-        tensor.element.CopyFrom(s.solver)
+        tensor.element.value = s.solver.SerializeToString()
         tensor.model.CopyFrom(solver_regression(solver=dict(s.data)))
         onnx.tensor.append( tensor )
         LOGGER(' ****** ')
