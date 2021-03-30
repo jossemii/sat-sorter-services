@@ -2,6 +2,7 @@ syntax = "proto3";
 
 import "onnx.proto";
 import "ipss.proto";
+import "gateway.proto";
 
 // Solver
 message Interpretation {
@@ -18,7 +19,7 @@ message Cnf {
     repeated Clause clause = 1;
 }
 
-message WhoAreYourParams {}
+message Empty {}
 
 service Random {
     rpc RandomCnf(WhoAreYourParams) returns (Cnf) {}
@@ -29,10 +30,11 @@ message File {
 }
 
 service Solver {
-    rpc StartTrain ( WhoAreYourParams) returns (WhoAreYourParams) {}
-    rpc StopTrain ( WhoAreYourParams) returns (WhoAreYourParams) {}
-    rpc GetTensor ( WhoAreYourParams) returns (stream tensor_onnx.ONNX) {}
-    rpc UploadSolver ( ipss.Service) returns (WhoAreYourParams) {}
-    rpc StreamLogs (WhoAreYourParams) returns (stream File){}
+    rpc StartTrain ( Empty) returns (Empty) {}
+    rpc StopTrain ( Empty) returns (Empty) {}
+    rpc GetTensor ( Empty) returns (stream tensor_onnx.ONNX) {}
+    rpc UploadSolver ( ipss.Service) returns (Empty) {}
+    rpc UploadMinimalSolver ( gateway.MinimalService) returns(Empty) {}
+    rpc StreamLogs (Empty) returns (stream File){}
     rpc Solve(Cnf) returns (Interpretation) {}
 }

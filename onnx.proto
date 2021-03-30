@@ -14,7 +14,7 @@ package tensor_onnx;
 message ONNX {
   required ipss.Tensor specification = 1;
   message ONNXTensor {
-      optional ipss.Any element = 1; // element.field it's optional.
+      optional ipss.Any element = 1;
       required ModelProto model = 2;
   }
   repeated ONNXTensor tensor = 2;
