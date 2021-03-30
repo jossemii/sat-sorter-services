@@ -19,16 +19,6 @@ SHAKE_STREAM = lambda value: "" if value is None else hashlib.shake_256(value).h
 
 HASH_LIST = ['SHAKE256', 'SHA3_256']
 
-def calculate_service_hash(service: gateway_pb2.ipss__pb2.Service, hash_function: str):
-    aux = gateway_pb2.ipss__pb2.Service()
-    aux.CopyFrom(service)
-    aux.container.ClearField('filesystem')
-    for hash in service.container.filesystem:
-        if hash.algorithm == hash_function:
-            aux.container.filesystem.append(hash)
-    HASH = eval(hash_function)
-    return HASH(aux.SerializeToString())
-
 class SolverInstance(object):
     def __init__(self, solver_with_config: solvers_dataset_pb2.SolverWithConfig):
         self.service_def = gateway_pb2.ipss__pb2.Service()
@@ -50,9 +40,8 @@ class SolverInstance(object):
         self.multihash = {}
         for hash in HASH_LIST:
             self.multihash.update({
-                hash: calculate_service_hash(
-                    service = solver_with_config.definition,
-                    hash_function = hash
+                hash: eval(hash)(
+                    solver_with_config.definition.SerializeToString()
                 )
             })
 
@@ -125,7 +114,7 @@ class Session(metaclass=Singleton):
         solver_instance = self.solvers[solver_config_id]
         try:
             solver_instance.update_solver_stub(
-                self.gateway_stub.StartService(solver_instance.service_extended())
+                self.gateway_stub.StartServiceWithExtended(solver_instance.service_extended())
             )
         except grpc.RpcError as e:
             LOGGER('GRPC ERROR.'+ str(e))

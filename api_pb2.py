@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\tapi.proto\x1a\nonnx.proto\x1a\nipss.proto\"\"\n\x0eInterpretation\x12\x10\n\x08variable\x18\x01 \x03(\x05\"\x19\n\x06\x43lause\x12\x0f\n\x07literal\x18\x01 \x03(\x05\"\x1e\n\x03\x43nf\x12\x17\n\x06\x63lause\x18\x01 \x03(\x0b\x32\x07.Clause\"\x12\n\x10WhoAreYourParams\"\x14\n\x04\x46ile\x12\x0c\n\x04\x66ile\x18\x01 \x01(\t20\n\x06Random\x12&\n\tRandomCnf\x12\x11.WhoAreYourParams\x1a\x04.Cnf\"\x00\x32\xac\x02\n\x06Solver\x12\x34\n\nStartTrain\x12\x11.WhoAreYourParams\x1a\x11.WhoAreYourParams\"\x00\x12\x33\n\tStopTrain\x12\x11.WhoAreYourParams\x1a\x11.WhoAreYourParams\"\x00\x12\x35\n\tGetTensor\x12\x11.WhoAreYourParams\x1a\x11.tensor_onnx.ONNX\"\x00\x30\x01\x12\x32\n\x0cUploadSolver\x12\r.ipss.Service\x1a\x11.WhoAreYourParams\"\x00\x12*\n\nStreamLogs\x12\x11.WhoAreYourParams\x1a\x05.File\"\x00\x30\x01\x12 \n\x05Solve\x12\x04.Cnf\x1a\x0f.Interpretation\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\tapi.proto\x1a\nonnx.proto\x1a\nipss.proto\"\"\n\x0eInterpretation\x12\x10\n\x08variable\x18\x01 \x03(\x05\"\x19\n\x06\x43lause\x12\x0f\n\x07literal\x18\x01 \x03(\x05\"\x1e\n\x03\x43nf\x12\x17\n\x06\x63lause\x18\x01 \x03(\x0b\x32\x07.Clause\"\x07\n\x05\x45mpty\"\x14\n\x04\x46ile\x12\x0c\n\x04\x66ile\x18\x01 \x01(\t2%\n\x06Random\x12\x1b\n\tRandomCnf\x12\x06.Empty\x1a\x04.Cnf\"\x00\x32\xdf\x01\n\x06Solver\x12\x1e\n\nStartTrain\x12\x06.Empty\x1a\x06.Empty\"\x00\x12\x1d\n\tStopTrain\x12\x06.Empty\x1a\x06.Empty\"\x00\x12*\n\tGetTensor\x12\x06.Empty\x1a\x11.tensor_onnx.ONNX\"\x00\x30\x01\x12\'\n\x0cUploadSolver\x12\r.ipss.Service\x1a\x06.Empty\"\x00\x12\x1f\n\nStreamLogs\x12\x06.Empty\x1a\x05.File\"\x00\x30\x01\x12 \n\x05Solve\x12\x04.Cnf\x1a\x0f.Interpretation\"\x00\x62\x06proto3'
   ,
   dependencies=[onnx__pb2.DESCRIPTOR,ipss__pb2.DESCRIPTOR,])
 
@@ -124,9 +124,9 @@ _CNF = _descriptor.Descriptor(
 )
 
 
-_WHOAREYOURPARAMS = _descriptor.Descriptor(
-  name='WhoAreYourParams',
-  full_name='WhoAreYourParams',
+_EMPTY = _descriptor.Descriptor(
+  name='Empty',
+  full_name='Empty',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
@@ -145,7 +145,7 @@ _WHOAREYOURPARAMS = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=132,
-  serialized_end=150,
+  serialized_end=139,
 )
 
 
@@ -176,15 +176,15 @@ _FILE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=152,
-  serialized_end=172,
+  serialized_start=141,
+  serialized_end=161,
 )
 
 _CNF.fields_by_name['clause'].message_type = _CLAUSE
 DESCRIPTOR.message_types_by_name['Interpretation'] = _INTERPRETATION
 DESCRIPTOR.message_types_by_name['Clause'] = _CLAUSE
 DESCRIPTOR.message_types_by_name['Cnf'] = _CNF
-DESCRIPTOR.message_types_by_name['WhoAreYourParams'] = _WHOAREYOURPARAMS
+DESCRIPTOR.message_types_by_name['Empty'] = _EMPTY
 DESCRIPTOR.message_types_by_name['File'] = _FILE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -209,12 +209,12 @@ Cnf = _reflection.GeneratedProtocolMessageType('Cnf', (_message.Message,), {
   })
 _sym_db.RegisterMessage(Cnf)
 
-WhoAreYourParams = _reflection.GeneratedProtocolMessageType('WhoAreYourParams', (_message.Message,), {
-  'DESCRIPTOR' : _WHOAREYOURPARAMS,
+Empty = _reflection.GeneratedProtocolMessageType('Empty', (_message.Message,), {
+  'DESCRIPTOR' : _EMPTY,
   '__module__' : 'api_pb2'
-  # @@protoc_insertion_point(class_scope:WhoAreYourParams)
+  # @@protoc_insertion_point(class_scope:Empty)
   })
-_sym_db.RegisterMessage(WhoAreYourParams)
+_sym_db.RegisterMessage(Empty)
 
 File = _reflection.GeneratedProtocolMessageType('File', (_message.Message,), {
   'DESCRIPTOR' : _FILE,
@@ -232,15 +232,15 @@ _RANDOM = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=174,
-  serialized_end=222,
+  serialized_start=163,
+  serialized_end=200,
   methods=[
   _descriptor.MethodDescriptor(
     name='RandomCnf',
     full_name='Random.RandomCnf',
     index=0,
     containing_service=None,
-    input_type=_WHOAREYOURPARAMS,
+    input_type=_EMPTY,
     output_type=_CNF,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
@@ -258,16 +258,16 @@ _SOLVER = _descriptor.ServiceDescriptor(
   index=1,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=225,
-  serialized_end=525,
+  serialized_start=203,
+  serialized_end=426,
   methods=[
   _descriptor.MethodDescriptor(
     name='StartTrain',
     full_name='Solver.StartTrain',
     index=0,
     containing_service=None,
-    input_type=_WHOAREYOURPARAMS,
-    output_type=_WHOAREYOURPARAMS,
+    input_type=_EMPTY,
+    output_type=_EMPTY,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),
@@ -276,8 +276,8 @@ _SOLVER = _descriptor.ServiceDescriptor(
     full_name='Solver.StopTrain',
     index=1,
     containing_service=None,
-    input_type=_WHOAREYOURPARAMS,
-    output_type=_WHOAREYOURPARAMS,
+    input_type=_EMPTY,
+    output_type=_EMPTY,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),
@@ -286,7 +286,7 @@ _SOLVER = _descriptor.ServiceDescriptor(
     full_name='Solver.GetTensor',
     index=2,
     containing_service=None,
-    input_type=_WHOAREYOURPARAMS,
+    input_type=_EMPTY,
     output_type=onnx__pb2._ONNX,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
@@ -297,7 +297,7 @@ _SOLVER = _descriptor.ServiceDescriptor(
     index=3,
     containing_service=None,
     input_type=ipss__pb2._SERVICE,
-    output_type=_WHOAREYOURPARAMS,
+    output_type=_EMPTY,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),
@@ -306,7 +306,7 @@ _SOLVER = _descriptor.ServiceDescriptor(
     full_name='Solver.StreamLogs',
     index=4,
     containing_service=None,
-    input_type=_WHOAREYOURPARAMS,
+    input_type=_EMPTY,
     output_type=_FILE,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,

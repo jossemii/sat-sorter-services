@@ -22,6 +22,13 @@ class Session(metaclass=Singleton):
         self.solvers_lock = Lock()
         self.exit_event = None
         self._solver = _solve.Session()
+        self.random_service_multihash = {}
+        for hash in _solve.HASH_LIST:
+            self.random_service_multihash.update({
+                hash: eval(hash)(
+                    self.random_def.SerializeToString()
+                )
+            })
 
     def stop(self):
         if self.exit_event and self.thread:
@@ -47,12 +54,25 @@ class Session(metaclass=Singleton):
             self._solver.add_solver(solver_with_config=p.solver, solver_config_id=p.hash)
             self.solvers_lock.release()
 
+    def random_service_extended(self):
+        config = True
+        se = gateway_pb2.ServiceExtended()
+        for hash in self.random_solver_multihash:
+            h = gateway_pb2.ipss__pb2.Hash()
+            h.hash = self.random_solver_multihash[hash]
+            h.tag.append(hash)
+            se.hash.CopyFrom(hash)
+            if config: # Solo hace falta enviar la configuracion en el primer paquete.
+                se.config.CopyFrom(self.config)
+                config = False
+            yield se
+        se.ClearField('hash')
+        se.service.CopyFrom(self.random_def)
+        yield se
+
     def init_random_cnf_service(self):
-        # Pasamos directamente la especificacion del servicio sin configuracion.
-        service_extended = gateway_pb2.ServiceExtended()
-        service_extended.service.CopyFrom(self.random_def)
         try:
-            instance = self.gateway_stub.StartService(service_extended)
+            instance = self.gateway_stub.StartServiceWithExtended(self.random_service_extended())
         except grpc.RpcError as e:
             LOGGER('GRPC ERROR.'+ str(e))
         uri = instance.instance.uri_slot[

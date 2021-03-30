@@ -2,7 +2,6 @@ syntax = "proto3";
 
 import "onnx.proto";
 import "ipss.proto";
-import "gateway.proto";
 
 // Solver
 message Interpretation {
@@ -22,7 +21,7 @@ message Cnf {
 message Empty {}
 
 service Random {
-    rpc RandomCnf(WhoAreYourParams) returns (Cnf) {}
+    rpc RandomCnf(Empty) returns (Cnf) {}
 }
 
 message File {
@@ -34,7 +33,6 @@ service Solver {
     rpc StopTrain ( Empty) returns (Empty) {}
     rpc GetTensor ( Empty) returns (stream tensor_onnx.ONNX) {}
     rpc UploadSolver ( ipss.Service) returns (Empty) {}
-    rpc UploadMinimalSolver ( gateway.MinimalService) returns(Empty) {}
     rpc StreamLogs (Empty) returns (stream File){}
     rpc Solve(Cnf) returns (Interpretation) {}
 }

@@ -18,7 +18,7 @@ class RandomStub(object):
         """
         self.RandomCnf = channel.unary_unary(
                 '/Random/RandomCnf',
-                request_serializer=api__pb2.WhoAreYourParams.SerializeToString,
+                request_serializer=api__pb2.Empty.SerializeToString,
                 response_deserializer=api__pb2.Cnf.FromString,
                 )
 
@@ -37,7 +37,7 @@ def add_RandomServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'RandomCnf': grpc.unary_unary_rpc_method_handler(
                     servicer.RandomCnf,
-                    request_deserializer=api__pb2.WhoAreYourParams.FromString,
+                    request_deserializer=api__pb2.Empty.FromString,
                     response_serializer=api__pb2.Cnf.SerializeToString,
             ),
     }
@@ -62,7 +62,7 @@ class Random(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/Random/RandomCnf',
-            api__pb2.WhoAreYourParams.SerializeToString,
+            api__pb2.Empty.SerializeToString,
             api__pb2.Cnf.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
@@ -79,27 +79,27 @@ class SolverStub(object):
         """
         self.StartTrain = channel.unary_unary(
                 '/Solver/StartTrain',
-                request_serializer=api__pb2.WhoAreYourParams.SerializeToString,
-                response_deserializer=api__pb2.WhoAreYourParams.FromString,
+                request_serializer=api__pb2.Empty.SerializeToString,
+                response_deserializer=api__pb2.Empty.FromString,
                 )
         self.StopTrain = channel.unary_unary(
                 '/Solver/StopTrain',
-                request_serializer=api__pb2.WhoAreYourParams.SerializeToString,
-                response_deserializer=api__pb2.WhoAreYourParams.FromString,
+                request_serializer=api__pb2.Empty.SerializeToString,
+                response_deserializer=api__pb2.Empty.FromString,
                 )
         self.GetTensor = channel.unary_stream(
                 '/Solver/GetTensor',
-                request_serializer=api__pb2.WhoAreYourParams.SerializeToString,
+                request_serializer=api__pb2.Empty.SerializeToString,
                 response_deserializer=onnx__pb2.ONNX.FromString,
                 )
         self.UploadSolver = channel.unary_unary(
                 '/Solver/UploadSolver',
                 request_serializer=ipss__pb2.Service.SerializeToString,
-                response_deserializer=api__pb2.WhoAreYourParams.FromString,
+                response_deserializer=api__pb2.Empty.FromString,
                 )
         self.StreamLogs = channel.unary_stream(
                 '/Solver/StreamLogs',
-                request_serializer=api__pb2.WhoAreYourParams.SerializeToString,
+                request_serializer=api__pb2.Empty.SerializeToString,
                 response_deserializer=api__pb2.File.FromString,
                 )
         self.Solve = channel.unary_unary(
@@ -153,27 +153,27 @@ def add_SolverServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'StartTrain': grpc.unary_unary_rpc_method_handler(
                     servicer.StartTrain,
-                    request_deserializer=api__pb2.WhoAreYourParams.FromString,
-                    response_serializer=api__pb2.WhoAreYourParams.SerializeToString,
+                    request_deserializer=api__pb2.Empty.FromString,
+                    response_serializer=api__pb2.Empty.SerializeToString,
             ),
             'StopTrain': grpc.unary_unary_rpc_method_handler(
                     servicer.StopTrain,
-                    request_deserializer=api__pb2.WhoAreYourParams.FromString,
-                    response_serializer=api__pb2.WhoAreYourParams.SerializeToString,
+                    request_deserializer=api__pb2.Empty.FromString,
+                    response_serializer=api__pb2.Empty.SerializeToString,
             ),
             'GetTensor': grpc.unary_stream_rpc_method_handler(
                     servicer.GetTensor,
-                    request_deserializer=api__pb2.WhoAreYourParams.FromString,
+                    request_deserializer=api__pb2.Empty.FromString,
                     response_serializer=onnx__pb2.ONNX.SerializeToString,
             ),
             'UploadSolver': grpc.unary_unary_rpc_method_handler(
                     servicer.UploadSolver,
                     request_deserializer=ipss__pb2.Service.FromString,
-                    response_serializer=api__pb2.WhoAreYourParams.SerializeToString,
+                    response_serializer=api__pb2.Empty.SerializeToString,
             ),
             'StreamLogs': grpc.unary_stream_rpc_method_handler(
                     servicer.StreamLogs,
-                    request_deserializer=api__pb2.WhoAreYourParams.FromString,
+                    request_deserializer=api__pb2.Empty.FromString,
                     response_serializer=api__pb2.File.SerializeToString,
             ),
             'Solve': grpc.unary_unary_rpc_method_handler(
@@ -203,8 +203,8 @@ class Solver(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/Solver/StartTrain',
-            api__pb2.WhoAreYourParams.SerializeToString,
-            api__pb2.WhoAreYourParams.FromString,
+            api__pb2.Empty.SerializeToString,
+            api__pb2.Empty.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -220,8 +220,8 @@ class Solver(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/Solver/StopTrain',
-            api__pb2.WhoAreYourParams.SerializeToString,
-            api__pb2.WhoAreYourParams.FromString,
+            api__pb2.Empty.SerializeToString,
+            api__pb2.Empty.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -237,7 +237,7 @@ class Solver(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_stream(request, target, '/Solver/GetTensor',
-            api__pb2.WhoAreYourParams.SerializeToString,
+            api__pb2.Empty.SerializeToString,
             onnx__pb2.ONNX.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
@@ -255,7 +255,7 @@ class Solver(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/Solver/UploadSolver',
             ipss__pb2.Service.SerializeToString,
-            api__pb2.WhoAreYourParams.FromString,
+            api__pb2.Empty.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -271,7 +271,7 @@ class Solver(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_stream(request, target, '/Solver/StreamLogs',
-            api__pb2.WhoAreYourParams.SerializeToString,
+            api__pb2.Empty.SerializeToString,
             api__pb2.File.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
