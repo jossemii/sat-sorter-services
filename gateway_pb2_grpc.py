@@ -3,7 +3,6 @@
 import grpc
 
 import gateway_pb2 as gateway__pb2
-import ipss_pb2 as ipss__pb2
 
 
 class GatewayStub(object):
@@ -15,11 +14,6 @@ class GatewayStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.StartService = channel.unary_unary(
-                '/gateway.Gateway/StartService',
-                request_serializer=ipss__pb2.Service.SerializeToString,
-                response_deserializer=gateway__pb2.Instance.FromString,
-                )
         self.StartServiceWithExtended = channel.stream_unary(
                 '/gateway.Gateway/StartServiceWithExtended',
                 request_serializer=gateway__pb2.ServiceExtended.SerializeToString,
@@ -34,12 +28,6 @@ class GatewayStub(object):
 
 class GatewayServicer(object):
     """Missing associated documentation comment in .proto file."""
-
-    def StartService(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
 
     def StartServiceWithExtended(self, request_iterator, context):
         """Missing associated documentation comment in .proto file."""
@@ -56,11 +44,6 @@ class GatewayServicer(object):
 
 def add_GatewayServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'StartService': grpc.unary_unary_rpc_method_handler(
-                    servicer.StartService,
-                    request_deserializer=ipss__pb2.Service.FromString,
-                    response_serializer=gateway__pb2.Instance.SerializeToString,
-            ),
             'StartServiceWithExtended': grpc.stream_unary_rpc_method_handler(
                     servicer.StartServiceWithExtended,
                     request_deserializer=gateway__pb2.ServiceExtended.FromString,
@@ -80,23 +63,6 @@ def add_GatewayServicer_to_server(servicer, server):
  # This class is part of an EXPERIMENTAL API.
 class Gateway(object):
     """Missing associated documentation comment in .proto file."""
-
-    @staticmethod
-    def StartService(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/gateway.Gateway/StartService',
-            ipss__pb2.Service.SerializeToString,
-            gateway__pb2.Instance.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
     def StartServiceWithExtended(request_iterator,

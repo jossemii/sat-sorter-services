@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\rgateway.proto\x12\x07gateway\x1a\nipss.proto\"V\n\x05Token\x12\x15\n\x0bvalue_int32\x18\x01 \x01(\x05H\x00\x12\x15\n\x0bvalue_int64\x18\x02 \x01(\x03H\x00\x12\x16\n\x0cvalue_string\x18\x03 \x01(\tH\x00\x42\x07\n\x05oneOf\"!\n\x04Hash\x12\x0c\n\x04hash\x18\x01 \x01(\t\x12\x0b\n\x03tag\x18\x02 \x03(\t\"\x07\n\x05\x45mpty\"K\n\x08Instance\x12 \n\x08instance\x18\x01 \x01(\x0b\x32\x0e.ipss.Instance\x12\x1d\n\x05token\x18\x02 \x01(\x0b\x32\x0e.gateway.Token\"\x90\x01\n\x0fServiceExtended\x12\x1d\n\x04hash\x18\x01 \x01(\x0b\x32\r.gateway.HashH\x00\x12 \n\x07service\x18\x02 \x01(\x0b\x32\r.ipss.ServiceH\x00\x12(\n\x06\x63onfig\x18\x03 \x01(\x0b\x32\x13.ipss.ConfigurationH\x01\x88\x01\x01\x42\x07\n\x05oneOfB\t\n\x07_config2\xbb\x01\n\x07Gateway\x12\x32\n\x0cStartService\x12\r.ipss.Service\x1a\x11.gateway.Instance\"\x00\x12K\n\x18StartServiceWithExtended\x12\x18.gateway.ServiceExtended\x1a\x11.gateway.Instance\"\x00(\x01\x12/\n\x0bStopService\x12\x0e.gateway.Token\x1a\x0e.gateway.Empty\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\rgateway.proto\x12\x07gateway\x1a\nipss.proto\"V\n\x05Token\x12\x15\n\x0bvalue_int32\x18\x01 \x01(\x05H\x00\x12\x15\n\x0bvalue_int64\x18\x02 \x01(\x03H\x00\x12\x16\n\x0cvalue_string\x18\x03 \x01(\tH\x00\x42\x07\n\x05oneOf\"!\n\x04Hash\x12\x0c\n\x04hash\x18\x01 \x01(\t\x12\x0b\n\x03tag\x18\x02 \x03(\t\"\x07\n\x05\x45mpty\"K\n\x08Instance\x12 \n\x08instance\x18\x01 \x01(\x0b\x32\x0e.ipss.Instance\x12\x1d\n\x05token\x18\x02 \x01(\x0b\x32\x0e.gateway.Token\"\x90\x01\n\x0fServiceExtended\x12\x1d\n\x04hash\x18\x01 \x01(\x0b\x32\r.gateway.HashH\x00\x12 \n\x07service\x18\x02 \x01(\x0b\x32\r.ipss.ServiceH\x00\x12(\n\x06\x63onfig\x18\x03 \x01(\x0b\x32\x13.ipss.ConfigurationH\x01\x88\x01\x01\x42\x07\n\x05oneOfB\t\n\x07_config2\x87\x01\n\x07Gateway\x12K\n\x18StartServiceWithExtended\x12\x18.gateway.ServiceExtended\x1a\x11.gateway.Instance\"\x00(\x01\x12/\n\x0bStopService\x12\x0e.gateway.Token\x1a\x0e.gateway.Empty\"\x00\x62\x06proto3'
   ,
   dependencies=[ipss__pb2.DESCRIPTOR,])
 
@@ -311,22 +311,12 @@ _GATEWAY = _descriptor.ServiceDescriptor(
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
   serialized_start=395,
-  serialized_end=582,
+  serialized_end=530,
   methods=[
-  _descriptor.MethodDescriptor(
-    name='StartService',
-    full_name='gateway.Gateway.StartService',
-    index=0,
-    containing_service=None,
-    input_type=ipss__pb2._SERVICE,
-    output_type=_INSTANCE,
-    serialized_options=None,
-    create_key=_descriptor._internal_create_key,
-  ),
   _descriptor.MethodDescriptor(
     name='StartServiceWithExtended',
     full_name='gateway.Gateway.StartServiceWithExtended',
-    index=1,
+    index=0,
     containing_service=None,
     input_type=_SERVICEEXTENDED,
     output_type=_INSTANCE,
@@ -336,7 +326,7 @@ _GATEWAY = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='StopService',
     full_name='gateway.Gateway.StopService',
-    index=2,
+    index=1,
     containing_service=None,
     input_type=_TOKEN,
     output_type=_EMPTY,

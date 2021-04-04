@@ -33,7 +33,6 @@ message ServiceExtended {
 }
 
 service Gateway {
-    rpc StartService( ipss.Service) returns (Instance) {}
     rpc StartServiceWithExtended( stream ServiceExtended) returns (Instance) {}
     rpc StopService(Token) returns (Empty) {}
 }
