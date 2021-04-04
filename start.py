@@ -28,7 +28,7 @@ if __name__ == "__main__":
     # Read __config__ file.
     config = api_pb2.ipss__pb2.ConfigurationFile()
     config.ParseFromString(
-        open('__config__', 'rb').read()
+        open('/__config__', 'rb').read()
     )
 
     gateway_uri = config.gateway.uri_slot[
