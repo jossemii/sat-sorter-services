@@ -11,5 +11,17 @@
         }
     },
     "architecture": "x86",
-    "entrypoint": "python3 /satrainer/start.py"
+    "entrypoint": "python3 /satrainer/start.py",
+    "envs": [
+        "SAVE_TRAIN_DATA", 
+        "MAINTENANCE_SLEEP_TIME", 
+        "SOLVER_PASS_TIMEOUT_TIMES", 
+        "SOLVER_FAILED_ATTEMPTS", 
+        "STOP_SOLVER_TIME_DELTA_MINUTES",
+        "TRAIN_SOLVERS_TIMEOUT",
+        "MAX_REGRESSION_DEGREE",
+        "TIME_FOR_EACH_REGRESSION_LOOP",
+        "CONNECTION_ERRORS",
+        "START_AVR_TIMEOUT"
+    ]
 }
