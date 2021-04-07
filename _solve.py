@@ -11,7 +11,7 @@ from start import MAINTENANCE_SLEEP_TIME, SOLVER_PASS_TIMEOUT_TIMES, SOLVER_FAIL
 
 
 # -- HASH FUNCTIONS --
-SHAKE_256 = lambda value: "" if value is None else hashlib.shake_256(value).hexdigest()
+SHAKE_256 = lambda value: "" if value is None else hashlib.shake_256(value).hexdigest(32)
 SHA3_256 = lambda value: "" if value is None else hashlib.sha3_256(value).hexdigest()
 
 # ALERT: Its not async.
