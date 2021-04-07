@@ -62,9 +62,9 @@ class SolverInstance(object):
         yield se
 
     def update_solver_stub(self, instance: gateway_pb2.ipss__pb2.Instance):
-        uri = instance.instance.uri_slot[
-            self.config.slot[0].port
-        ]
+        for uri_slot in instance.instance.uri_slot:
+            if uri_slot.internal_port == self.config.slot[0].port:
+                uri = uri_slot.uri[0]
         self.stub = api_pb2_grpc.SolverStub(
             grpc.insecure_channel(
                 uri.ip+':'+str(uri.port)

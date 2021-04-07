@@ -75,9 +75,9 @@ class Session(metaclass=Singleton):
             instance = self.gateway_stub.StartServiceWithExtended(self.random_service_extended())
         except grpc.RpcError as e:
             LOGGER('GRPC ERROR.'+ str(e))
-        uri = instance.instance.uri_slot[
-            self.random_def.api[0].port
-        ]
+        for uri_slot in instance.instance.uri_slot:
+            if uri_slot.internal_port == self.config.slot[0].port:
+                uri = uri_slot.uri[0]
         self.random_stub = api_pb2_grpc.RandomStub(
                 grpc.insecure_channel(
                     uri.ip+':'+str(uri.port)
