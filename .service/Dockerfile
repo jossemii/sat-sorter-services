@@ -10,8 +10,8 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
   apt-get -yq install git cmake && \
   apt-get clean && \
   git clone https://github.com/onnx/onnx.git && \
-  cd onnx && git submodule update --init --recursive
-RUN python3 onnx/setup.py install && \
+  cd onnx && git submodule update --init --recursive && \
+  python3 onnx/setup.py install && \
   apt-get -y install libprotobuf-dev protobuf-compiler && \
   pip3 install cython protobuf numpy onnx scikit-learn skl2onnx
 
