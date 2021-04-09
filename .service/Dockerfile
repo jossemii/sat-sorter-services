@@ -5,15 +5,15 @@ RUN apt-get update --fix-missing && \
   pip3 install grpcio protobuf onnxruntime 
 
 # For regression service.
-RUN export DEBIAN_FRONTEND=noninteractive && \
-  apt-get update --fix-missing && \
-  apt-get -yq install git cmake && \
-  apt-get clean && \
-  git clone https://github.com/onnx/onnx.git && \
-  cd onnx && git submodule update --init --recursive && \
-  python3 onnx/setup.py install && \
-  apt-get -y install libprotobuf-dev protobuf-compiler && \
-  pip3 install cython protobuf numpy onnx scikit-learn skl2onnx
+#RUN export DEBIAN_FRONTEND=noninteractive && \
+#  apt-get update --fix-missing && \
+#  apt-get -yq install git cmake && \
+#  apt-get clean && \
+#  git clone https://github.com/onnx/onnx.git && \
+#  cd onnx && git submodule update --init --recursive && \
+#  python3 onnx/setup.py install && \
+#  apt-get -y install libprotobuf-dev protobuf-compiler && \
+#  pip3 install cython protobuf numpy onnx scikit-learn skl2onnx
 
 RUN mkdir /satrainer && cd /satrainer && \
   apt-get update && apt-get -y install git && \
