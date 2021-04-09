@@ -3,7 +3,8 @@ RUN apt-get update --fix-missing && apt-get -y install python3.6 python3-pip && 
 RUN pip3 install grpcio protobuf onnxruntime 
 
 # For regression service.
-RUN dpkg --configure -a && apt-get update --fix-missing && apt-get -y install git cmake && apt-get clean
+RUN export DEBIAN_FRONTEND=noninteractive
+RUN apt-get update --fix-missing && apt-get -yq install git cmake && apt-get clean
 RUN git clone https://github.com/onnx/onnx.git
 RUN cd onnx && git submodule update --init --recursive
 RUN python3 onnx/setup.py install
