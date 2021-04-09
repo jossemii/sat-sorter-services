@@ -7,7 +7,8 @@ RUN pip3 install onnxruntime
 # For regression service.
 RUN apt-get update --fix-missing && apt-get -y install git && apt-get clean
 RUN git clone https://github.com/onnx/onnx.git
-RUN cd onnx && && git submodule update --init --recursive && python setup.py install
+RUN cd onnx && && git submodule update --init --recursive
+RUN python3 onnx/setup.py install
 RUN apt-get install libprotobuf-dev protobuf-compiler
 RUN pip3 install cython protobuf numpy onnx scikit-learn skl2onnx
 
