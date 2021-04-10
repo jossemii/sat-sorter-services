@@ -92,9 +92,10 @@ message Filesystem {
     message Branch { 
         oneof item {
             bytes file = 1;
-            Filesystem filesystem = 2;
+            string link = 2;
+            Filesystem filesystem = 3;
         }
-        string name = 3;
+        string name = 4;
         // ¿ more params ... ?
     }
     repeated Branch branch = 1;
@@ -148,7 +149,7 @@ message Instance {
         repeated Uri uri = 2;
     }
     repeated Slot api = 1;
-    Uri_Slot uri_slot = 2; // map like [ 8080 -> 192.17.0.4:6899, ]
+    repeated Uri_Slot uri_slot = 2; // map like [ 8080 -> 192.17.0.4:6899, ]
 }
 
 //  -------------------------------
