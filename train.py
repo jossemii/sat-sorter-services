@@ -4,7 +4,7 @@ import api_pb2, api_pb2_grpc, solvers_dataset_pb2, gateway_pb2, gateway_pb2_grpc
 from start import DIR, TRAIN_SOLVERS_TIMEOUT, LOGGER, CONNECTION_ERRORS, START_AVR_TIMEOUT
 from start import SAVE_TRAIN_DATA as REFRESH, RANDOM_SERVICE, GATEWAY_MAIN_DIR
 from singleton import Singleton
-import _solve
+import _solve, verify
 
 
 class Session(metaclass=Singleton):
@@ -15,6 +15,7 @@ class Session(metaclass=Singleton):
         with open('random.service', 'rb') as file:
             self.random_def = gateway_pb2.ipss__pb2.Service()
             self.random_def.ParseFromString(file.read())
+
         self.random_stub = None
         self.random_token = None
         self.solvers_dataset = solvers_dataset_pb2.DataSet()
@@ -22,13 +23,21 @@ class Session(metaclass=Singleton):
         self.solvers_lock = Lock()
         self.exit_event = None
         self._solver = _solve.Session()
-        self.random_service_multihash = {}
+
+        # Random CNF Service.
+        self.random_config = gateway_pb2.ipss__pb2.Configuration()
+        slot = gateway_pb2.ipss__pb2.Configuration.SlotSpec()
+        slot.port = self.random_def.api[0].port # solo tomamos el primer slot. ¡suponemos que se encuentra alli toda la api!
+        slot.transport_protocol.hash.append('http2','grpc')
+        self.random_config.slot.append(slot)
+
+        self.random_service_multihash = []
         for hash in _solve.HASH_LIST:
-            self.random_service_multihash.update({
-                hash: eval(hash)(
+            self.random_service_multihash.append(
+                eval(hash)(
                     self.random_def.SerializeToString()
                 )
-            })
+            )
 
     def stop(self):
         if self.exit_event and self.thread:
@@ -42,7 +51,7 @@ class Session(metaclass=Singleton):
             self.thread = None
 
     def load_solver(self, solver: solvers_dataset_pb2.ipss__pb2.Service):
-        hash = hashlib.sha256(solver.SerializeToString())
+        hash = verify.get_service_hash(service=solver, hash_type='sha3-256')
         if hash not in self.solvers:
             self.solvers.append(hash)
             self.solvers_lock.acquire()
@@ -56,27 +65,24 @@ class Session(metaclass=Singleton):
 
     def random_service_extended(self):
         config = True
-        se = gateway_pb2.ServiceExtended()
+        transport = gateway_pb2.ServiceTransport()
         for hash in self.random_solver_multihash:
-            h = gateway_pb2.ipss__pb2.Hash()
-            h.hash = self.random_solver_multihash[hash]
-            h.tag.append(hash)
-            se.hash.CopyFrom(hash)
+            transport.hash = hash
             if config: # Solo hace falta enviar la configuracion en el primer paquete.
-                se.config.CopyFrom(self.config)
+                transport.config.CopyFrom(self.config)
                 config = False
-            yield se
-        se.ClearField('hash')
-        se.service.CopyFrom(self.random_def)
-        yield se
+            yield transport
+        transport.ClearField('hash')
+        transport.service.CopyFrom(self.random_def)
+        yield transport
 
     def init_random_cnf_service(self):
         try:
-            instance = self.gateway_stub.StartServiceWithExtended(self.random_service_extended())
+            instance = self.gateway_stub.StartService(self.random_service_extended())
         except grpc.RpcError as e:
             LOGGER('GRPC ERROR.'+ str(e))
         for uri_slot in instance.instance.uri_slot:
-            if uri_slot.internal_port == self.config.slot[0].port:
+            if uri_slot.internal_port == self.random_config.slot[0].port:
                 uri = uri_slot.uri[0]
         self.random_stub = api_pb2_grpc.RandomStub(
                 grpc.insecure_channel(

@@ -14,9 +14,9 @@ class GatewayStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.StartServiceWithExtended = channel.stream_unary(
-                '/gateway.Gateway/StartServiceWithExtended',
-                request_serializer=gateway__pb2.ServiceExtended.SerializeToString,
+        self.StartService = channel.stream_unary(
+                '/gateway.Gateway/StartService',
+                request_serializer=gateway__pb2.ServiceTransport.SerializeToString,
                 response_deserializer=gateway__pb2.Instance.FromString,
                 )
         self.StopService = channel.unary_unary(
@@ -29,7 +29,7 @@ class GatewayStub(object):
 class GatewayServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def StartServiceWithExtended(self, request_iterator, context):
+    def StartService(self, request_iterator, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -44,9 +44,9 @@ class GatewayServicer(object):
 
 def add_GatewayServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'StartServiceWithExtended': grpc.stream_unary_rpc_method_handler(
-                    servicer.StartServiceWithExtended,
-                    request_deserializer=gateway__pb2.ServiceExtended.FromString,
+            'StartService': grpc.stream_unary_rpc_method_handler(
+                    servicer.StartService,
+                    request_deserializer=gateway__pb2.ServiceTransport.FromString,
                     response_serializer=gateway__pb2.Instance.SerializeToString,
             ),
             'StopService': grpc.unary_unary_rpc_method_handler(
@@ -65,7 +65,7 @@ class Gateway(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def StartServiceWithExtended(request_iterator,
+    def StartService(request_iterator,
             target,
             options=(),
             channel_credentials=None,
@@ -75,8 +75,8 @@ class Gateway(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.stream_unary(request_iterator, target, '/gateway.Gateway/StartServiceWithExtended',
-            gateway__pb2.ServiceExtended.SerializeToString,
+        return grpc.experimental.stream_unary(request_iterator, target, '/gateway.Gateway/StartService',
+            gateway__pb2.ServiceTransport.SerializeToString,
             gateway__pb2.Instance.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

@@ -11,23 +11,22 @@ from start import MAINTENANCE_SLEEP_TIME, SOLVER_PASS_TIMEOUT_TIMES, SOLVER_FAIL
 
 
 # -- HASH FUNCTIONS --
-SHAKE_256 = lambda value: "" if value is None else hashlib.shake_256(value).hexdigest(32)
-SHA3_256 = lambda value: "" if value is None else hashlib.sha3_256(value).hexdigest()
+SHAKE_256 = lambda value: "" if value is None else 'shake-256:0x'+hashlib.shake_256(value).hexdigest(32)
+SHA3_256 = lambda value: "" if value is None else 'sha3-256:0x'+hashlib.sha3_256(value).hexdigest()
 
-# ALERT: Its not async.
-SHAKE_STREAM = lambda value: "" if value is None else hashlib.shake_256(value).hexdigest(99999999)
-
-HASH_LIST = ['SHAKE256', 'SHA3_256']
+HASH_LIST = ['SHAKE_256', 'SHA3_256']
 
 class SolverInstance(object):
     def __init__(self, solver_with_config: solvers_dataset_pb2.SolverWithConfig):
         self.service_def = gateway_pb2.ipss__pb2.Service()
         self.service_def.CopyFrom(solver_with_config.definition)
+        
+        # Configuration.
         self.config = gateway_pb2.ipss__pb2.Configuration()
         self.config.enviroment_variables = solver_with_config.enviroment_variables
         slot = gateway_pb2.ipss__pb2.Configuration.SlotSpec()
         slot.port = solver_with_config.definition.api[0].port # solo tomamos el primer slot. ¡suponemos que se encuentra alli toda la api!
-        slot.transport_protocol.tag.append('http2','grpc')
+        slot.transport_protocol.hash.append('http2','grpc')
         self.config.slot.append(slot)
 
         self.stub = None
@@ -37,29 +36,26 @@ class SolverInstance(object):
         self.pass_timeout = 0
         self.failed_attempts = 0
         # Calculate service hashes.
-        self.multihash = {}
+        self.multihash = []
         for hash in HASH_LIST:
-            self.multihash.update({
-                hash: eval(hash)(
-                    solver_with_config.definition.SerializeToString()
+            self.multihash.append(
+                eval(hash)(
+                    self.service_def.SerializeToString()
                 )
-            })
+            )
 
     def service_extended(self):
         config = True
-        se = gateway_pb2.ServiceExtended()
+        transport = gateway_pb2.ServiceTransport()
         for hash in self.multihash:
-            h = gateway_pb2.ipss__pb2.Hash()
-            h.hash = self.multihash[hash]
-            h.tag.append(hash)
-            se.hash.CopyFrom(hash)
+            transport.hash = hash
             if config: # Solo hace falta enviar la configuracion en el primer paquete.
-                se.config.CopyFrom(self.config)
+                transport.config.CopyFrom(self.config)
                 config = False
-            yield se
-        se.ClearField('hash')
-        se.service.CopyFrom(self.service_def)
-        yield se
+            yield transport
+        transport.ClearField('hash')
+        transport.service.CopyFrom(self.service_def)
+        yield transport
 
     def update_solver_stub(self, instance: gateway_pb2.ipss__pb2.Instance):
         for uri_slot in instance.instance.uri_slot:
@@ -86,7 +82,7 @@ class SolverInstance(object):
         self.use_datetime = datetime.now()
 
     def check_if_service_is_alive(self) -> bool:
-        LOGGER('Check if serlvice ' + str(self.service_def) + ' is alive.')
+        LOGGER('Check if serlvice ' + str(self.multihash[0]) + ' is alive.')
         cnf = api_pb2.Cnf()
         clause = cnf.clause.add()
         clause.literal = 1
@@ -114,7 +110,7 @@ class Session(metaclass=Singleton):
         solver_instance = self.solvers[solver_config_id]
         try:
             solver_instance.update_solver_stub(
-                self.gateway_stub.StartServiceWithExtended(solver_instance.service_extended())
+                self.gateway_stub.StartService(solver_instance.service_extended())
             )
         except grpc.RpcError as e:
             LOGGER('GRPC ERROR.'+ str(e))

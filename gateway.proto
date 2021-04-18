@@ -10,13 +10,6 @@ message Token {
     }   
 }
 
-// Hash Table ( IPDL ?)
-message Hash {
-    string hash = 1; // d5tr ...
-    repeated string tag = 2; // SHA256 ...
-    // Hash function specification can be applied. <- must be optional
-}
-
 message Empty {}
 
 message Instance {
@@ -24,15 +17,15 @@ message Instance {
     Token token = 2;
 }
 
-message ServiceExtended {
+message ServiceTransport {
     oneof oneOf{
-        Hash hash = 1;
+        string hash = 1;
         ipss.Service service = 2;
     }
     optional ipss.Configuration config = 3;
 }
 
 service Gateway {
-    rpc StartServiceWithExtended( stream ServiceExtended) returns (Instance) {}
+    rpc StartService( stream ServiceTransport) returns (Instance) {}
     rpc StopService(Token) returns (Empty) {}
 }
