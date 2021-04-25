@@ -21,7 +21,7 @@ if __name__ == "__main__":
     import os, hashlib
     import train, _get, _solve
     from threading import get_ident, Thread
-    import regresion
+    #import regresion
     import grpc, api_pb2, api_pb2_grpc
     from concurrent import futures
 
@@ -42,7 +42,7 @@ if __name__ == "__main__":
             )
 
     LOGGER('INIT START THREAD ' + str(get_ident()))
-    Thread(target=regresion.init, name='Regression').start()
+    # Cuando se añadan los paquetes necesarios al .service/Dockerfile Thread(target=regresion.init, name='Regression').start()
     trainer = train.Session()
     _solver = _solve.Session()
 

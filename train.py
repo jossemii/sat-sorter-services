@@ -1,10 +1,10 @@
 from threading import get_ident, Thread, Lock, Event
 import grpc, hashlib
 import api_pb2, api_pb2_grpc, solvers_dataset_pb2, gateway_pb2, gateway_pb2_grpc
-from start import DIR, TRAIN_SOLVERS_TIMEOUT, LOGGER, CONNECTION_ERRORS, START_AVR_TIMEOUT
-from start import SAVE_TRAIN_DATA as REFRESH, GATEWAY_MAIN_DIR
+from start import DIR, TRAIN_SOLVERS_TIMEOUT, LOGGER, CONNECTION_ERRORS
+from start import SAVE_TRAIN_DATA as REFRESH, GATEWAY_MAIN_DIR, START_AVR_TIMEOUT
 from singleton import Singleton
-import _solve, verify
+import _solve
 
 
 class Session(metaclass=Singleton):
