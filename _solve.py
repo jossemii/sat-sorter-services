@@ -35,25 +35,18 @@ class SolverInstance(object):
         self.use_datetime = None
         self.pass_timeout = 0
         self.failed_attempts = 0
-        # Calculate service hashes.
-        self.multihash = []
-        for hash in HASH_LIST:
-            self.multihash.append(
-                eval(hash)(
-                    self.service_def.SerializeToString()
-                )
-            )
 
     def service_extended(self):
         config = True
         transport = gateway_pb2.ServiceTransport()
-        for hash in self.multihash:
+        for hash in self.service_def.hash:
             transport.hash = hash
             if config: # Solo hace falta enviar la configuracion en el primer paquete.
                 transport.config.CopyFrom(self.config)
                 config = False
             yield transport
         transport.ClearField('hash')
+        if config: transport.config.CopyFrom(self.config)
         transport.service.CopyFrom(self.service_def)
         yield transport
 
