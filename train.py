@@ -32,14 +32,6 @@ class Session(metaclass=Singleton):
             self.random_def.api[0].port
         ].CopyFrom( transport_protocol )
 
-        self.random_service_multihash = []
-        for hash in _solve.HASH_LIST:
-            self.random_service_multihash.append(
-                eval(hash)(
-                    self.random_def.SerializeToString()
-                )
-            )
-
     def stop(self):
         if self.exit_event and self.thread:
             self.exit_event.set()
@@ -74,13 +66,14 @@ class Session(metaclass=Singleton):
     def random_service_extended(self):
         config = True
         transport = gateway_pb2.ServiceTransport()
-        for hash in self.random_solver_multihash:
+        for hash in self.random_def.hash:
             transport.hash = hash
             if config: # Solo hace falta enviar la configuracion en el primer paquete.
                 transport.config.CopyFrom(self.random_config)
                 config = False
             yield transport
         transport.ClearField('hash')
+        if config: transport.config.CopyFrom(self.random_config)
         transport.service.CopyFrom(self.random_def)
         yield transport
 
