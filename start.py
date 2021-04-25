@@ -31,9 +31,8 @@ if __name__ == "__main__":
         open('/__config__', 'rb').read()
     )
 
-    gateway_uri = config.gateway.uri_slot[
-        config.gateway.api[0].port
-    ]
+    gateway_uri = api_pb2.ipss_pb2.Instance.Uri()
+    gateway_uri = config.gateway.uri_slot[0].uri[0]
     GATEWAY_MAIN_DIR = gateway_uri.ip+':'+str(gateway_uri.port)
 
     for env_var in config.config.enviroment_variables:
