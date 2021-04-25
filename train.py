@@ -26,10 +26,11 @@ class Session(metaclass=Singleton):
 
         # Random CNF Service.
         self.random_config = gateway_pb2.ipss__pb2.Configuration()
-        slot = gateway_pb2.ipss__pb2.Configuration.SlotSpec()
-        slot.port = self.random_def.api[0].port # solo tomamos el primer slot. ¡suponemos que se encuentra alli toda la api!
-        slot.transport_protocol.hash.append('http2','grpc')
-        self.random_config.slot.append(slot)
+        transport_protocol = gateway_pb2.ipss__pb2.ProtocolMesh()
+        transport_protocol.hash.append('http2','grpc')
+        self.random_config.spec_slot.update({
+            self.random_def.api[0].port : transport_protocol
+        })
 
         self.random_service_multihash = []
         for hash in _solve.HASH_LIST:
@@ -76,7 +77,7 @@ class Session(metaclass=Singleton):
         for hash in self.random_solver_multihash:
             transport.hash = hash
             if config: # Solo hace falta enviar la configuracion en el primer paquete.
-                transport.config.CopyFrom(self.config)
+                transport.config.CopyFrom(self.random_config)
                 config = False
             yield transport
         transport.ClearField('hash')
