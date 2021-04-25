@@ -28,9 +28,9 @@ class Session(metaclass=Singleton):
         self.random_config = gateway_pb2.ipss__pb2.Configuration()
         transport_protocol = gateway_pb2.ipss__pb2.ProtocolMesh()
         transport_protocol.hash.extend(['http2','grpc'])
-        self.random_config.spec_slot.update({
-            self.random_def.api[0].port : transport_protocol
-        })
+        self.random_config.spec_slot[
+            self.random_def.api[0].port
+        ] = transport_protocol
 
         self.random_service_multihash = []
         for hash in _solve.HASH_LIST:
