@@ -30,7 +30,7 @@ class Session(metaclass=Singleton):
         transport_protocol.hash.extend(['http2','grpc'])
         self.random_config.spec_slot[
             self.random_def.api[0].port
-        ] = transport_protocol
+        ].CopyFrom( transport_protocol )
 
         self.random_service_multihash = []
         for hash in _solve.HASH_LIST:
