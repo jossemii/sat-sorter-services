@@ -12,7 +12,7 @@ class Session(metaclass=Singleton):
     def __init__(self):
         self.thread = None
         self.gateway_stub = gateway_pb2_grpc.GatewayStub(grpc.insecure_channel(GATEWAY_MAIN_DIR))
-        with open('random.service', 'rb') as file:
+        with open(DIR+'random.service', 'rb') as file:
             self.random_def = gateway_pb2.ipss__pb2.Service()
             self.random_def.ParseFromString(file.read())
 
