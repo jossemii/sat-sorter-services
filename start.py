@@ -65,7 +65,7 @@ if __name__ == "__main__":
             
         def UploadSolver(self, request, context):
             trainer.load_solver(request)
-            return api_pb2.WhoAreYourParams()
+            return api_pb2.Empty()
 
         def GetTensor(self, request, context):
             with open(DIR + 'tensor.onnx', 'rb') as file:
@@ -77,11 +77,11 @@ if __name__ == "__main__":
 
         def StartTrain(self, request, context):
             trainer.start()
-            return api_pb2.WhoAreYourParams()
+            return api_pb2.Empty()
 
         def StopTrain(self, request, context):
             trainer.stop()
-            return api_pb2.WhoAreYourParams()
+            return api_pb2.Empty()
 
 
     # create a gRPC server
