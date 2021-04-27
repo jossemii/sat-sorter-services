@@ -1,5 +1,6 @@
 from threading import get_ident, Thread, Lock, Event
 import grpc, hashlib
+from time import sleep
 import api_pb2, api_pb2_grpc, solvers_dataset_pb2, gateway_pb2, gateway_pb2_grpc
 from start import DIR, TRAIN_SOLVERS_TIMEOUT, LOGGER, CONNECTION_ERRORS
 from start import SAVE_TRAIN_DATA as REFRESH, GATEWAY_MAIN_DIR, START_AVR_TIMEOUT
@@ -17,7 +18,7 @@ class Session(metaclass=Singleton):
             self.random_def.ParseFromString(file.read())
 
         self.random_stub = None
-        self.random_token = None
+        self.random_token = gateway_pb2.Token()
         self.solvers_dataset = solvers_dataset_pb2.DataSet()
         self.solvers = []
         self.solvers_lock = Lock()
@@ -78,13 +79,14 @@ class Session(metaclass=Singleton):
         yield transport
 
     def init_random_cnf_service(self):
-        try:
-            instance = self.gateway_stub.StartService(self.random_service_extended())
-        except grpc.RpcError as e:
-            LOGGER('GRPC ERROR.'+ str(e))
-        for uri_slot in instance.instance.uri_slot:
-            if uri_slot.internal_port == self.random_config.slot[0].port:
-                uri = uri_slot.uri[0]
+        while True:
+            try:
+                instance = self.gateway_stub.StartService(self.random_service_extended())
+                break
+            except grpc.RpcError as e:
+                LOGGER('GRPC ERROR.'+ str(e))
+                sleep(1)
+        uri = instance.instance.uri_slot[0].uri[0]
         self.random_stub = api_pb2_grpc.RandomStub(
                 grpc.insecure_channel(
                     uri.ip+':'+str(uri.port)
@@ -107,7 +109,7 @@ class Session(metaclass=Singleton):
             try:
                 LOGGER('OBTENIENDO RANDON CNF')
                 return self.random_stub.RandomCnf(
-                    request=api_pb2.WhoAreYourParams(),
+                    request=api_pb2.Empty(),
                     timeout=START_AVR_TIMEOUT
                 )
             except (grpc.RpcError, TimeoutError) as e:
@@ -177,7 +179,7 @@ class Session(metaclass=Singleton):
                 insats = {}  # Solvers que afirman la insatisfactibilidad junto con su respectivo tiempo.
                 LOGGER('VAMOS A PROBAR LOS SOLVERS')
                 self.solvers_lock.acquire()
-                for solver in self.solvers_dataset:
+                for solver in self.solvers_dataset.data:
                     LOGGER('SOVLER --> ' + str(solver.hash))
                     interpretation, time = self._solver.cnf(cnf=cnf, solver_config_id=solver.hash, timeout=timeout)
                     if not interpretation or not interpretation.variable:
