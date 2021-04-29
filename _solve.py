@@ -22,10 +22,7 @@ class SolverInstance(object):
         # Configuration.
         self.config = gateway_pb2.ipss__pb2.Configuration()
         self.config.enviroment_variables = solver_with_config.enviroment_variables
-        slot = gateway_pb2.ipss__pb2.Configuration.SlotSpec()
-        slot.port = solver_with_config.definition.api[0].port # solo tomamos el primer slot. ¡suponemos que se encuentra alli toda la api!
-        slot.transport_protocol.hash.append('http2','grpc')
-        self.config.slot.append(slot)
+        self.config.spec_slot.append( solver_with_config.definition.api[0].port ) # solo tomamos el primer slot. ¡suponemos que se encuentra alli toda la api!
 
         self.stub = None
         self.token = None
@@ -49,9 +46,7 @@ class SolverInstance(object):
         yield transport
 
     def update_solver_stub(self, instance: gateway_pb2.ipss__pb2.Instance):
-        for uri_slot in instance.instance.uri_slot:
-            if uri_slot.internal_port == self.config.slot[0].port:
-                uri = uri_slot.uri[0]
+        uri = instance.instance.uri_slot[0].uri[0]
         self.stub = api_pb2_grpc.SolverStub(
             grpc.insecure_channel(
                 uri.ip+':'+str(uri.port)

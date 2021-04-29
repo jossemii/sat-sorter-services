@@ -34,11 +34,9 @@ class Session(metaclass=Singleton):
 
         # Random CNF Service.
         self.random_config = gateway_pb2.ipss__pb2.Configuration()
-        transport_protocol = gateway_pb2.ipss__pb2.ProtocolMesh()
-        transport_protocol.hash.extend(['http2','grpc'])
-        self.random_config.spec_slot[
+        self.random_config.spec_slot.append(
             self.random_def.api[0].port
-        ].CopyFrom( transport_protocol )
+        )
 
     def stop(self):
         if self.exit_event and self.thread:
@@ -85,25 +83,10 @@ class Session(metaclass=Singleton):
         transport.service.CopyFrom(self.random_def)
         yield transport
 
-    def generator(self):
-        t = gateway_pb2.ServiceTransport()
-        #t.hash = 'sha3-256:0xd7c93dfccaa5fe35edbf1163c687149c8bde62e964d8586544fee697ad22a10b'
-        t.hash = self.random_def.hash[0]
-        t.config.CopyFrom(gateway_pb2.ipss__pb2.Configuration())
-        yield t
-        t.hash = self.random_def.hash[1]
-        yield t
-        t.ClearField('hash')
-        t.service.CopyFrom(self.random_def)
-        yield t
-
     def init_random_cnf_service(self):
         while True:
             try:
-                #instance = self.gateway_stub.StartService(self.random_service_extended())
-                print('2-> ', self.GATEWAY_MAIN_DIR)
-                print(self.GATEWAY_MAIN_DIR == '192.168.1.250:8080')
-                instance = gateway_pb2_grpc.GatewayStub(grpc.insecure_channel('192.168.1.250:8080')).StartService(self.random_service_extended()) 
+                instance = self.gateway_stub.StartService(self.random_service_extended())
                 break
             except grpc.RpcError as e:
                 LOGGER('GRPC ERROR.'+ str(e))

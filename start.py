@@ -36,9 +36,9 @@ if __name__ == "__main__":
 
     #gateway_uri = api_pb2.ipss__pb2.Instance.Uri()
     #gateway_uri = config.gateway.uri_slot[0].uri[0]
-    #GATEWAY_MAIN_DIR.append( gateway_uri.ip+':'+str(gateway_uri.port) )
+    #ENVS['GATEWAY_MAIN_DIR'] = gateway_uri.ip+':'+str(gateway_uri.port)
 
-    ENVS['GATEWAY_MAIN_DIR'] = '192.168.1.250:8080'
+    ENVS['GATEWAY_MAIN_DIR'] = '192.168.1.250:8080' # <- QUITAR ESTO.
 
     #for env_var in config.config.enviroment_variables:
     #    ENVS[env_var] = type(ENVS[env_var])(
@@ -50,8 +50,7 @@ if __name__ == "__main__":
     trainer = train.Session(ENVS=ENVS)
     _solver = _solve.Session(ENVS=ENVS)
 
-    print('1-> ',ENVS['GATEWAY_MAIN_DIR'])
-    trainer.start()
+    trainer.start() # <- QUITAR ESTO.
 
     class SolverServicer(api_pb2_grpc.SolverServicer): 
 
