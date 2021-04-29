@@ -6,9 +6,7 @@ import grpc, hashlib
 
 import api_pb2, api_pb2_grpc, gateway_pb2, gateway_pb2_grpc, solvers_dataset_pb2
 from singleton import Singleton
-from start import GATEWAY_MAIN_DIR as GATEWAY_MAIN_DIR, STOP_SOLVER_TIME_DELTA_MINUTES, LOGGER
-from start import MAINTENANCE_SLEEP_TIME, SOLVER_PASS_TIMEOUT_TIMES, SOLVER_FAILED_ATTEMPTS
-
+from start import LOGGER
 
 # -- HASH FUNCTIONS --
 SHAKE_256 = lambda value: "" if value is None else 'shake-256:0x'+hashlib.shake_256(value).hexdigest(32)
@@ -91,11 +89,19 @@ class SolverInstance(object):
 
 class Session(metaclass=Singleton):
 
-    def __init__(self):
+    def __init__(self, ENVS):
+
+        # set used envs on variables.
+        self.GATEWAY_MAIN_DIR = ENVS['GATEWAY_MAIN_DIR']
+        self.MAINTENANCE_SLEEP_TIME = ENVS['MAINTENANCE_SLEEP_TIME']
+        self.SOLVER_PASS_TIMEOUT_TIMES = ENVS['SOLVER_PASS_TIMEOUT_TIMES']
+        self.STOP_SOLVER_TIME_DELTA_MINUTES = ENVS['STOP_SOLVER_TIME_DELTA_MINUTES']
+        self.SOLVER_FAILED_ATTEMPTS = ['SOLVER_FAILED_ATTEMPTS']
+
         LOGGER('INIT SOLVE SESSION ....')
         self.avr_time = 30
         self.solvers = {}
-        self.gateway_stub = gateway_pb2_grpc.GatewayStub(grpc.insecure_channel(GATEWAY_MAIN_DIR))
+        self.gateway_stub = gateway_pb2_grpc.GatewayStub(grpc.insecure_channel(self.GATEWAY_MAIN_DIR))
         self.solvers_lock = Lock()
         Thread(target=self.maintenance, name='Maintainer').start()
 
@@ -141,7 +147,7 @@ class Session(metaclass=Singleton):
     def maintenance(self):
         while True:
             LOGGER('MAINTEANCE THREAD IS ' + str(get_ident()))
-            sleep(MAINTENANCE_SLEEP_TIME)
+            sleep(self.MAINTENANCE_SLEEP_TIME)
 
             
             index = 0
@@ -157,20 +163,20 @@ class Session(metaclass=Singleton):
                 LOGGER('      maintain solver --> ' + str(solver_instance))
 
                 # En caso de que lleve mas de dos minutos sin usarse.
-                if datetime.now() - solver_instance.use_datetime > timedelta(minutes=STOP_SOLVER_TIME_DELTA_MINUTES):
+                if datetime.now() - solver_instance.use_datetime > timedelta(minutes=self.STOP_SOLVER_TIME_DELTA_MINUTES):
                     self.stop_solver(solver=solver_id)
                     self.solvers_lock.release()
                     continue
                 # En caso de que tarde en dar respuesta a cnf's reales,
                 #  comprueba si la instancia sigue funcionando.
-                if solver_instance.pass_timeout > SOLVER_PASS_TIMEOUT_TIMES and \
+                if solver_instance.pass_timeout > self.SOLVER_PASS_TIMEOUT_TIMES and \
                         not solver_instance.check_if_service_is_alive() or \
-                        solver_instance.failed_attempts > SOLVER_FAILED_ATTEMPTS:
+                        solver_instance.failed_attempts > self.SOLVER_FAILED_ATTEMPTS:
                     self.update_solver_stub(solver_config_id=solver_id)
 
                 self.solvers_lock.release()
                 index = +1
-                sleep(MAINTENANCE_SLEEP_TIME / index)
+                sleep(self.MAINTENANCE_SLEEP_TIME / index)
 
     def stop_solver(self, id: str):
         try:

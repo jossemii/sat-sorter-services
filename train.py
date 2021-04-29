@@ -2,17 +2,24 @@ from threading import get_ident, Thread, Lock, Event
 import grpc, hashlib
 from time import sleep
 import api_pb2, api_pb2_grpc, solvers_dataset_pb2, gateway_pb2, gateway_pb2_grpc
-from start import DIR, TRAIN_SOLVERS_TIMEOUT, LOGGER, CONNECTION_ERRORS
-from start import SAVE_TRAIN_DATA as REFRESH, GATEWAY_MAIN_DIR, START_AVR_TIMEOUT
 from singleton import Singleton
 import _solve
+from start import LOGGER, DIR
 
 
 class Session(metaclass=Singleton):
 
-    def __init__(self):
+    def __init__(self, ENVS):
+
+        # set used envs on variables.
+        self.GATEWAY_MAIN_DIR = ENVS['GATEWAY_MAIN_DIR']
+        self.START_AVR_TIMEOUT = ENVS['START_AVR_TIMEOUT']
+        self.CONNECTION_ERRORS = ENVS['CONNECTION_ERRORS']
+        self.TRAIN_SOLVERS_TIMEOUT = ENVS['TRAIN_SOLVERS_TIMEOUT']
+        self.REFRESH = ENVS['SAVE_TRAIN_DATA']
+
         self.thread = None
-        self.gateway_stub = gateway_pb2_grpc.GatewayStub(grpc.insecure_channel(GATEWAY_MAIN_DIR))
+        self.gateway_stub = gateway_pb2_grpc.GatewayStub(grpc.insecure_channel(self.GATEWAY_MAIN_DIR))
         with open(DIR+'random.service', 'rb') as file:
             self.random_def = gateway_pb2.ipss__pb2.Service()
             self.random_def.ParseFromString(file.read())
@@ -23,7 +30,7 @@ class Session(metaclass=Singleton):
         self.solvers = []
         self.solvers_lock = Lock()
         self.exit_event = None
-        self._solver = _solve.Session()
+        self._solver = _solve.Session(ENVS=ENVS)
 
         # Random CNF Service.
         self.random_config = gateway_pb2.ipss__pb2.Configuration()
@@ -78,10 +85,25 @@ class Session(metaclass=Singleton):
         transport.service.CopyFrom(self.random_def)
         yield transport
 
+    def generator(self):
+        t = gateway_pb2.ServiceTransport()
+        #t.hash = 'sha3-256:0xd7c93dfccaa5fe35edbf1163c687149c8bde62e964d8586544fee697ad22a10b'
+        t.hash = self.random_def.hash[0]
+        t.config.CopyFrom(gateway_pb2.ipss__pb2.Configuration())
+        yield t
+        t.hash = self.random_def.hash[1]
+        yield t
+        t.ClearField('hash')
+        t.service.CopyFrom(self.random_def)
+        yield t
+
     def init_random_cnf_service(self):
         while True:
             try:
-                instance = self.gateway_stub.StartService(self.random_service_extended())
+                #instance = self.gateway_stub.StartService(self.random_service_extended())
+                print('2-> ', self.GATEWAY_MAIN_DIR)
+                print(self.GATEWAY_MAIN_DIR == '192.168.1.250:8080')
+                instance = gateway_pb2_grpc.GatewayStub(grpc.insecure_channel('192.168.1.250:8080')).StartService(self.random_service_extended()) 
                 break
             except grpc.RpcError as e:
                 LOGGER('GRPC ERROR.'+ str(e))
@@ -110,10 +132,10 @@ class Session(metaclass=Singleton):
                 LOGGER('OBTENIENDO RANDON CNF')
                 return self.random_stub.RandomCnf(
                     request=api_pb2.Empty(),
-                    timeout=START_AVR_TIMEOUT
+                    timeout=self.START_AVR_TIMEOUT
                 )
             except (grpc.RpcError, TimeoutError) as e:
-                if connection_errors < CONNECTION_ERRORS:
+                if connection_errors < self.CONNECTION_ERRORS:
                     connection_errors = connection_errors + 1
                     continue
                 else:
@@ -164,13 +186,13 @@ class Session(metaclass=Singleton):
     def init(self):
         LOGGER('TRAINER THREAD IS ' + str(get_ident()))
         refresh = 0
-        timeout = TRAIN_SOLVERS_TIMEOUT
+        timeout = self.TRAIN_SOLVERS_TIMEOUT
         LOGGER('INICIANDO SERVICIO DE RANDOM CNF')
         self.init_random_cnf_service()
         LOGGER('hecho.')
         while True:
             if self.exit_event.is_set(): break
-            if refresh < REFRESH:
+            if refresh < self.REFRESH:
                 LOGGER('REFRESH ES MENOR')
                 refresh = refresh + 1
                 cnf = self.random_cnf()

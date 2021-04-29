@@ -1,19 +1,22 @@
 import logging
 logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s')
 LOGGER = lambda message: logging.getLogger().debug(message)
+DIR = '' #DIR = '/satrainer/'
 
-DIR = '/satrainer/'
-GATEWAY_MAIN_DIR = '172.17.0.1:8000'  # Direccion del nodo por defecto.
-SAVE_TRAIN_DATA = 2
-MAINTENANCE_SLEEP_TIME = 100
-SOLVER_PASS_TIMEOUT_TIMES = 5
-SOLVER_FAILED_ATTEMPTS = 5
-STOP_SOLVER_TIME_DELTA_MINUTES = 2
-TRAIN_SOLVERS_TIMEOUT = 30
-MAX_REGRESSION_DEGREE = 100
-TIME_FOR_EACH_REGRESSION_LOOP = 999
-CONNECTION_ERRORS = 5
-START_AVR_TIMEOUT = 30
+ENVS = {
+    'GATEWAY_MAIN_DIR' : '', # Lista de direcciones para gateway.
+    'SAVE_TRAIN_DATA' : 2,
+    'MAINTENANCE_SLEEP_TIME' : 100,
+    'SOLVER_PASS_TIMEOUT_TIMES' : 5,
+    'SOLVER_FAILED_ATTEMPTS' : 5,
+    'STOP_SOLVER_TIME_DELTA_MINUTES' : 2,
+    'TRAIN_SOLVERS_TIMEOUT' : 30,
+    'MAX_REGRESSION_DEGREE' : 100,
+    'TIME_FOR_EACH_REGRESSION_LOOP' : 999,
+    'CONNECTION_ERRORS' : 5,
+    'START_AVR_TIMEOUT' : 30 
+}
+
 
 if __name__ == "__main__":
 
@@ -26,24 +29,29 @@ if __name__ == "__main__":
     from concurrent import futures
 
     # Read __config__ file.
-    config = api_pb2.ipss__pb2.ConfigurationFile()
-    config.ParseFromString(
-        open('/__config__', 'rb').read()
-    )
+    #config = api_pb2.ipss__pb2.ConfigurationFile()
+    #config.ParseFromString(
+    #    open('/__config__', 'rb').read()
+    #)
 
-    gateway_uri = api_pb2.ipss__pb2.Instance.Uri()
-    gateway_uri = config.gateway.uri_slot[0].uri[0]
-    GATEWAY_MAIN_DIR = gateway_uri.ip+':'+str(gateway_uri.port)
+    #gateway_uri = api_pb2.ipss__pb2.Instance.Uri()
+    #gateway_uri = config.gateway.uri_slot[0].uri[0]
+    #GATEWAY_MAIN_DIR.append( gateway_uri.ip+':'+str(gateway_uri.port) )
 
-    for env_var in config.config.enviroment_variables:
-        locals()[env_var] = type(locals()[env_var])(
-            config.config.enviroment_variables[env_var].value
-            )
+    ENVS['GATEWAY_MAIN_DIR'] = '192.168.1.250:8080'
+
+    #for env_var in config.config.enviroment_variables:
+    #    ENVS[env_var] = type(ENVS[env_var])(
+    #        config.config.enviroment_variables[env_var].value
+    #        )
 
     LOGGER('INIT START THREAD ' + str(get_ident()))
     # Cuando se añadan los paquetes necesarios al .service/Dockerfile Thread(target=regresion.init, name='Regression').start()
-    trainer = train.Session()
-    _solver = _solve.Session()
+    trainer = train.Session(ENVS=ENVS)
+    _solver = _solve.Session(ENVS=ENVS)
+
+    print('1-> ',ENVS['GATEWAY_MAIN_DIR'])
+    trainer.start()
 
     class SolverServicer(api_pb2_grpc.SolverServicer): 
 
@@ -68,12 +76,12 @@ if __name__ == "__main__":
             return api_pb2.Empty()
 
         def GetTensor(self, request, context):
-            with open(DIR + 'tensor.onnx', 'rb') as file:
+            with open(ENVS['DIR'] + 'tensor.onnx', 'rb') as file:
                 while True:
                     tensor = api_pb2.onnx__pb2.ONNX()
                     tensor.ParseFromString(file.read())
                     yield tensor
-                    sleep(TIME_FOR_EACH_REGRESSION_LOOP)
+                    sleep(ENVS['TIME_FOR_EACH_REGRESSION_LOOP'])
 
         def StartTrain(self, request, context):
             trainer.start()
