@@ -52,12 +52,11 @@ class Session(metaclass=Singleton):
     def load_solver(self, solver: solvers_dataset_pb2.ipss__pb2.Service):
         # Se puede cargar un solver sin estar completo, 
         #  pero debe de contener si o si la hash3-256
-        #  ya que el servicio no la calculará ni comprobará.
+        #  ya que el servicio no la calculará (ni comprobará).
 
-        if solver.HasField('hash'):
-            for h in solver.hash:
-                if h.split(':')[0] == 'sha3-256':
-                    hash = h.split(':')[1]
+        for h in solver.hash:
+            if h.split(':')[0] == 'sha3-256':
+                hash = h.split(':')[1]
         if hash and hash not in self.solvers:
             self.solvers.append(hash)
             self.solvers_lock.acquire()
