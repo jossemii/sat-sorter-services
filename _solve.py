@@ -21,11 +21,11 @@ class SolverInstance(object):
         
         # Configuration.
         self.config = gateway_pb2.ipss__pb2.Configuration()
-        self.config.enviroment_variables = solver_with_config.enviroment_variables
+        self.config.enviroment_variables.update(solver_with_config.enviroment_variables)
         self.config.spec_slot.append( solver_with_config.definition.api[0].port ) # solo tomamos el primer slot. ¡suponemos que se encuentra alli toda la api!
 
         self.stub = None
-        self.token = None
+        self.token = gateway_pb2.Token()
         self.creation_datetime = datetime.now()
         self.use_datetime = None
         self.pass_timeout = 0
@@ -91,7 +91,7 @@ class Session(metaclass=Singleton):
         self.MAINTENANCE_SLEEP_TIME = ENVS['MAINTENANCE_SLEEP_TIME']
         self.SOLVER_PASS_TIMEOUT_TIMES = ENVS['SOLVER_PASS_TIMEOUT_TIMES']
         self.STOP_SOLVER_TIME_DELTA_MINUTES = ENVS['STOP_SOLVER_TIME_DELTA_MINUTES']
-        self.SOLVER_FAILED_ATTEMPTS = ['SOLVER_FAILED_ATTEMPTS']
+        self.SOLVER_FAILED_ATTEMPTS = ENVS['SOLVER_FAILED_ATTEMPTS']
 
         LOGGER('INIT SOLVE SESSION ....')
         self.avr_time = 30
@@ -185,7 +185,7 @@ class Session(metaclass=Singleton):
     def add_solver(self, solver_with_config: solvers_dataset_pb2.SolverWithConfig, solver_config_id: str):
         self.solvers.update({
             solver_config_id: SolverInstance(
-                    solver_with_config=solver_config_id
+                    solver_with_config=solver_with_config
                 )
             })
         self.update_solver_stub(solver_config_id=solver_config_id)

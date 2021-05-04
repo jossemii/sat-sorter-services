@@ -51,7 +51,7 @@ class Session(metaclass=Singleton):
 
     def load_solver(self, solver: solvers_dataset_pb2.ipss__pb2.Service):
         # Se puede cargar un solver sin estar completo, 
-        #  pero debe de contener si o si la hash3-256
+        #  pero debe de contener si o si la sha3-256
         #  ya que el servicio no la calculará (ni comprobará).
 
         for h in solver.hash:
@@ -63,7 +63,7 @@ class Session(metaclass=Singleton):
             p = solvers_dataset_pb2.DataSetInstance()
             p.solver.definition.CopyFrom(solver)
             # p.solver.enviroment_variables (Usamos las variables de entorno por defecto).
-            p.hash = hashlib.sha256(p.solver.SerializeToString())
+            p.hash = hashlib.sha3_256(p.solver.SerializeToString()).hexdigest()
             self.solvers_dataset.data.append(p)
             self._solver.add_solver(solver_with_config=p.solver, solver_config_id=p.hash)
             self.solvers_lock.release()
@@ -180,14 +180,17 @@ class Session(metaclass=Singleton):
                 cnf = self.random_cnf()
                 LOGGER('RESPUESTA DEL CNF --> ' + str(cnf))
                 is_insat = True  # En caso en que se demuestre lo contrario.
-                insats = {}  # Solvers que afirman la insatisfactibilidad junto con su respectivo tiempo.
+                insats = []  # Solvers que afirman la insatisfactibilidad junto con su respectivo tiempo.
                 LOGGER('VAMOS A PROBAR LOS SOLVERS')
                 self.solvers_lock.acquire()
                 for solver in self.solvers_dataset.data:
                     LOGGER('SOVLER --> ' + str(solver.hash))
                     interpretation, time = self._solver.cnf(cnf=cnf, solver_config_id=solver.hash, timeout=timeout)
                     if not interpretation or not interpretation.variable:
-                        insats.update({solver.hash: time})
+                        insats.append({
+                            'solver': solver,
+                            'time': time
+                        })
                     else:
                         if self.is_good(cnf, interpretation):
                             is_insat = False
@@ -205,20 +208,13 @@ class Session(metaclass=Singleton):
                 self.solvers_lock.release()
                 # Registra los solvers que afirmaron la insatisfactibilidad en caso en que ninguno
                 #  haya demostrado lo contrario.
-                if is_insat:
-                    for solver in insats:
-                        self.updateScore(
-                            cnf=cnf,
-                            solver=solver,
-                            score=float(+1 / insats.get(solver)) if insats.get(solver) != 0 else 1
-                        )
-                else:
-                    for solver in insats:
-                        self.updateScore(
-                            cnf=cnf,
-                            solver=solver,
-                            score=float(-1 / insats.get(solver)) if insats.get(solver) != 0 else -1
-                        )
+                for d in insats:
+                    self.updateScore(
+                        cnf=cnf,
+                        solver=d['solver'],
+                        score=(float(+1 / d['time']) if d['time'] != 0 else 1) if is_insat   
+                            else (float(-1 / d['time']) if d['time'] != 0 else -1) # comprueba is_insat en cada vuelta, cuando no es necesario, pero el codigo queda más limpio.
+                    )
             else:
                 LOGGER('ACTUALIZA EL DATASET')
                 refresh = 0
