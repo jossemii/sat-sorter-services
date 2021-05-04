@@ -27,7 +27,7 @@ class SolverInstance(object):
         self.stub = None
         self.token = gateway_pb2.Token()
         self.creation_datetime = datetime.now()
-        self.use_datetime = None
+        self.use_datetime = datetime.now()
         self.pass_timeout = 0
         self.failed_attempts = 0
 
