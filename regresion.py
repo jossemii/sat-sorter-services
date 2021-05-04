@@ -6,9 +6,7 @@ from skl2onnx import convert_sklearn
 from skl2onnx.common.data_types import FloatTensorType
 import api_pb2, solvers_dataset_pb2
 from threading import get_ident
-from start import DIR, LOGGER, TIME_FOR_EACH_REGRESSION_LOOP
-from start import MAX_REGRESSION_DEGREE as MAX_DEGREE
-TENSOR_SPECIFICATION = None
+from start import DIR, LOGGER
 
 def regression_with_degree(degree: int, input: np.array, output: np.array):
     poly = PolynomialFeatures(degree= degree, include_bias=False)
@@ -21,7 +19,7 @@ def regression_with_degree(degree: int, input: np.array, output: np.array):
         'model': model
     }
 
-def solver_regression(solver: dict):
+def solver_regression(solver: dict, MAX_DEGREE):
     # Get input variables. Num of cnf variables and Num of cnf clauses.
     input = np.array(
         [[int(var) for var in value.split(':')] for value in solver]
@@ -45,7 +43,7 @@ def solver_regression(solver: dict):
     # Convert into ONNX format
     return convert_sklearn(best_tensor['model'])
 
-def iterate_regression():
+def iterate_regression(TENSOR_SPECIFICATION, MAX_DEGREE):
     # Read solvers dataset
     with open(DIR + 'solvers_dataset.bin', 'rb') as file:
         data_set = solvers_dataset_pb2.DataSet()
@@ -60,7 +58,7 @@ def iterate_regression():
         # ONNXTensor
         tensor = api_pb2.onnx__pb2.ONNX.ONNXTensor()
         tensor.element.value = s.solver.SerializeToString()
-        tensor.model.CopyFrom(solver_regression(solver=dict(s.data)))
+        tensor.model.CopyFrom(solver_regression(solver=dict(s.data), MAX_DEGREE=MAX_DEGREE))
         onnx.tensor.append( tensor )
         LOGGER(' ****** ')
 
@@ -68,7 +66,12 @@ def iterate_regression():
     with open(DIR+'tensor.onnx', 'wb') as file:
         file.write(onnx.SerializeToString())
 
-def init():
+def init(ENVS):
+
+    # set used envs on variables.
+    TIME_FOR_EACH_REGRESSION_LOOP = ENVS['TIME_FOR_EACH_REGRESSION_LOOP']
+    MAX_DEGREE = ENVS['MAX_REGRESSION_DEGREE']
+
     def generate_tensor_spec():
         # Performance
         p = api_pb2.ipss__pb2.Tensor.Variable()
@@ -83,18 +86,21 @@ def init():
         l.id = "l"
         l.tag.extend(["number of literals"])
         # Solver services
-        s = api_pb2.ipss__pb2.Service()
+        s = api_pb2.ipss__pb2.Tensor.Variable()
         s.id = "s"
         s.tag.extend(["SATsolver"])
-        with open(DIR + '.service/s.desc', 'rb') as file:
+        with open(DIR + '.service/s.field', 'rb') as file:
             s.field.ParseFromString(file.read())
 
         TENSOR_SPECIFICATION = api_pb2.ipss__pb2.Tensor()
         TENSOR_SPECIFICATION.output_variable.append(p)
         TENSOR_SPECIFICATION.input_variable.extend([c, l, s])
+        return TENSOR_SPECIFICATION
 
     LOGGER('INIT REGRESSION THREAD '+ str(get_ident()))
-    generate_tensor_spec()
     while True:
         sleep(TIME_FOR_EACH_REGRESSION_LOOP)
-        iterate_regression()
+        iterate_regression(
+            MAX_DEGREE=MAX_DEGREE, 
+            TENSOR_SPECIFICATION=generate_tensor_spec()
+        )
