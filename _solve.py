@@ -159,7 +159,7 @@ class Session(metaclass=Singleton):
 
                 # En caso de que lleve mas de dos minutos sin usarse.
                 if datetime.now() - solver_instance.use_datetime > timedelta(minutes=self.STOP_SOLVER_TIME_DELTA_MINUTES):
-                    self.stop_solver(solver=solver_id)
+                    self.stop_solver(id=solver_id)
                     self.solvers_lock.release()
                     continue
                 # En caso de que tarde en dar respuesta a cnf's reales,
