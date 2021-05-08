@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x15solvers_dataset.proto\x1a\nipss.proto\"$\n\x04\x44\x61ta\x12\r\n\x05score\x18\x01 \x01(\x02\x12\r\n\x05index\x18\x02 \x01(\x05\"\xbb\x01\n\x10SolverWithConfig\x12!\n\ndefinition\x18\x01 \x01(\x0b\x32\r.ipss.Service\x12H\n\x14\x65nviroment_variables\x18\x02 \x03(\x0b\x32*.SolverWithConfig.EnviromentVariablesEntry\x1a:\n\x18\x45nviromentVariablesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\"\xa0\x01\n\x0f\x44\x61taSetInstance\x12!\n\x06solver\x18\x01 \x01(\x0b\x32\x11.SolverWithConfig\x12(\n\x04\x64\x61ta\x18\x02 \x03(\x0b\x32\x1a.DataSetInstance.DataEntry\x12\x0c\n\x04hash\x18\x03 \x01(\t\x1a\x32\n\tDataEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x14\n\x05value\x18\x02 \x01(\x0b\x32\x05.Data:\x02\x38\x01\")\n\x07\x44\x61taSet\x12\x1e\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32\x10.DataSetInstanceb\x06proto3'
+  serialized_pb=b'\n\x15solvers_dataset.proto\x1a\nipss.proto\"$\n\x04\x44\x61ta\x12\r\n\x05score\x18\x01 \x01(\x02\x12\r\n\x05index\x18\x02 \x01(\x05\"\xc6\x01\n\x10SolverWithConfig\x12!\n\ndefinition\x18\x01 \x01(\x0b\x32\r.ipss.Service\x12H\n\x14\x65nviroment_variables\x18\x02 \x03(\x0b\x32*.SolverWithConfig.EnviromentVariablesEntry\x1a\x45\n\x18\x45nviromentVariablesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x18\n\x05value\x18\x02 \x01(\x0b\x32\t.ipss.Any:\x02\x38\x01\"\xa0\x01\n\x0f\x44\x61taSetInstance\x12!\n\x06solver\x18\x01 \x01(\x0b\x32\x11.SolverWithConfig\x12(\n\x04\x64\x61ta\x18\x02 \x03(\x0b\x32\x1a.DataSetInstance.DataEntry\x12\x0c\n\x04hash\x18\x03 \x01(\t\x1a\x32\n\tDataEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x14\n\x05value\x18\x02 \x01(\x0b\x32\x05.Data:\x02\x38\x01\")\n\x07\x44\x61taSet\x12\x1e\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32\x10.DataSetInstanceb\x06proto3'
   ,
   dependencies=[ipss__pb2.DESCRIPTOR,])
 
@@ -83,8 +83,8 @@ _SOLVERWITHCONFIG_ENVIROMENTVARIABLESENTRY = _descriptor.Descriptor(
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='value', full_name='SolverWithConfig.EnviromentVariablesEntry.value', index=1,
-      number=2, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -101,7 +101,7 @@ _SOLVERWITHCONFIG_ENVIROMENTVARIABLESENTRY = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=205,
-  serialized_end=263,
+  serialized_end=274,
 )
 
 _SOLVERWITHCONFIG = _descriptor.Descriptor(
@@ -139,7 +139,7 @@ _SOLVERWITHCONFIG = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=76,
-  serialized_end=263,
+  serialized_end=274,
 )
 
 
@@ -177,8 +177,8 @@ _DATASETINSTANCE_DATAENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=376,
-  serialized_end=426,
+  serialized_start=387,
+  serialized_end=437,
 )
 
 _DATASETINSTANCE = _descriptor.Descriptor(
@@ -222,8 +222,8 @@ _DATASETINSTANCE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=266,
-  serialized_end=426,
+  serialized_start=277,
+  serialized_end=437,
 )
 
 
@@ -254,10 +254,11 @@ _DATASET = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=428,
-  serialized_end=469,
+  serialized_start=439,
+  serialized_end=480,
 )
 
+_SOLVERWITHCONFIG_ENVIROMENTVARIABLESENTRY.fields_by_name['value'].message_type = ipss__pb2._ANY
 _SOLVERWITHCONFIG_ENVIROMENTVARIABLESENTRY.containing_type = _SOLVERWITHCONFIG
 _SOLVERWITHCONFIG.fields_by_name['definition'].message_type = ipss__pb2._SERVICE
 _SOLVERWITHCONFIG.fields_by_name['enviroment_variables'].message_type = _SOLVERWITHCONFIG_ENVIROMENTVARIABLESENTRY
