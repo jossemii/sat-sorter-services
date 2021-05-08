@@ -185,7 +185,11 @@ class Session(metaclass=Singleton):
                 self.solvers_lock.acquire()
                 for solver in self.solvers_dataset.data:
                     LOGGER('SOVLER --> ' + str(solver.hash))
-                    interpretation, time = self._solver.cnf(cnf=cnf, solver_config_id=solver.hash, timeout=timeout)
+                    try:
+                        interpretation, time = self._solver.cnf(cnf=cnf, solver_config_id=solver.hash, timeout=timeout)
+                    except Exception as e:
+                        LOGGER('ERROR '+ str(e))
+                        pass
                     if not interpretation or not interpretation.variable:
                         insats.append({
                             'solver': solver,

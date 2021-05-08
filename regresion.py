@@ -3,7 +3,7 @@ import numpy as np
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 from skl2onnx import convert_sklearn
-from skl2onnx.common.data_types import FloatTensorType, Int32TensorType
+from skl2onnx.common.data_types import Int64TensorType
 import api_pb2, solvers_dataset_pb2
 from threading import get_ident
 from start import DIR, LOGGER
@@ -44,7 +44,7 @@ def solver_regression(solver: dict, MAX_DEGREE):
     return convert_sklearn(
         best_tensor['model'], 
         initial_types=[
-            ('X', FloatTensorType([None, 4])), # we need to use None for dynamic number of inputs because of changes in latest onnxruntime.
+            ('X', Int64TensorType([None, 4])), # we need to use None for dynamic number of inputs because of changes in latest onnxruntime.
                                                       # The shape is , the first dimension is the number of rows followed by the number of features.
         ]
     )
@@ -86,27 +86,27 @@ def init(ENVS):
 
     def generate_tensor_spec():
         # Performance
-        p = api_pb2.ipss__pb2.Tensor.Variable()
+        p = api_pb2.ipss__pb2.Tensor.Index()
         p.id = "p"
         p.tag.extend(["performance"])
         # Number clauses
-        c = api_pb2.ipss__pb2.Tensor.Variable()
+        c = api_pb2.ipss__pb2.Tensor.Index()
         c.id = "c"
         c.tag.extend(["number of clauses"])
         # Number of literals
-        l = api_pb2.ipss__pb2.Tensor.Variable()
+        l = api_pb2.ipss__pb2.Tensor.Index()
         l.id = "l"
         l.tag.extend(["number of literals"])
         # Solver services
-        s = api_pb2.ipss__pb2.Tensor.Variable()
+        s = api_pb2.ipss__pb2.Tensor.Index()
         s.id = "s"
         s.tag.extend(["SATsolver"])
         with open(DIR + '.service/s.field', 'rb') as file:
             s.field.ParseFromString(file.read())
 
         TENSOR_SPECIFICATION = api_pb2.ipss__pb2.Tensor()
-        TENSOR_SPECIFICATION.output_variable.append(p)
-        TENSOR_SPECIFICATION.input_variable.extend([c, l, s])
+        TENSOR_SPECIFICATION.index.extend([c, l, s, p])
+        TENSOR_SPECIFICATION.rank = 3
         return TENSOR_SPECIFICATION
 
     LOGGER('INIT REGRESSION THREAD '+ str(get_ident()))

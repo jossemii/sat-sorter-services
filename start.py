@@ -12,7 +12,7 @@ ENVS = {
     'STOP_SOLVER_TIME_DELTA_MINUTES' : 2,
     'TRAIN_SOLVERS_TIMEOUT' : 30,
     'MAX_REGRESSION_DEGREE' : 100,
-    'TIME_FOR_EACH_REGRESSION_LOOP' : 999,
+    'TIME_FOR_EACH_REGRESSION_LOOP' : 50,
     'CONNECTION_ERRORS' : 5,
     'START_AVR_TIMEOUT' : 30 
 }
@@ -38,7 +38,7 @@ if __name__ == "__main__":
     #gateway_uri = config.gateway.uri_slot[0].uri[0]
     #ENVS['GATEWAY_MAIN_DIR'] = gateway_uri.ip+':'+str(gateway_uri.port)
 
-    ENVS['GATEWAY_MAIN_DIR'] = '192.168.1.250:8080' # <- QUITAR ESTO.
+    ENVS['GATEWAY_MAIN_DIR'] = '192.168.1.144:8080' # <- QUITAR ESTO.
 
     #for env_var in config.config.enviroment_variables:
     #    ENVS[env_var] = type(ENVS[env_var])(
