@@ -1,4 +1,4 @@
-import onnx_pb2, solvers_dataset_pb2
+import onnx_pb2, solvers_dataset_pb2, api_pb2
 import onnxruntime as rt
 from start import DIR, LOGGER
 
@@ -10,15 +10,15 @@ def get_score(model: onnx_pb2.ModelProto, _cnf: dict) -> float:
     LOGGER("inputs name:"+str(inname)+"|| outputs name:"+str(outname))
     return session.run(outname, {inname[0]: _cnf})
 
-def data(cnf: list) -> dict:
+def data(cnf: api_pb2.Cnf) -> dict:
     num_literals = 0
-    for clause in cnf:
-        for literal in clause:
+    for clause in cnf.clause:
+        for literal in clause.literal:
             if abs(literal) > num_literals:
                 num_literals = abs(literal)
     return {'clauses': len(cnf), 'literals': num_literals}
 
-def cnf(cnf: list) -> solvers_dataset_pb2.SolverWithConfig():
+def cnf(cnf: api_pb2.Cnf) -> solvers_dataset_pb2.SolverWithConfig:
     with open(DIR+'tensor.onnx', 'rb') as file:
         tensors = onnx_pb2.ONNX()
         tensors.ParseFromString(file.read())
