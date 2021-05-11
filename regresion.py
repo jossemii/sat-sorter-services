@@ -3,7 +3,7 @@ import numpy as np
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 from skl2onnx import convert_sklearn
-from skl2onnx.common.data_types import Int64TensorType
+from skl2onnx.common.data_types import Int64TensorType, FloatTensorType
 import api_pb2, solvers_dataset_pb2
 from threading import get_ident
 from start import DIR, LOGGER
@@ -21,6 +21,7 @@ def regression_with_degree(degree: int, input: np.array, output: np.array):
 
 def solver_regression(solver: dict, MAX_DEGREE):
     # Get input variables. Num of cnf variables and Num of cnf clauses.
+    # num_clauses : num_literals
     input = np.array(
         [[int(var) for var in value.split(':')] for value in solver]
     ).reshape(-1, 2)
@@ -30,7 +31,7 @@ def solver_regression(solver: dict, MAX_DEGREE):
         [value.score for value in solver.values()]
     ).reshape(-1, 1)
     if len(input) != len(output):
-        raise Exception('Error en solvers.json, faltan scores.')
+        raise Exception('Error en solvers dataset, faltan scores.')
 
     best_tensor = {'coefficient': 0}
     for degree in range(1, MAX_DEGREE+1):
@@ -41,10 +42,12 @@ def solver_regression(solver: dict, MAX_DEGREE):
             best_tensor = tensor
     
     # Convert into ONNX format
+    #   In the case that best_tensor hasn't got an model means
+    #    that linear regression could not perform.
     return convert_sklearn(
-        best_tensor['model'], 
+        best_tensor['model'],
         initial_types=[
-            ('X', Int64TensorType([None, 4])), # we need to use None for dynamic number of inputs because of changes in latest onnxruntime.
+            ('X', Int64TensorType([None, 2])), # we need to use None for dynamic number of inputs because of changes in latest onnxruntime.
                                                       # The shape is , the first dimension is the number of rows followed by the number of features.
         ]
     )
@@ -87,21 +90,21 @@ def init(ENVS):
     def generate_tensor_spec():
         # Performance
         p = api_pb2.ipss__pb2.Tensor.Index()
-        p.id = "p"
+        p.id = "score"
         p.tag.extend(["performance"])
         # Number clauses
         c = api_pb2.ipss__pb2.Tensor.Index()
-        c.id = "c"
+        c.id = "clauses"
         c.tag.extend(["number of clauses"])
         # Number of literals
         l = api_pb2.ipss__pb2.Tensor.Index()
-        l.id = "l"
+        l.id = "literals"
         l.tag.extend(["number of literals"])
         # Solver services
         s = api_pb2.ipss__pb2.Tensor.Index()
-        s.id = "s"
+        s.id = "solver"
         s.tag.extend(["SATsolver"])
-        with open(DIR + '.service/s.field', 'rb') as file:
+        with open(DIR + '.service/solver.field', 'rb') as file:
             s.field.ParseFromString(file.read())
 
         TENSOR_SPECIFICATION = api_pb2.ipss__pb2.Tensor()

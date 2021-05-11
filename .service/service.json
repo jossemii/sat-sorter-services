@@ -3,10 +3,10 @@
     "tensor": {
         "grade": 3,
         "index": {
-            "x": ["number cnf variables"],
-            "y": ["number cnf clauses"], 
-            "s": ["SATsolver"],
-            "z": ["score"]    
+            "literals": ["number cnf literals"],
+            "clauses": ["number cnf clauses"], 
+            "solver": ["SATsolver"],
+            "score": ["score"]    
         }
     },
     "architecture": "x86",
