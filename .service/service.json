@@ -1,7 +1,7 @@
 {
     "api": [{"port":8080, "protocol":["http2","grpc"]}],
     "tensor": {
-        "grade": 3,
+        "rank": 3,
         "index": {
             "literals": ["number cnf literals"],
             "clauses": ["number cnf clauses"], 
