@@ -9,8 +9,8 @@
             "score": ["score"]    
         }
     },
-    "architecture": "x86",
-    "entrypoint": "python3 /satrainer/start.py",
+    "architecture": "ARM64",
+    "entrypoint": "python3 /satsorter/start.py",
     "envs": [
         "SAVE_TRAIN_DATA", 
         "MAINTENANCE_SLEEP_TIME", 
