@@ -7,7 +7,7 @@ RUN apt-get update --fix-missing && \
 # For regression service.
 RUN export DEBIAN_FRONTEND=noninteractive && \
   apt-get update --fix-missing && \
-  apt-get -y install protobuf-compiler libprotoc-dev && \
+  apt-get -y install cmake protobuf-compiler libprotoc-dev && \
   pip3 install sklearn protobuf numpy scikit-learn skl2onnx
 
 RUN mkdir /satsorter && cd /satsorter && \
