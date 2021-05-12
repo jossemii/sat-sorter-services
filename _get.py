@@ -28,12 +28,10 @@ def cnf(cnf: api_pb2.Cnf) -> solvers_dataset_pb2.SolverWithConfig:
         tensors.ParseFromString(file.read())
 
         best_interpretation = solvers_dataset_pb2.SolverWithConfig()
-        best_interpretation_score = 0
+        best_interpretation_score = None
         for tensor in tensors.tensor:
             score = get_score(model=tensor.model, _cnf=data(cnf=cnf))
-            print('SCORE IS -> ', score)
-            if best_interpretation_score < score:
+            if not best_interpretation_score or best_interpretation_score < score:
                 best_interpretation_score = score
                 best_interpretation.ParseFromString(tensor.element.value)
-        print('BEST INTERPRETATION -> ', best_interpretation, 'FROM ', tensor.element.value)
         return best_interpretation
