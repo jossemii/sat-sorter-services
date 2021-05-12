@@ -156,7 +156,7 @@ class Session(metaclass=Singleton):
                     break
                 LOGGER('      maintain solver --> ' + str(solver_instance))
 
-                # En caso de que lleve mas de dos minutos sin usarse.
+                # En caso de que lleve mas de STOP_SOLVER_TIME_DELTA_MINUTES sin usarse.
                 if datetime.now() - solver_instance.use_datetime > timedelta(minutes=self.STOP_SOLVER_TIME_DELTA_MINUTES):
                     self.stop_solver(id=solver_id)
                     self.solvers_lock.release()
