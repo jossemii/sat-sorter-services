@@ -1,10 +1,10 @@
 import logging
 logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s')
 LOGGER = lambda message: logging.getLogger().debug(message)
-DIR = '' #DIR = '/satrainer/'
+DIR = '/satrainer/'
 
 ENVS = {
-    'GATEWAY_MAIN_DIR' : '', # Lista de direcciones para gateway.
+    'GATEWAY_MAIN_DIR' : '',
     'SAVE_TRAIN_DATA' : 2,
     'MAINTENANCE_SLEEP_TIME' : 100,
     'SOLVER_PASS_TIMEOUT_TIMES' : 5,
@@ -12,7 +12,7 @@ ENVS = {
     'STOP_SOLVER_TIME_DELTA_MINUTES' : 2,
     'TRAIN_SOLVERS_TIMEOUT' : 30,
     'MAX_REGRESSION_DEGREE' : 100,
-    'TIME_FOR_EACH_REGRESSION_LOOP' : 50,
+    'TIME_FOR_EACH_REGRESSION_LOOP' : 900,
     'CONNECTION_ERRORS' : 5,
     'START_AVR_TIMEOUT' : 30 
 }
@@ -29,21 +29,19 @@ if __name__ == "__main__":
     from concurrent import futures
 
     # Read __config__ file.
-    #config = api_pb2.ipss__pb2.ConfigurationFile()
-    #config.ParseFromString(
-    #    open('/__config__', 'rb').read()
-    #)
+    config = api_pb2.ipss__pb2.ConfigurationFile()
+    config.ParseFromString(
+        open('/__config__', 'rb').read()
+    )
 
-    #gateway_uri = api_pb2.ipss__pb2.Instance.Uri()
-    #gateway_uri = config.gateway.uri_slot[0].uri[0]
-    #ENVS['GATEWAY_MAIN_DIR'] = gateway_uri.ip+':'+str(gateway_uri.port)
+    gateway_uri = api_pb2.ipss__pb2.Instance.Uri()
+    gateway_uri = config.gateway.uri_slot[0].uri[0]
+    ENVS['GATEWAY_MAIN_DIR'] = gateway_uri.ip+':'+str(gateway_uri.port)
 
-    ENVS['GATEWAY_MAIN_DIR'] = '192.168.1.144:8080' # <- QUITAR ESTO.
-
-    #for env_var in config.config.enviroment_variables:
-    #    ENVS[env_var] = type(ENVS[env_var])(
-    #        config.config.enviroment_variables[env_var].value
-    #        )
+    for env_var in config.config.enviroment_variables:
+        ENVS[env_var] = type(ENVS[env_var])(
+            config.config.enviroment_variables[env_var].value
+            )
 
     LOGGER('INIT START THREAD ' + str(get_ident()))
       
@@ -57,7 +55,7 @@ if __name__ == "__main__":
             solver_with_config = _get.cnf(
                 cnf=request
             )
-            solver_config_id = hashlib.sha256(solver_with_config.SerializeToString())
+            solver_config_id = hashlib.sha3_256(solver_with_config.SerializeToString()).hexdigest()
             LOGGER('USING SOLVER --> '+ str(solver_config_id))
             return _solver.cnf(cnf=request, solver_config_id=solver_config_id)[0]
 

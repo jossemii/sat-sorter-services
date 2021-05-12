@@ -178,7 +178,7 @@ class Session(metaclass=Singleton):
                 LOGGER('REFRESH ES MENOR')
                 refresh = refresh + 1
                 cnf = self.random_cnf()
-                LOGGER('RESPUESTA DEL CNF --> ' + str(cnf))
+                LOGGER('OBTENIDO NUEVO CNF. ')
                 is_insat = True  # En caso en que se demuestre lo contrario.
                 insats = []  # Solvers que afirman la insatisfactibilidad junto con su respectivo tiempo.
                 LOGGER('VAMOS A PROBAR LOS SOLVERS')
