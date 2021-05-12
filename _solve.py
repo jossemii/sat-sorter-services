@@ -75,7 +75,7 @@ class SolverInstance(object):
         try:
             self.stub.Solve(
                 request=cnf,
-                timeout=self.avr_time
+                timeout=30
             )
             return True
         except (TimeoutError, grpc.RpcError):
@@ -94,7 +94,6 @@ class Session(metaclass=Singleton):
         self.SOLVER_FAILED_ATTEMPTS = ENVS['SOLVER_FAILED_ATTEMPTS']
 
         LOGGER('INIT SOLVE SESSION ....')
-        self.avr_time = 30
         self.solvers = {}
         self.gateway_stub = gateway_pb2_grpc.GatewayStub(grpc.insecure_channel(self.GATEWAY_MAIN_DIR))
         self.solvers_lock = Lock()
@@ -121,7 +120,7 @@ class Session(metaclass=Singleton):
             start_time = time_now()
             interpretation = solver.stub.Solve(
                 request=cnf,
-                timeout=self.avr_time
+                timeout=timeout
             )
             time = time_now() - start_time
             # Si hemos obtenido una respuesta, en caso de que nos comunique que hay una interpretacion,
