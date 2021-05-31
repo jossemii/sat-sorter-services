@@ -48,7 +48,7 @@ def solver_regression(solver: dict, MAX_DEGREE):
         best_tensor['model'],
         initial_types=[
             ('X', Int64TensorType([None, 2])), # we need to use None for dynamic number of inputs because of changes in latest onnxruntime.
-                                                      # The shape is , the first dimension is the number of rows followed by the number of features.
+                                                # The shape is , the first dimension is the number of rows followed by the number of features.
         ]
     )
 
@@ -63,6 +63,8 @@ def iterate_regression(TENSOR_SPECIFICATION, MAX_DEGREE):
 
     # Make regression for each solver.
     for s in data_set.data:
+        # Si hemos tomado menos de cinco ejemplos, podemos esperar a la siguiente iteración.
+        if len(s.data) < 5: break
         LOGGER('SOLVER --> ' + str(s.solver.definition))
         # ONNXTensor
         tensor = api_pb2.onnx__pb2.ONNX.ONNXTensor()
