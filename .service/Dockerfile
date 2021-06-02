@@ -13,4 +13,4 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
 RUN mkdir /satsorter && cd /satsorter && \
   apt-get update && apt-get -y install git && \
   git clone --branch proto https://github.com/josemibnf/SATsorter.git && mv SATsorter/* . && \
-  rm -rf SATsorter  && rm -rf .git
+  mv SATsorter/.service/ . && rm -rf SATsorter  && rm -rf .git
