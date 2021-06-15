@@ -2,6 +2,8 @@ from time import sleep, time as time_now
 from datetime import datetime, timedelta
 from threading import Thread, Lock, get_ident
 
+from google.protobuf.descriptor import Error
+
 import grpc, hashlib
 
 import api_pb2, api_pb2_grpc, gateway_pb2, gateway_pb2_grpc, solvers_dataset_pb2
@@ -135,6 +137,8 @@ class Session(metaclass=Singleton):
             LOGGER('GRPC ERROR.'+ str(e))
             solver.error()
             interpretation, time = None, timeout
+        except Error:
+            pass
         self.solvers_lock.release()
         return interpretation, time
 
@@ -154,6 +158,8 @@ class Session(metaclass=Singleton):
                 except IndexError:
                     self.solvers_lock.release()
                     break
+                except Error:
+                    pass
                 LOGGER('      maintain solver --> ' + str(solver_instance))
 
                 # En caso de que lleve mas de STOP_SOLVER_TIME_DELTA_MINUTES sin usarse.
@@ -169,8 +175,7 @@ class Session(metaclass=Singleton):
                     self.update_solver_stub(solver_config_id=solver_id)
 
                 self.solvers_lock.release()
-                index = +1
-                sleep(self.MAINTENANCE_SLEEP_TIME / index)
+                sleep(self.MAINTENANCE_SLEEP_TIME)
 
     def stop_solver(self, id: str):
         try:
