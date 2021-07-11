@@ -27,6 +27,7 @@ class SolverInstance(object):
         self.config.spec_slot.append( solver_with_config.definition.api[0].port ) # solo tomamos el primer slot. ¡suponemos que se encuentra alli toda la api!
 
         self.stub = None
+        self.lock = Lock()
         self.token = gateway_pb2.Token()
         self.creation_datetime = datetime.now()
         self.use_datetime = datetime.now()
@@ -49,6 +50,7 @@ class SolverInstance(object):
 
     def update_solver_stub(self, instance: gateway_pb2.ipss__pb2.Instance):
         uri = instance.instance.uri_slot[0].uri[0]
+        LOGGER('THE URI FOR THE SOLVER '+ str(self.service_def.hash[0])+' is--> '+str(uri))
         self.stub = api_pb2_grpc.SolverStub(
             grpc.insecure_channel(
                 uri.ip+':'+str(uri.port)
@@ -74,13 +76,16 @@ class SolverInstance(object):
         cnf = api_pb2.Cnf()
         clause = cnf.clause.add()
         clause.literal = 1
+        self.lock.acquire()
         try:
             self.stub.Solve(
                 request=cnf,
                 timeout=30
             )
+            self.lock.release()
             return True
         except (TimeoutError, grpc.RpcError):
+            self.lock.release()
             return False
 
 
@@ -111,43 +116,49 @@ class Session(metaclass=Singleton):
             LOGGER('GRPC ERROR.'+ str(e))
 
     def cnf(self, cnf, solver_config_id: str, timeout=None):
-        LOGGER('cnf want solvers lock' + str(self.solvers_lock.locked()))
+        LOGGER(str(timeout)+'cnf want solvers lock' + str(self.solvers_lock.locked()))
         self.solvers_lock.acquire()
+        LOGGER(str(timeout)+'using the lock')
 
         if solver_config_id not in self.solvers: raise Exception
         solver = self.solvers[solver_config_id]
+        self.solvers_lock.release()
+
+        solver.lock.acquire()
         solver.mark_time()
         try:
             # Tiene en cuenta el tiempo de respuesta y deserializacion del buffer.
             start_time = time_now()
+            LOGGER('    resolving cnf on '+ str(solver_config_id))
             interpretation = solver.stub.Solve(
                 request=cnf,
                 timeout=timeout
             )
             time = time_now() - start_time
+            LOGGER(str(time)+'    resolved cnf on '+ str(solver_config_id))
             # Si hemos obtenido una respuesta, en caso de que nos comunique que hay una interpretacion,
             #  si no nos da interpretacion asumimos que lo identifica como insatisfactible.
             solver.reset_timers()
             LOGGER('INTERPRETACION --> ' + str(interpretation.variable))
-        except TimeoutError:
-            LOGGER('TIME OUT NO SUPERADO.')
-            solver.timeout_passed()
-            interpretation, time = None, timeout
         except grpc.RpcError as e:
-            LOGGER('GRPC ERROR.'+ str(e))
+            if int(e.code().value[0]) == 4:  # https://github.com/avinassh/grpc-errors/blob/master/python/client.py
+                LOGGER('TIME OUT NO SUPERADO.')
+                solver.timeout_passed()
+            else:
+                LOGGER('GRPC ERROR.'+ str(e))
+                solver.error()
+            interpretation, time = None, timeout
+        except Exception as e:
+            LOGGER('ERROR ON CNF ' + str(e))
             solver.error()
             interpretation, time = None, timeout
-        except Error:
-            pass
-        self.solvers_lock.release()
+        solver.lock.release()
         return interpretation, time
 
     def maintenance(self):
         while True:
             LOGGER('MAINTEANCE THREAD IS ' + str(get_ident()))
             sleep(self.MAINTENANCE_SLEEP_TIME)
-
-            
             index = 0
             while True: # Si hacemos for solver in solvers habría que bloquear el bucle entero.
                 LOGGER('maintainer want solvers lock' + str(self.solvers_lock.locked()))
@@ -158,14 +169,19 @@ class Session(metaclass=Singleton):
                 except IndexError:
                     self.solvers_lock.release()
                     break
-                except Error:
-                    pass
+                except Exception as e:
+                    LOGGER('ERROR on maintainer, '+str(e))
+                    self.solvers_lock.release()
+                    break
+                self.solvers_lock.release()
+
+                solver_instance.lock.acquire()
                 LOGGER('      maintain solver --> ' + str(solver_instance))
 
                 # En caso de que lleve mas de STOP_SOLVER_TIME_DELTA_MINUTES sin usarse.
                 if datetime.now() - solver_instance.use_datetime > timedelta(minutes=self.STOP_SOLVER_TIME_DELTA_MINUTES):
                     self.stop_solver(id=solver_id)
-                    self.solvers_lock.release()
+                    solver_instance.lock.release()
                     continue
                 # En caso de que tarde en dar respuesta a cnf's reales,
                 #  comprueba si la instancia sigue funcionando.
@@ -174,10 +190,11 @@ class Session(metaclass=Singleton):
                         solver_instance.failed_attempts > self.SOLVER_FAILED_ATTEMPTS:
                     self.update_solver_stub(solver_config_id=solver_id)
 
-                self.solvers_lock.release()
+                solver_instance.lock.release()
                 sleep(self.MAINTENANCE_SLEEP_TIME)
 
     def stop_solver(self, id: str):
+        self.solvers_lock.acquire()
         try:
             self.gateway_stub.StopService(
                 self.solvers[id].token
@@ -185,6 +202,7 @@ class Session(metaclass=Singleton):
         except grpc.RpcError as e:
             LOGGER('GRPC ERROR.'+ str(e))
         del self.solvers[id]
+        self.solvers_lock.release()
 
     def add_solver(self, solver_with_config: solvers_dataset_pb2.SolverWithConfig, solver_config_id: str):
         self.solvers.update({

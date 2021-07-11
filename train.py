@@ -29,7 +29,7 @@ class Session(metaclass=Singleton):
         self.solvers_dataset = solvers_dataset_pb2.DataSet()
         self.solvers = []
         self.solvers_lock = Lock()
-        self.exit_event = None
+        self.do_stop = False
         self._solver = _solve.Session(ENVS=ENVS)
 
         # Random CNF Service.
@@ -39,14 +39,14 @@ class Session(metaclass=Singleton):
         )
 
     def stop(self):
-        if self.exit_event and self.thread:
-            self.exit_event.set()
+        if self.do_stop and self.thread:
+            self.do_stop = True
             self.thread.join()
             try:
                 self.gateway_stub.StopService(self.random_token)
             except grpc.RpcError as e:
                 LOGGER('GRPC ERROR.'+ str(e))
-            self.exit_event = None
+            self.do_stop = False
             self.thread = None
 
     def load_solver(self, solver: solvers_dataset_pb2.ipss__pb2.Service):
@@ -157,9 +157,8 @@ class Session(metaclass=Singleton):
         solver.data[type_of_cnf].index = solver.data[type_of_cnf].index + 1
 
     def start(self):
-        if self.exit_event and self.thread: return None
+        if self.do_stop and self.thread: return None
         try:
-            self.exit_event = Event()
             self.thread = Thread(target=self.init, name='Trainer')
             self.thread.start()
         except RuntimeError:
@@ -172,8 +171,7 @@ class Session(metaclass=Singleton):
         LOGGER('INICIANDO SERVICIO DE RANDOM CNF')
         self.init_random_cnf_service()
         LOGGER('hecho.')
-        while True:
-            if self.exit_event.is_set(): break
+        while not self.do_stop:
             if refresh < self.REFRESH:
                 LOGGER('REFRESH ES MENOR')
                 refresh = refresh + 1
@@ -184,11 +182,12 @@ class Session(metaclass=Singleton):
                 LOGGER('VAMOS A PROBAR LOS SOLVERS')
                 self.solvers_lock.acquire()
                 for solver in self.solvers_dataset.data:
-                    LOGGER('SOVLER --> ' + str(solver.hash))
+                    if self.do_stop: break
+                    LOGGER('SOLVER --> ' + str(solver.hash))
                     try:
                         interpretation, time = self._solver.cnf(cnf=cnf, solver_config_id=solver.hash, timeout=timeout)
                     except Exception as e:
-                        LOGGER('ERROR SOLVING A CNF'+ str(e))
+                        LOGGER('ERROR SOLVING A CNF ON TRAIN '+ str(e))
                         interpretation, time = None, timeout
                         pass
                     if not interpretation or not interpretation.variable:

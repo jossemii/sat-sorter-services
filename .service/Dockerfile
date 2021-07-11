@@ -8,7 +8,7 @@ RUN apt-get update --fix-missing && \
 RUN export DEBIAN_FRONTEND=noninteractive && \
   apt-get update --fix-missing && \
   apt-get -y install cmake protobuf-compiler libprotoc-dev && \
-  pip3 install sklearn protobuf numpy scikit-learn skl2onnx
+  pip3 install sklearn numpy scikit-learn skl2onnx
 
 RUN mkdir /satsorter && cd /satsorter && \
   apt-get update && apt-get -y install git && \

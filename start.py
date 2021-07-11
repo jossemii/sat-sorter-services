@@ -21,7 +21,7 @@ ENVS = {
 if __name__ == "__main__":
 
     from time import sleep
-    import os, hashlib
+    import hashlib
     import train, _get, _solve
     from threading import get_ident, Thread
     import regresion
@@ -57,7 +57,11 @@ if __name__ == "__main__":
             )
             solver_config_id = hashlib.sha3_256(solver_with_config.SerializeToString()).hexdigest()
             LOGGER('USING SOLVER --> '+ str(solver_config_id))
-            return _solver.cnf(cnf=request, solver_config_id=solver_config_id)[0]
+            try:
+                return _solver.cnf(cnf=request, solver_config_id=solver_config_id)[0]
+            except Exception as e:
+                LOGGER('ERROR SOLVING A CNF ON Solve ' + str(e))
+                return api_pb2.Empty()
 
         def StreamLogs(self, request, context):
             with open('app.log') as file:
