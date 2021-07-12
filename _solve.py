@@ -120,7 +120,11 @@ class Session(metaclass=Singleton):
         self.solvers_lock.acquire()
         LOGGER(str(timeout)+'using the lock')
 
-        if solver_config_id not in self.solvers: raise Exception
+        if solver_config_id not in self.solvers:
+            self.solvers_lock.release()
+            LOGGER('ERROR SOLVING CNF, SOLVER_CONFIG_ID NOT IN _Solve.solvers list.' \
+                   +str(self.solvers)+' '+str(solver_config_id))
+            return None, timeout
         solver = self.solvers[solver_config_id]
         self.solvers_lock.release()
 

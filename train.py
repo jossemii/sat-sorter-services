@@ -187,7 +187,7 @@ class Session(metaclass=Singleton):
                     try:
                         interpretation, time = self._solver.cnf(cnf=cnf, solver_config_id=solver.hash, timeout=timeout)
                     except Exception as e:
-                        LOGGER('ERROR SOLVING A CNF ON TRAIN '+ str(e))
+                        LOGGER('INTERNAL ERROR SOLVING A CNF ON TRAIN '+ str(e))
                         interpretation, time = None, timeout
                         pass
                     if not interpretation or not interpretation.variable:
