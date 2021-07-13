@@ -27,10 +27,11 @@ class Session(metaclass=Singleton):
         self.random_stub = None
         self.random_token = gateway_pb2.Token()
         self.solvers_dataset = solvers_dataset_pb2.DataSet()
-        self.solvers = []
-        self.solvers_lock = Lock()
+        self.solvers = [] # Lista de los solvers por hash.
+        self.solvers_dataset_lock = Lock() # Se usa al añadir un solver y durante cada iteracion de entrenamiento.
+        self.solvers_lock = Lock() # Se uso al añadir un solver ya que podrían añadirse varios concurrentemente.
         self.do_stop = False
-        self._solver = _solve.Session(ENVS=ENVS)
+        self._solver = _solve.Session(ENVS=ENVS) # Using singleton pattern.
 
         # Random CNF Service.
         self.random_config = gateway_pb2.ipss__pb2.Configuration()
@@ -57,16 +58,19 @@ class Session(metaclass=Singleton):
         for h in solver.hash:
             if h.split(':')[0] == 'sha3-256':
                 hash = h.split(':')[1]
+
+        self.solvers_lock.acquire()
         if hash and hash not in self.solvers:
             self.solvers.append(hash)
-            self.solvers_lock.acquire()
+            self.solvers_dataset_lock.acquire()
             p = solvers_dataset_pb2.DataSetInstance()
             p.solver.definition.CopyFrom(solver)
             # p.solver.enviroment_variables (Usamos las variables de entorno por defecto).
             p.hash = hashlib.sha3_256(p.solver.SerializeToString()).hexdigest()
             self.solvers_dataset.data.append(p)
             self._solver.add_solver(solver_with_config=p.solver, solver_config_id=p.hash)
-            self.solvers_lock.release()
+            self.solvers_dataset_lock.release()
+        self.solvers_lock.release()
 
     def random_service_extended(self):
         config = True
@@ -180,7 +184,7 @@ class Session(metaclass=Singleton):
                 is_insat = True  # En caso en que se demuestre lo contrario.
                 insats = []  # Solvers que afirman la insatisfactibilidad junto con su respectivo tiempo.
                 LOGGER('VAMOS A PROBAR LOS SOLVERS')
-                self.solvers_lock.acquire()
+                self.solvers_dataset_lock.acquire()
                 for solver in self.solvers_dataset.data:
                     if self.do_stop: break
                     LOGGER('SOLVER --> ' + str(solver.hash))
@@ -209,7 +213,7 @@ class Session(metaclass=Singleton):
                             solver=solver,
                             score=score
                         )
-                self.solvers_lock.release()
+                self.solvers_dataset_lock.release()
                 # Registra los solvers que afirmaron la insatisfactibilidad en caso en que ninguno
                 #  haya demostrado lo contrario.
                 for d in insats:

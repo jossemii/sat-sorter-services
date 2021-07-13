@@ -108,6 +108,11 @@ class Session(metaclass=Singleton):
 
     def update_solver_stub(self, solver_config_id: str):
         solver_instance = self.solvers[solver_config_id]
+        # Hay que asegurarse de que el objeto solver_instance no es usado por otro hilo,
+        #   solo de da uso de este método en dos casos: durante la creación del solver, se
+        #   ha añadido a la lista solvers antes de llamar a este método y
+        #   bloquea el solvers_lock, por tanto ningun hilo lo tomará de la lista. Durante el
+        #   mantenimiento se llama al método dando uso del bloqueo propio del solver.
         try:
             solver_instance.update_solver_stub(
                 self.gateway_stub.StartService(solver_instance.service_extended())
@@ -209,9 +214,11 @@ class Session(metaclass=Singleton):
         self.solvers_lock.release()
 
     def add_solver(self, solver_with_config: solvers_dataset_pb2.SolverWithConfig, solver_config_id: str):
+        self.solvers_lock.acquire()
         self.solvers.update({
             solver_config_id: SolverInstance(
-                    solver_with_config=solver_with_config
-                )
-            })
+                solver_with_config=solver_with_config
+            )
+        })
         self.update_solver_stub(solver_config_id=solver_config_id)
+        self.solvers_lock.release()
