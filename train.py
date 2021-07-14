@@ -103,15 +103,6 @@ class Session(metaclass=Singleton):
         self.random_token.CopyFrom(instance.token)
 
     def random_cnf(self):
-        def new_instance():
-            LOGGER('VAMOS A CAMBIAR EL SERVICIO DE OBTENCION DE CNFs RANDOM')
-            try:
-                self.gateway_stub.StopService(self.random_token)
-            except grpc.RpcError as e:
-                LOGGER('GRPC ERROR.'+ str(e))
-            self.init_random_cnf_service()
-            LOGGER('listo. ahora vamos a probar otra vez.')
-
         connection_errors = 0
         while True:
             try:
@@ -127,7 +118,13 @@ class Session(metaclass=Singleton):
                 else:
                     connection_errors = 0
                     LOGGER('  ERROR OCCURS OBTAINING THE CNF --> ' + str(e))
-                    new_instance()
+                    LOGGER('VAMOS A CAMBIAR EL SERVICIO DE OBTENCION DE CNFs RANDOM')
+                    try:
+                        self.gateway_stub.StopService(self.random_token)
+                    except grpc.RpcError as e:
+                        LOGGER('GRPC ERROR.' + str(e))
+                    self.init_random_cnf_service()
+                    LOGGER('listo. ahora vamos a probar otra vez.')
                     continue
 
     @staticmethod

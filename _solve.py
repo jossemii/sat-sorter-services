@@ -223,10 +223,11 @@ class Session(metaclass=Singleton):
             sleep(self.MAINTENANCE_SLEEP_TIME)
             index = 0
             while True:  # Si hacemos for solver in solvers habría que bloquear el bucle entero.
+                sleep(self.MAINTENANCE_SLEEP_TIME)
                 LOGGER('maintainer want solvers lock' + str(self.lock.locked()))
                 self.lock.acquire()
                 # Toma aqui el máximo tiempo de desuso para aprovechar el uso del lock.
-                MAX_DISUSE_TIME = len(self.solvers) * self.TRAIN_SOLVERS_TIMEOUT
+                max_disuse_time = len(self.solvers) * self.TRAIN_SOLVERS_TIMEOUT
                 try:
                     solver_config = self.solvers[
                         list(self.solvers)[index]
@@ -251,7 +252,7 @@ class Session(metaclass=Singleton):
                 # En caso de que lleve mas de demasiado tiempo sin usarse.
                 # o se encuentre en estado 'zombie'
                 if datetime.now() - instance.use_datetime > timedelta(
-                            minutes=MAX_DISUSE_TIME) \
+                            minutes=max_disuse_time) \
                         or instance.is_zombie(
                             self.SOLVER_PASS_TIMEOUT_TIMES,
                             self.TRAIN_SOLVERS_TIMEOUT,
@@ -263,7 +264,6 @@ class Session(metaclass=Singleton):
                     self.lock.acquire()
                     solver_config.add_instance(instance)
                     self.lock.release()
-                sleep(self.MAINTENANCE_SLEEP_TIME)
 
     def add_solver(self, solver_with_config: solvers_dataset_pb2.SolverWithConfig, solver_config_id: str):
         self.lock.acquire()
