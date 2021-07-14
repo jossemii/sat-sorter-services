@@ -48,14 +48,20 @@ if __name__ == "__main__":
     trainer = train.Session(ENVS=ENVS)
     _solver = _solve.Session(ENVS=ENVS)
 
-    class SolverServicer(api_pb2_grpc.SolverServicer): 
+
+    class SolverServicer(api_pb2_grpc.SolverServicer):
 
         def Solve(self, request, context):
-            solver_with_config = _get.cnf(
-                cnf=request
-            )
+            try:
+                solver_with_config = _get.cnf(
+                    cnf=request
+                )
+            except FileNotFoundError:
+                LOGGER('Wait more for it, tensor is not ready. ')
+                return api_pb2.Empty()
+
             solver_config_id = hashlib.sha3_256(solver_with_config.SerializeToString()).hexdigest()
-            LOGGER('USING SOLVER --> '+ str(solver_config_id))
+            LOGGER('USING SOLVER --> ' + str(solver_config_id))
             try:
                 return _solver.cnf(
                     cnf=request,
@@ -73,7 +79,7 @@ if __name__ == "__main__":
                     f.file = file.read()
                     yield f
                     sleep(1)
-            
+
         def UploadSolver(self, request, context):
             trainer.load_solver(request)
             return api_pb2.Empty()
@@ -97,9 +103,9 @@ if __name__ == "__main__":
 
     # create a gRPC server
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    
+
     api_pb2_grpc.add_SolverServicer_to_server(
-            SolverServicer(), server)
+        SolverServicer(), server)
 
     # listen on port 8080
     LOGGER('Starting server. Listening on port 8080.')

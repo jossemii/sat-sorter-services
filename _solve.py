@@ -16,6 +16,7 @@ SHA3_256 = lambda value: "" if value is None else 'sha3-256:0x' + hashlib.sha3_2
 
 HASH_LIST = ['SHAKE_256', 'SHA3_256']
 
+
 # Si se toma una instancia, se debe de asegurar que, o bien se agrega a su cola
 #  correspondiente, o bien se para. No asegurar esto ocasiona un bug importante
 #  ya que las instancias quedarían zombies en la red hasta que el clasificador
@@ -252,12 +253,12 @@ class Session(metaclass=Singleton):
                 # En caso de que lleve mas de demasiado tiempo sin usarse.
                 # o se encuentre en estado 'zombie'
                 if datetime.now() - instance.use_datetime > timedelta(
-                            minutes=max_disuse_time) \
+                        minutes=max_disuse_time) \
                         or instance.is_zombie(
-                            self.SOLVER_PASS_TIMEOUT_TIMES,
-                            self.TRAIN_SOLVERS_TIMEOUT,
-                            self.SOLVER_FAILED_ATTEMPTS
-                        ):
+                    self.SOLVER_PASS_TIMEOUT_TIMES,
+                    self.TRAIN_SOLVERS_TIMEOUT,
+                    self.SOLVER_FAILED_ATTEMPTS
+                ):
                     instance.stop(self.gateway_stub)
                 # En caso contrario añade de nuevo la instancia a su respectiva cola.
                 else:
@@ -266,6 +267,7 @@ class Session(metaclass=Singleton):
                     self.lock.release()
 
     def add_solver(self, solver_with_config: solvers_dataset_pb2.SolverWithConfig, solver_config_id: str):
+        LOGGER('ADDED NEW SOLVER '+str(solver_config_id))
         self.lock.acquire()
         self.solvers.update({
             solver_config_id: SolverConfig(

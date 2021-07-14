@@ -114,6 +114,7 @@ class Session(metaclass=Singleton):
             except (grpc.RpcError, TimeoutError) as e:
                 if connection_errors < self.CONNECTION_ERRORS:
                     connection_errors = connection_errors + 1
+                    sleep(1) # Evita condiciones de carrera si lo ejecuta tras recibir la instancia.
                     continue
                 else:
                     connection_errors = 0
