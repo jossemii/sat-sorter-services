@@ -11,55 +11,38 @@ from singleton import Singleton
 from start import LOGGER
 
 # -- HASH FUNCTIONS --
-SHAKE_256 = lambda value: "" if value is None else 'shake-256:0x'+hashlib.shake_256(value).hexdigest(32)
-SHA3_256 = lambda value: "" if value is None else 'sha3-256:0x'+hashlib.sha3_256(value).hexdigest()
+SHAKE_256 = lambda value: "" if value is None else 'shake-256:0x' + hashlib.shake_256(value).hexdigest(32)
+SHA3_256 = lambda value: "" if value is None else 'sha3-256:0x' + hashlib.sha3_256(value).hexdigest()
 
 HASH_LIST = ['SHAKE_256', 'SHA3_256']
 
-class SolverInstance(object):
-    def __init__(self, solver_with_config: solvers_dataset_pb2.SolverWithConfig):
-        self.service_def = gateway_pb2.ipss__pb2.Service()
-        self.service_def.CopyFrom(solver_with_config.definition)
-        
-        # Configuration.
-        self.config = gateway_pb2.ipss__pb2.Configuration()
-        self.config.enviroment_variables.update(solver_with_config.enviroment_variables)
-        self.config.spec_slot.append( solver_with_config.definition.api[0].port ) # solo tomamos el primer slot. ¡suponemos que se encuentra alli toda la api!
+# Si se toma una instancia, se debe de asegurar que, o bien se agrega a su cola
+#  correspondiente, o bien se para. No asegurar esto ocasiona un bug importante
+#  ya que las instancias quedarían zombies en la red hasta que el clasificador
+#  fuera eliminado.
 
-        self.stub = None
-        self.lock = Lock()
-        self.token = gateway_pb2.Token()
+class SolverInstance(object):
+    def __init__(self, stub, token):
+        self.stub = stub
+        self.token = token
         self.creation_datetime = datetime.now()
         self.use_datetime = datetime.now()
         self.pass_timeout = 0
         self.failed_attempts = 0
 
-    def service_extended(self):
-        config = True
-        transport = gateway_pb2.ServiceTransport()
-        for hash in self.service_def.hash:
-            transport.hash = hash
-            if config: # Solo hace falta enviar la configuracion en el primer paquete.
-                transport.config.CopyFrom(self.config)
-                config = False
-            yield transport
-        transport.ClearField('hash')
-        if config: transport.config.CopyFrom(self.config)
-        transport.service.CopyFrom(self.service_def)
-        yield transport
-
-    def update_solver_stub(self, instance: gateway_pb2.ipss__pb2.Instance):
-        uri = instance.instance.uri_slot[0].uri[0]
-        LOGGER('THE URI FOR THE SOLVER '+ str(self.service_def.hash[0])+' is--> '+str(uri))
-        self.stub = api_pb2_grpc.SolverStub(
-            grpc.insecure_channel(
-                uri.ip+':'+str(uri.port)
-            )
-        )
-        self.token.CopyFrom(instance.token)
-
     def error(self):
         self.failed_attempts = self.failed_attempts + 1
+
+    def is_zombie(self,
+                  SOLVER_PASS_TIMEOUT_TIMES,
+                  TRAIN_SOLVERS_TIMEOUT,
+                  SOLVER_FAILED_ATTEMPTS
+                  ) -> bool:
+        # En caso de que tarde en dar respuesta a cnf's reales,
+        #  comprueba si la instancia sigue funcionando.
+        return self.pass_timeout > SOLVER_PASS_TIMEOUT_TIMES and \
+               not self.check_if_is_alive(timeout=TRAIN_SOLVERS_TIMEOUT) \
+               or self.failed_attempts > SOLVER_FAILED_ATTEMPTS
 
     def timeout_passed(self):
         self.pass_timeout = self.pass_timeout + 1
@@ -71,154 +54,222 @@ class SolverInstance(object):
     def mark_time(self):
         self.use_datetime = datetime.now()
 
-    def check_if_service_is_alive(self) -> bool:
-        LOGGER('Check if serlvice ' + str(self.multihash[0]) + ' is alive.')
+    def check_if_is_alive(self, timeout) -> bool:
+        LOGGER('Check if instance ' + str(self.token) + ' is alive.')
         cnf = api_pb2.Cnf()
         clause = cnf.clause.add()
         clause.literal = 1
-        self.lock.acquire()
         try:
             self.stub.Solve(
                 request=cnf,
-                timeout=30
+                timeout=timeout
             )
-            self.lock.release()
             return True
         except (TimeoutError, grpc.RpcError):
-            self.lock.release()
             return False
+
+    def stop(self, gateway_stub):
+        try:
+            gateway_stub.StopService(
+                self.token
+            )
+        except grpc.RpcError as e:
+            LOGGER('GRPC ERROR.' + str(e))
+
+
+class SolverConfig(object):
+    def __init__(self, solver_with_config: solvers_dataset_pb2.SolverWithConfig):
+        self.service_def = gateway_pb2.ipss__pb2.Service()
+        self.service_def.CopyFrom(solver_with_config.definition)
+
+        # Configuration.
+        self.config = gateway_pb2.ipss__pb2.Configuration()
+        self.config.enviroment_variables.update(solver_with_config.enviroment_variables)
+        self.config.spec_slot.append(solver_with_config.definition.api[
+                                         0].port)  # solo tomamos el primer slot. ¡suponemos que se encuentra alli toda la api!
+
+        self.instances = []  # se da uso de una pila para que el 'maintainer' detecte las instancias que quedan en desuso,
+                             #  ya que quedarán estancadas al final de la pila.
+
+    def service_extended(self):
+        config = True
+        transport = gateway_pb2.ServiceTransport()
+        for hash in self.service_def.hash:
+            transport.hash = hash
+            if config:  # Solo hace falta enviar la configuracion en el primer paquete.
+                transport.config.CopyFrom(self.config)
+                config = False
+            yield transport
+        transport.ClearField('hash')
+        if config: transport.config.CopyFrom(self.config)
+        transport.service.CopyFrom(self.service_def)
+        yield transport
+
+    def launch_instance(self, gateway_stub) -> SolverInstance:
+        try:
+            instance = gateway_stub.StartService(self.service_extended())
+        except grpc.RpcError as e:
+            LOGGER('GRPC ERROR.' + str(e))
+
+        uri = instance.instance.uri_slot[0].uri[0]
+        LOGGER('THE URI FOR THE SOLVER ' + str(self.service_def.hash[0]) + ' is--> ' + str(uri))
+
+        return SolverInstance(
+            stub=api_pb2_grpc.SolverStub(
+                grpc.insecure_channel(
+                    uri.ip + ':' + str(uri.port)
+                )
+            ),
+            token=instance.token
+        )
+
+    def add_instance(self, instance: SolverInstance):
+        self.instances.append(instance)
+
+    def get_instance(self) -> SolverInstance:
+        try:
+            return self.instances.pop()
+        except IndexError:
+            raise IndexError
 
 
 class Session(metaclass=Singleton):
 
-    def __init__(self, ENVS):
+    def __init__(self, ENVS: dict):
 
         # set used envs on variables.
         self.GATEWAY_MAIN_DIR = ENVS['GATEWAY_MAIN_DIR']
         self.MAINTENANCE_SLEEP_TIME = ENVS['MAINTENANCE_SLEEP_TIME']
         self.SOLVER_PASS_TIMEOUT_TIMES = ENVS['SOLVER_PASS_TIMEOUT_TIMES']
-        self.STOP_SOLVER_TIME_DELTA_MINUTES = ENVS['STOP_SOLVER_TIME_DELTA_MINUTES']
         self.SOLVER_FAILED_ATTEMPTS = ENVS['SOLVER_FAILED_ATTEMPTS']
+        self.TRAIN_SOLVERS_TIMEOUT = ENVS['TRAIN_SOLVERS_TIMEOUT']
 
         LOGGER('INIT SOLVE SESSION ....')
         self.solvers = {}
         self.gateway_stub = gateway_pb2_grpc.GatewayStub(grpc.insecure_channel(self.GATEWAY_MAIN_DIR))
-        self.solvers_lock = Lock()
+        self.lock = Lock()
         Thread(target=self.maintenance, name='Maintainer').start()
 
-    def update_solver_stub(self, solver_config_id: str):
-        solver_instance = self.solvers[solver_config_id]
-        # Hay que asegurarse de que el objeto solver_instance no es usado por otro hilo,
-        #   solo de da uso de este método en dos casos: durante la creación del solver, se
-        #   ha añadido a la lista solvers antes de llamar a este método y
-        #   bloquea el solvers_lock, por tanto ningun hilo lo tomará de la lista. Durante el
-        #   mantenimiento se llama al método dando uso del bloqueo propio del solver.
-        try:
-            solver_instance.update_solver_stub(
-                self.gateway_stub.StartService(solver_instance.service_extended())
-            )
-        except grpc.RpcError as e:
-            LOGGER('GRPC ERROR.'+ str(e))
-
-    def cnf(self, cnf, solver_config_id: str, timeout=None):
-        LOGGER(str(timeout)+'cnf want solvers lock' + str(self.solvers_lock.locked()))
-        self.solvers_lock.acquire()
-        LOGGER(str(timeout)+'using the lock')
+    def cnf(self, cnf, solver_config_id: str, timeout=None, solver_with_config=None):
+        LOGGER(str(timeout) + 'cnf want solvers lock' + str(self.lock.locked()))
+        self.lock.acquire()
 
         if solver_config_id not in self.solvers:
-            self.solvers_lock.release()
+            self.lock.release()
             LOGGER('ERROR SOLVING CNF, SOLVER_CONFIG_ID NOT IN _Solve.solvers list.' \
-                   +str(self.solvers)+' '+str(solver_config_id))
-            return None, timeout
-        solver = self.solvers[solver_config_id]
-        self.solvers_lock.release()
+                   + str(self.solvers.keys()) + ' ' + str(solver_config_id))
 
-        solver.lock.acquire()
-        solver.mark_time()
+            self.add_solver(
+                solver_config_id=solver_config_id,
+                solver_with_config=solver_with_config
+            )
+            return None, timeout
+
+        solver_config = self.solvers[solver_config_id]
+        try:
+            instance = solver_config.get_instance()
+            self.lock.release()
+        except IndexError:
+            # Si no hay ninguna instancia disponible, deja el lock y manda al nodo una nueva.
+            self.lock.release()
+            instance = solver_config.launch_instance(self.gateway_stub)
+
+        instance.mark_time()
         try:
             # Tiene en cuenta el tiempo de respuesta y deserializacion del buffer.
             start_time = time_now()
-            LOGGER('    resolving cnf on '+ str(solver_config_id))
-            interpretation = solver.stub.Solve(
+            LOGGER('    resolving cnf on ' + str(solver_config_id))
+            interpretation = instance.stub.Solve(
                 request=cnf,
                 timeout=timeout
             )
             time = time_now() - start_time
-            LOGGER(str(time)+'    resolved cnf on '+ str(solver_config_id))
+            LOGGER(str(time) + '    resolved cnf on ' + str(solver_config_id))
             # Si hemos obtenido una respuesta, en caso de que nos comunique que hay una interpretacion,
             #  si no nos da interpretacion asumimos que lo identifica como insatisfactible.
-            solver.reset_timers()
+            instance.reset_timers()
             LOGGER('INTERPRETACION --> ' + str(interpretation.variable))
         except grpc.RpcError as e:
             if int(e.code().value[0]) == 4:  # https://github.com/avinassh/grpc-errors/blob/master/python/client.py
                 LOGGER('TIME OUT NO SUPERADO.')
-                solver.timeout_passed()
+                instance.timeout_passed()
             else:
-                LOGGER('GRPC ERROR.'+ str(e))
-                solver.error()
+                LOGGER('GRPC ERROR.' + str(e))
+                instance.error()
             interpretation, time = None, timeout
         except Exception as e:
             LOGGER('ERROR ON CNF ' + str(e))
-            solver.error()
+            instance.error()
             interpretation, time = None, timeout
-        solver.lock.release()
+
+        # Si la instancia se encuentra en estado zombie
+        # la para, en caso contrario la introduce
+        #  de nuevo en su cola correspondiente.
+        if instance.is_zombie(
+            self.SOLVER_PASS_TIMEOUT_TIMES,
+            self.TRAIN_SOLVERS_TIMEOUT,
+            self.SOLVER_FAILED_ATTEMPTS
+        ):
+            instance.stop(self.gateway_stub)
+        else:
+            self.lock.acquire()
+            solver_config.add_instance(instance)
+            self.lock.release()
         return interpretation, time
 
     def maintenance(self):
+        LOGGER('MAINTEANCE THREAD IS ' + str(get_ident()))
         while True:
-            LOGGER('MAINTEANCE THREAD IS ' + str(get_ident()))
             sleep(self.MAINTENANCE_SLEEP_TIME)
             index = 0
-            while True: # Si hacemos for solver in solvers habría que bloquear el bucle entero.
-                LOGGER('maintainer want solvers lock' + str(self.solvers_lock.locked()))
-                self.solvers_lock.acquire()
+            while True:  # Si hacemos for solver in solvers habría que bloquear el bucle entero.
+                LOGGER('maintainer want solvers lock' + str(self.lock.locked()))
+                self.lock.acquire()
+                # Toma aqui el máximo tiempo de desuso para aprovechar el uso del lock.
+                MAX_DISUSE_TIME = len(self.solvers) * self.TRAIN_SOLVERS_TIMEOUT
                 try:
-                    solver_id = list(self.solvers)[index]
-                    solver_instance = self.solvers[solver_id]
+                    solver_config = self.solvers[
+                        list(self.solvers)[index]
+                    ]
+                    try:
+                        instance = solver_config.get_instance()
+                    except IndexError:
+                        # No hay instancias disponibles en esta cola.
+                        self.lock.release()
+                        continue
                 except IndexError:
-                    self.solvers_lock.release()
+                    # Se han recorrido todos los solvers.
+                    self.lock.release()
                     break
                 except Exception as e:
-                    LOGGER('ERROR on maintainer, '+str(e))
-                    self.solvers_lock.release()
+                    LOGGER('ERROR on maintainer, ' + str(e))
+                    self.lock.release()
                     break
-                self.solvers_lock.release()
+                self.lock.release()
 
-                solver_instance.lock.acquire()
-                LOGGER('      maintain solver --> ' + str(solver_instance))
-
-                # En caso de que lleve mas de STOP_SOLVER_TIME_DELTA_MINUTES sin usarse.
-                if datetime.now() - solver_instance.use_datetime > timedelta(minutes=self.STOP_SOLVER_TIME_DELTA_MINUTES):
-                    self.stop_solver(id=solver_id)
-                    solver_instance.lock.release()
-                    continue
-                # En caso de que tarde en dar respuesta a cnf's reales,
-                #  comprueba si la instancia sigue funcionando.
-                if solver_instance.pass_timeout > self.SOLVER_PASS_TIMEOUT_TIMES and \
-                        not solver_instance.check_if_service_is_alive() or \
-                        solver_instance.failed_attempts > self.SOLVER_FAILED_ATTEMPTS:
-                    self.update_solver_stub(solver_config_id=solver_id)
-
-                solver_instance.lock.release()
+                LOGGER('      maintain solver instance --> ' + str(instance))
+                # En caso de que lleve mas de demasiado tiempo sin usarse.
+                # o se encuentre en estado 'zombie'
+                if datetime.now() - instance.use_datetime > timedelta(
+                            minutes=MAX_DISUSE_TIME) \
+                        or instance.is_zombie(
+                            self.SOLVER_PASS_TIMEOUT_TIMES,
+                            self.TRAIN_SOLVERS_TIMEOUT,
+                            self.SOLVER_FAILED_ATTEMPTS
+                        ):
+                    instance.stop(self.gateway_stub)
+                # En caso contrario añade de nuevo la instancia a su respectiva cola.
+                else:
+                    self.lock.acquire()
+                    solver_config.add_instance(instance)
+                    self.lock.release()
                 sleep(self.MAINTENANCE_SLEEP_TIME)
 
-    def stop_solver(self, id: str):
-        self.solvers_lock.acquire()
-        try:
-            self.gateway_stub.StopService(
-                self.solvers[id].token
-            )
-        except grpc.RpcError as e:
-            LOGGER('GRPC ERROR.'+ str(e))
-        del self.solvers[id]
-        self.solvers_lock.release()
-
     def add_solver(self, solver_with_config: solvers_dataset_pb2.SolverWithConfig, solver_config_id: str):
-        self.solvers_lock.acquire()
+        self.lock.acquire()
         self.solvers.update({
-            solver_config_id: SolverInstance(
+            solver_config_id: SolverConfig(
                 solver_with_config=solver_with_config
             )
         })
-        self.update_solver_stub(solver_config_id=solver_config_id)
-        self.solvers_lock.release()
+        self.lock.release()

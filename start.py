@@ -9,7 +9,6 @@ ENVS = {
     'MAINTENANCE_SLEEP_TIME' : 100,
     'SOLVER_PASS_TIMEOUT_TIMES' : 5,
     'SOLVER_FAILED_ATTEMPTS' : 5,
-    'STOP_SOLVER_TIME_DELTA_MINUTES' : 2,
     'TRAIN_SOLVERS_TIMEOUT' : 30,
     'MAX_REGRESSION_DEGREE' : 100,
     'TIME_FOR_EACH_REGRESSION_LOOP' : 900,
@@ -58,7 +57,11 @@ if __name__ == "__main__":
             solver_config_id = hashlib.sha3_256(solver_with_config.SerializeToString()).hexdigest()
             LOGGER('USING SOLVER --> '+ str(solver_config_id))
             try:
-                return _solver.cnf(cnf=request, solver_config_id=solver_config_id)[0]
+                return _solver.cnf(
+                    cnf=request,
+                    solver_config_id=solver_config_id,
+                    solver_with_config=solver_with_config
+                )[0]
             except Exception as e:
                 LOGGER('ERROR SOLVING A CNF ON Solve ' + str(e))
                 return api_pb2.Empty()

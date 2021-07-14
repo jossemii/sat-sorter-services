@@ -1,9 +1,13 @@
-import onnx_pb2, solvers_dataset_pb2, api_pb2
-import onnxruntime as rt
 import numpy
-from start import DIR, LOGGER
+import onnxruntime as rt
 
-def get_score(model: onnx_pb2.ModelProto, _cnf: dict) -> float:
+import api_pb2
+import onnx_pb2
+import solvers_dataset_pb2
+from start import DIR
+
+
+def get_score(model: onnx_pb2.ModelProto, _cnf: list[numpy.ndarray]) -> float:
     session = rt.InferenceSession(
         model.SerializeToString()
     )
@@ -11,7 +15,8 @@ def get_score(model: onnx_pb2.ModelProto, _cnf: dict) -> float:
     label_name = session.get_outputs()[0].name
     return session.run([label_name], {input_name: [_cnf]})[0][0][0]
 
-def data(cnf: api_pb2.Cnf) -> dict:
+
+def data(cnf: api_pb2.Cnf) -> list[numpy.ndarray]:
     num_literals = 0
     for clause in cnf.clause:
         for literal in clause.literal:
@@ -22,8 +27,9 @@ def data(cnf: api_pb2.Cnf) -> dict:
         numpy.array((num_literals)).astype(numpy.int64)
     ]
 
+
 def cnf(cnf: api_pb2.Cnf) -> solvers_dataset_pb2.SolverWithConfig:
-    with open(DIR+'tensor.onnx', 'rb') as file:
+    with open(DIR + 'tensor.onnx', 'rb') as file:
         tensors = onnx_pb2.ONNX()
         tensors.ParseFromString(file.read())
 
