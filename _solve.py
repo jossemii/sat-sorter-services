@@ -164,7 +164,7 @@ class Session(metaclass=Singleton):
                 solver_config_id=solver_config_id,
                 solver_with_config=solver_with_config
             )
-            return None, timeout
+            return Error
 
         solver_config = self.solvers[solver_config_id]
         try:
@@ -187,17 +187,21 @@ class Session(metaclass=Singleton):
             time = time_now() - start_time
             LOGGER(str(time) + '    resolved cnf on ' + str(solver_config_id))
             # Si hemos obtenido una respuesta, en caso de que nos comunique que hay una interpretacion,
-            #  si no nos da interpretacion asumimos que lo identifica como insatisfactible.
+            # será satisfactible. Si no nos da interpretacion asumimos que lo identifica como insatisfactible.
+            # Si ocurre un error (menos por superar el timeout) se deja la interpretación vacia (None) para,
+            # tras asegurar la instancia, lanzar una excepción.
             instance.reset_timers()
             LOGGER('INTERPRETACION --> ' + str(interpretation.variable))
         except grpc.RpcError as e:
             if int(e.code().value[0]) == 4:  # https://github.com/avinassh/grpc-errors/blob/master/python/client.py
                 LOGGER('TIME OUT NO SUPERADO.')
                 instance.timeout_passed()
+                interpretation, time = api_pb2.Interpretation(), timeout
+                interpretation.satisfiable = False
             else:
                 LOGGER('GRPC ERROR.' + str(e))
                 instance.error()
-            interpretation, time = None, timeout
+                interpretation, time = None, timeout
         except Exception as e:
             LOGGER('ERROR ON CNF ' + str(e))
             instance.error()
@@ -207,16 +211,20 @@ class Session(metaclass=Singleton):
         # la para, en caso contrario la introduce
         #  de nuevo en su cola correspondiente.
         if instance.is_zombie(
-            self.SOLVER_PASS_TIMEOUT_TIMES,
-            self.TRAIN_SOLVERS_TIMEOUT,
-            self.SOLVER_FAILED_ATTEMPTS
+                self.SOLVER_PASS_TIMEOUT_TIMES,
+                self.TRAIN_SOLVERS_TIMEOUT,
+                self.SOLVER_FAILED_ATTEMPTS
         ):
             instance.stop(self.gateway_stub)
         else:
             self.lock.acquire()
             solver_config.add_instance(instance)
             self.lock.release()
-        return interpretation, time
+
+        if interpretation:
+            return interpretation, time
+        else:
+            raise Exception
 
     def maintenance(self):
         LOGGER('MAINTEANCE THREAD IS ' + str(get_ident()))

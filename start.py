@@ -16,7 +16,6 @@ ENVS = {
     'START_AVR_TIMEOUT' : 30 
 }
 
-
 if __name__ == "__main__":
 
     from time import sleep
@@ -62,15 +61,16 @@ if __name__ == "__main__":
 
             solver_config_id = hashlib.sha3_256(solver_with_config.SerializeToString()).hexdigest()
             LOGGER('USING SOLVER --> ' + str(solver_config_id))
-            try:
-                return _solver.cnf(
-                    cnf=request,
-                    solver_config_id=solver_config_id,
-                    solver_with_config=solver_with_config
-                )[0]
-            except Exception as e:
-                LOGGER('ERROR SOLVING A CNF ON Solve ' + str(e))
-                return api_pb2.Empty()
+            while True:
+                try:
+                    return _solver.cnf(
+                        cnf=request,
+                        solver_config_id=solver_config_id,
+                        solver_with_config=solver_with_config
+                    )[0]
+                except Exception as e:
+                    LOGGER('ERROR SOLVING A CNF ON Solve ' + str(e))
+                    continue
 
         def StreamLogs(self, request, context):
             with open('app.log') as file:

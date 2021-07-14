@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\tapi.proto\x1a\nonnx.proto\x1a\nipss.proto\"\"\n\x0eInterpretation\x12\x10\n\x08variable\x18\x01 \x03(\x05\"\x19\n\x06\x43lause\x12\x0f\n\x07literal\x18\x01 \x03(\x05\"\x1e\n\x03\x43nf\x12\x17\n\x06\x63lause\x18\x01 \x03(\x0b\x32\x07.Clause\"\x07\n\x05\x45mpty\"\x14\n\x04\x46ile\x12\x0c\n\x04\x66ile\x18\x01 \x01(\t2%\n\x06Random\x12\x1b\n\tRandomCnf\x12\x06.Empty\x1a\x04.Cnf\"\x00\x32\xdf\x01\n\x06Solver\x12\x1e\n\nStartTrain\x12\x06.Empty\x1a\x06.Empty\"\x00\x12\x1d\n\tStopTrain\x12\x06.Empty\x1a\x06.Empty\"\x00\x12*\n\tGetTensor\x12\x06.Empty\x1a\x11.tensor_onnx.ONNX\"\x00\x30\x01\x12\'\n\x0cUploadSolver\x12\r.ipss.Service\x1a\x06.Empty\"\x00\x12\x1f\n\nStreamLogs\x12\x06.Empty\x1a\x05.File\"\x00\x30\x01\x12 \n\x05Solve\x12\x04.Cnf\x1a\x0f.Interpretation\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\tapi.proto\x1a\nonnx.proto\x1a\nipss.proto\"L\n\x0eInterpretation\x12\x10\n\x08variable\x18\x01 \x03(\x05\x12\x18\n\x0bsatisfiable\x18\x02 \x01(\x08H\x00\x88\x01\x01\x42\x0e\n\x0c_satisfiable\"\x19\n\x06\x43lause\x12\x0f\n\x07literal\x18\x01 \x03(\x05\"\x1e\n\x03\x43nf\x12\x17\n\x06\x63lause\x18\x01 \x03(\x0b\x32\x07.Clause\"\x07\n\x05\x45mpty\"\x14\n\x04\x46ile\x12\x0c\n\x04\x66ile\x18\x01 \x01(\t2%\n\x06Random\x12\x1b\n\tRandomCnf\x12\x06.Empty\x1a\x04.Cnf\"\x00\x32\xdf\x01\n\x06Solver\x12\x1e\n\nStartTrain\x12\x06.Empty\x1a\x06.Empty\"\x00\x12\x1d\n\tStopTrain\x12\x06.Empty\x1a\x06.Empty\"\x00\x12*\n\tGetTensor\x12\x06.Empty\x1a\x11.tensor_onnx.ONNX\"\x00\x30\x01\x12\'\n\x0cUploadSolver\x12\r.ipss.Service\x1a\x06.Empty\"\x00\x12\x1f\n\nStreamLogs\x12\x06.Empty\x1a\x05.File\"\x00\x30\x01\x12 \n\x05Solve\x12\x04.Cnf\x1a\x0f.Interpretation\"\x00\x62\x06proto3'
   ,
   dependencies=[onnx__pb2.DESCRIPTOR,ipss__pb2.DESCRIPTOR,])
 
@@ -43,6 +43,13 @@ _INTERPRETATION = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='satisfiable', full_name='Interpretation.satisfiable', index=1,
+      number=2, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -54,9 +61,14 @@ _INTERPRETATION = _descriptor.Descriptor(
   syntax='proto3',
   extension_ranges=[],
   oneofs=[
+    _descriptor.OneofDescriptor(
+      name='_satisfiable', full_name='Interpretation._satisfiable',
+      index=0, containing_type=None,
+      create_key=_descriptor._internal_create_key,
+    fields=[]),
   ],
   serialized_start=37,
-  serialized_end=71,
+  serialized_end=113,
 )
 
 
@@ -87,8 +99,8 @@ _CLAUSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=73,
-  serialized_end=98,
+  serialized_start=115,
+  serialized_end=140,
 )
 
 
@@ -119,8 +131,8 @@ _CNF = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=100,
-  serialized_end=130,
+  serialized_start=142,
+  serialized_end=172,
 )
 
 
@@ -144,8 +156,8 @@ _EMPTY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=132,
-  serialized_end=139,
+  serialized_start=174,
+  serialized_end=181,
 )
 
 
@@ -176,10 +188,13 @@ _FILE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=141,
-  serialized_end=161,
+  serialized_start=183,
+  serialized_end=203,
 )
 
+_INTERPRETATION.oneofs_by_name['_satisfiable'].fields.append(
+  _INTERPRETATION.fields_by_name['satisfiable'])
+_INTERPRETATION.fields_by_name['satisfiable'].containing_oneof = _INTERPRETATION.oneofs_by_name['_satisfiable']
 _CNF.fields_by_name['clause'].message_type = _CLAUSE
 DESCRIPTOR.message_types_by_name['Interpretation'] = _INTERPRETATION
 DESCRIPTOR.message_types_by_name['Clause'] = _CLAUSE
@@ -232,8 +247,8 @@ _RANDOM = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=163,
-  serialized_end=200,
+  serialized_start=205,
+  serialized_end=242,
   methods=[
   _descriptor.MethodDescriptor(
     name='RandomCnf',
@@ -258,8 +273,8 @@ _SOLVER = _descriptor.ServiceDescriptor(
   index=1,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=203,
-  serialized_end=426,
+  serialized_start=245,
+  serialized_end=468,
   methods=[
   _descriptor.MethodDescriptor(
     name='StartTrain',
