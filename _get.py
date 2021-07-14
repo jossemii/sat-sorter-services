@@ -7,7 +7,7 @@ import solvers_dataset_pb2
 from start import DIR
 
 
-def get_score(model: onnx_pb2.ModelProto, _cnf: list[numpy.ndarray]) -> float:
+def get_score(model: onnx_pb2.ModelProto, _cnf: dict) -> float:
     session = rt.InferenceSession(
         model.SerializeToString()
     )
@@ -16,7 +16,7 @@ def get_score(model: onnx_pb2.ModelProto, _cnf: list[numpy.ndarray]) -> float:
     return session.run([label_name], {input_name: [_cnf]})[0][0][0]
 
 
-def data(cnf: api_pb2.Cnf) -> list[numpy.ndarray]:
+def data(cnf: api_pb2.Cnf) -> dict:
     num_literals = 0
     for clause in cnf.clause:
         for literal in clause.literal:
