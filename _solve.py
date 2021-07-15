@@ -129,12 +129,12 @@ class SolverConfig(object):
             token=instance.token
         )
 
-    def add_instance(self, instance: SolverInstance):
-        self.instances.append(instance)
+    def add_instance(self, instance: SolverInstance, deep=False):
+        self.instances.append(instance) if not deep else self.instances.insert(0, instance)
 
-    def get_instance(self, queue: bool) -> SolverInstance:
+    def get_instance(self, deep=False) -> SolverInstance:
         try:
-            return self.instances.pop() if not queue else self.instances.pop(0)
+            return self.instances.pop() if not deep else self.instances.pop(0)
         except IndexError:
             raise IndexError
 
@@ -173,7 +173,7 @@ class Session(metaclass=Singleton):
 
         solver_config = self.solvers[solver_config_id]
         try:
-            instance = solver_config.get_instance(queue=False)  # use the list like a stack.
+            instance = solver_config.get_instance()  # use the list like a stack.
             self.lock.release()
         except IndexError:
             # Si no hay ninguna instancia disponible, deja el lock y manda al nodo una nueva.
@@ -250,29 +250,12 @@ class Session(metaclass=Singleton):
                         list(self.solvers)[index]
                     ]
                     try:
-                        instance = solver_config.get_instance(queue=True)  # use the list like a queue
+                        instance = solver_config.get_instance(deep=True)  # use the list like a queue
 
-                        # Toma aqui el máximo tiempo de desuso para aprovechar el lock,
-                        #  una vez asegura que hay una instancia disponible.
+                        # Toma aqui el máximo tiempo de desuso para aprovechar el lock.
                         # Si salta una excepción la variable no vuelve a ser usada.
-                        max_disuse_time = random.randrange(
-
-                            # El tiempo máximo en desuso debe ser mayor al
-                            #  tiempo máximo que puede tomar una iteración del entrenamiento .
-                            len(self.solvers) * self.TRAIN_SOLVERS_TIMEOUT,
-
-                            # El tiempo máximo en desuso debe ser menor al
-                            #  tiempo que tarda el maintainer en subir arriba de la pila una instancia.
-                            (len(solver_config.instances)+1) * self.MAINTENANCE_SLEEP_TIME
-
-                            # En caso de no poder cumplir ambas condiciones, es preferible asegurar que
-                            #  no se sobrepase el tiempo que tarda el maintainer en colocar la instancia
-                            #  en lo alto de la pila.
-                        ) if len(self.solvers) * self.TRAIN_SOLVERS_TIMEOUT < \
-                             (len(solver_config.instances)+1) * self.MAINTENANCE_SLEEP_TIME \
-                            else (len(solver_config.instances)+1) * self.MAINTENANCE_SLEEP_TIME
+                        max_disuse_time = len(self.solvers) * self.TRAIN_SOLVERS_TIMEOUT
                         LOGGER('max_disuse_time is '+str(max_disuse_time))
-
                     except IndexError:
                         # No hay instancias disponibles en esta cola.
                         self.lock.release()
@@ -301,7 +284,7 @@ class Session(metaclass=Singleton):
                 # En caso contrario añade de nuevo la instancia a su respectiva cola.
                 else:
                     self.lock.acquire()
-                    solver_config.add_instance(instance)
+                    solver_config.add_instance(instance, deep=True)
                     self.lock.release()
 
     def add_solver(self, solver_with_config: solvers_dataset_pb2.SolverWithConfig, solver_config_id: str):
