@@ -127,9 +127,9 @@ class SolverConfig(object):
     def add_instance(self, instance: SolverInstance):
         self.instances.append(instance)
 
-    def get_instance(self) -> SolverInstance:
+    def get_instance(self, queue: bool) -> SolverInstance:
         try:
-            return self.instances.pop()
+            return self.instances.pop() if not queue else self.instances.pop(0)
         except IndexError:
             raise IndexError
 
@@ -168,7 +168,7 @@ class Session(metaclass=Singleton):
 
         solver_config = self.solvers[solver_config_id]
         try:
-            instance = solver_config.get_instance()
+            instance = solver_config.get_instance(queue=False)  # use the list like a stack.
             self.lock.release()
         except IndexError:
             # Si no hay ninguna instancia disponible, deja el lock y manda al nodo una nueva.
@@ -236,13 +236,16 @@ class Session(metaclass=Singleton):
                 LOGGER('maintainer want solvers lock' + str(self.lock.locked()))
                 self.lock.acquire()
                 # Toma aqui el máximo tiempo de desuso para aprovechar el uso del lock.
-                max_disuse_time = len(self.solvers) * self.TRAIN_SOLVERS_TIMEOUT
+                max_disuse_time = max(
+                    len(self.solvers) * self.TRAIN_SOLVERS_TIMEOUT,
+                    self.MAINTENANCE_SLEEP_TIME
+                )
                 try:
                     solver_config = self.solvers[
                         list(self.solvers)[index]
                     ]
                     try:
-                        instance = solver_config.get_instance()
+                        instance = solver_config.get_instance(queue=True)  # use the list like a queue
                     except IndexError:
                         # No hay instancias disponibles en esta cola.
                         self.lock.release()

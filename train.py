@@ -155,7 +155,8 @@ class Session(metaclass=Singleton):
         if type_of_cnf in solver.data:
             solver.data[type_of_cnf].index = 1
             solver.data[type_of_cnf].score = 0
-        solver.data[type_of_cnf].score = (solver.data[type_of_cnf].score * solver.data[type_of_cnf].index + score) / (solver.data[type_of_cnf].index + 1)
+        solver.data[type_of_cnf].score = (solver.data[type_of_cnf].score * solver.data[type_of_cnf].index + score) / (
+                    solver.data[type_of_cnf].index + 1)
         solver.data[type_of_cnf].index = solver.data[type_of_cnf].index + 1
 
     def start(self):
@@ -189,10 +190,12 @@ class Session(metaclass=Singleton):
                     try:
                         interpretation, time = self._solver.cnf(cnf=cnf, solver_config_id=solver.hash, timeout=timeout)
                     except Exception as e:
-                        LOGGER('INTERNAL ERROR SOLVING A CNF ON TRAIN '+ str(e))
+                        LOGGER('INTERNAL ERROR SOLVING A CNF ON TRAIN ' + str(e))
                         interpretation, time = None, timeout
                         pass
-                    if not interpretation or not interpretation.variable:
+                    # Durante el entrenamiento, si ha ocurrido un error al obtener un cnf se marca como insatisfactible,
+                    # tras muchas iteraciones no debería suponer un problema en el tensor.
+                    if not interpretation or not interpretation.satisfiable or len(interpretation.variable) == 0:
                         insats.append({
                             'solver': solver,
                             'time': time
@@ -218,8 +221,9 @@ class Session(metaclass=Singleton):
                     self.updateScore(
                         cnf=cnf,
                         solver=d['solver'],
-                        score=(float(+1 / d['time']) if d['time'] != 0 else 1) if is_insat   
-                            else (float(-1 / d['time']) if d['time'] != 0 else -1) # comprueba is_insat en cada vuelta, cuando no es necesario, pero el codigo queda más limpio.
+                        score=(float(+1 / d['time']) if d['time'] != 0 else 1) if is_insat
+                        else (float(-1 / d['time']) if d['time'] != 0 else -1)
+                        # comprueba is_insat en cada vuelta, cuando no es necesario, pero el codigo queda más limpio.
                     )
             else:
                 LOGGER('ACTUALIZA EL DATASET')
