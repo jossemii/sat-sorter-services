@@ -59,8 +59,9 @@ class SolverInstance(object):
     def check_if_is_alive(self, timeout) -> bool:
         LOGGER('Check if instance ' + str(self.token) + ' is alive.')
         cnf = api_pb2.Cnf()
-        clause = cnf.clause.add()
-        clause.literal = 1
+        clause = api_pb2.Clause()
+        clause.literal.append(1)
+        cnf.clause.append(clause)
         try:
             self.stub.Solve(
                 request=cnf,
@@ -259,14 +260,14 @@ class Session(metaclass=Singleton):
 
                             # El tiempo máximo en desuso debe ser menor al
                             #  tiempo que tarda el maintainer en subir arriba de la pila una instancia.
-                            len(solver_config.instances) * self.MAINTENANCE_SLEEP_TIME
+                            (len(solver_config.instances)+1) * self.MAINTENANCE_SLEEP_TIME
 
                             # En caso de no poder cumplir ambas condiciones, es preferible asegurar que
                             #  no se sobrepase el tiempo que tarda el maintainer en colocar la instancia
                             #  en lo alto de la pila.
-                        ) if len(self.solvers) * self.TRAIN_SOLVERS_TIMEOUT >= \
-                             len(solver_config.instances) * self.MAINTENANCE_SLEEP_TIME \
-                            else len(solver_config.instances) * self.MAINTENANCE_SLEEP_TIME
+                        ) if len(self.solvers) * self.TRAIN_SOLVERS_TIMEOUT < \
+                             (len(solver_config.instances)+1) * self.MAINTENANCE_SLEEP_TIME \
+                            else (len(solver_config.instances)+1) * self.MAINTENANCE_SLEEP_TIME
                         LOGGER('max_disuse_time is '+str(max_disuse_time))
 
                     except IndexError:
