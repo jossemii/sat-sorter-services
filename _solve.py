@@ -72,12 +72,15 @@ class SolverInstance(object):
             return False
 
     def stop(self, gateway_stub):
-        try:
-            gateway_stub.StopService(
-                self.token
-            )
-        except grpc.RpcError as e:
-            LOGGER('GRPC ERROR.' + str(e))
+        while True:
+            try:
+                gateway_stub.StopService(
+                    self.token
+                )
+                break
+            except grpc.RpcError as e:
+                LOGGER('GRPC ERROR STOPPING SOLVER ' + str(e))
+                sleep(1)
 
 
 class SolverConfig(object):

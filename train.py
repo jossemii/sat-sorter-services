@@ -39,14 +39,20 @@ class Session(metaclass=Singleton):
             self.random_def.api[0].port
         )
 
+    def stop_random(self):
+        while True:
+            try:
+                self.gateway_stub.StopService(self.random_token)
+                break
+            except grpc.RpcError as e:
+                LOGGER('GRPC ERROR STOPPING RANDOM ' + str(e))
+                sleep(1)
+
     def stop(self):
         if self.do_stop and self.thread:
             self.do_stop = True
             self.thread.join()
-            try:
-                self.gateway_stub.StopService(self.random_token)
-            except grpc.RpcError as e:
-                LOGGER('GRPC ERROR.'+ str(e))
+            self.stop_random()
             self.do_stop = False
             self.thread = None
 
@@ -120,10 +126,7 @@ class Session(metaclass=Singleton):
                     connection_errors = 0
                     LOGGER('  ERROR OCCURS OBTAINING THE CNF --> ' + str(e))
                     LOGGER('VAMOS A CAMBIAR EL SERVICIO DE OBTENCION DE CNFs RANDOM')
-                    try:
-                        self.gateway_stub.StopService(self.random_token)
-                    except grpc.RpcError as e:
-                        LOGGER('GRPC ERROR.' + str(e))
+                    self.stop_random()
                     self.init_random_cnf_service()
                     LOGGER('listo. ahora vamos a probar otra vez.')
                     continue
