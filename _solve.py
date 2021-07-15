@@ -246,6 +246,28 @@ class Session(metaclass=Singleton):
                     ]
                     try:
                         instance = solver_config.get_instance(queue=True)  # use the list like a queue
+
+                        # Toma aqui el máximo tiempo de desuso para aprovechar el lock,
+                        #  una vez asegura que hay una instancia disponible.
+                        # Si salta una excepción la variable no vuelve a ser usada.
+                        max_disuse_time = random.randrange(
+
+                            # El tiempo máximo en desuso debe ser mayor al
+                            #  tiempo máximo que puede tomar una iteración del entrenamiento .
+                            len(self.solvers) * self.TRAIN_SOLVERS_TIMEOUT,
+
+                            # El tiempo máximo en desuso debe ser menor al
+                            #  tiempo que tarda el maintainer en subir arriba de la pila una instancia.
+                            len(solver_config.instances) * self.MAINTENANCE_SLEEP_TIME
+
+                            # En caso de no poder cumplir ambas condiciones, es preferible asegurar que
+                            #  no se sobrepase el tiempo que tarda el maintainer en colocar la instancia
+                            #  en lo alto de la pila.
+                        ) if len(self.solvers) * self.TRAIN_SOLVERS_TIMEOUT >= \
+                             len(solver_config.instances) * self.MAINTENANCE_SLEEP_TIME \
+                            else len(solver_config.instances) * self.MAINTENANCE_SLEEP_TIME
+                        LOGGER('max_disuse_time is '+str(max_disuse_time))
+
                     except IndexError:
                         # No hay instancias disponibles en esta cola.
                         self.lock.release()
