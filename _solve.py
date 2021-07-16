@@ -1,4 +1,3 @@
-import random
 from time import sleep, time as time_now
 from datetime import datetime, timedelta
 from threading import Thread, Lock, get_ident
@@ -149,6 +148,7 @@ class Session(metaclass=Singleton):
         self.SOLVER_PASS_TIMEOUT_TIMES = ENVS['SOLVER_PASS_TIMEOUT_TIMES']
         self.SOLVER_FAILED_ATTEMPTS = ENVS['SOLVER_FAILED_ATTEMPTS']
         self.TRAIN_SOLVERS_TIMEOUT = ENVS['TRAIN_SOLVERS_TIMEOUT']
+        self.MAX_DISUSE_TIME_FACTOR = ENVS['MAX_DISUSE_TIME_FACTOR']
 
         LOGGER('INIT SOLVE SESSION ....')
         self.solvers = {}
@@ -254,8 +254,7 @@ class Session(metaclass=Singleton):
 
                         # Toma aqui el máximo tiempo de desuso para aprovechar el lock.
                         # Si salta una excepción la variable no vuelve a ser usada.
-                        max_disuse_time = len(self.solvers) * self.TRAIN_SOLVERS_TIMEOUT
-                        LOGGER('max_disuse_time is '+str(max_disuse_time))
+                        max_disuse_time = len(self.solvers) * self.TRAIN_SOLVERS_TIMEOUT * self.MAX_DISUSE_TIME_FACTOR
                     except IndexError:
                         # No hay instancias disponibles en esta cola.
                         self.lock.release()

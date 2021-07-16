@@ -102,7 +102,7 @@ if __name__ == "__main__":
 
 
     # create a gRPC server
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=ENVS['MAX_WORKERS']))
 
     api_pb2_grpc.add_SolverServicer_to_server(
         SolverServicer(), server)
