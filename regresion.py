@@ -1,3 +1,4 @@
+import hashlib
 from time import sleep
 import numpy as np
 from sklearn.linear_model import LinearRegression
@@ -52,12 +53,7 @@ def solver_regression(solver: dict, MAX_DEGREE):
         ]
     )
 
-def iterate_regression(TENSOR_SPECIFICATION, MAX_DEGREE):
-    # Read solvers dataset
-    with open(DIR + 'solvers_dataset.bin', 'rb') as file:
-        data_set = solvers_dataset_pb2.DataSet()
-        data_set.ParseFromString(file.read())
-
+def iterate_regression(TENSOR_SPECIFICATION, MAX_DEGREE, data_set):
     onnx = api_pb2.onnx__pb2.ONNX()
     onnx.specification.CopyFrom(TENSOR_SPECIFICATION)
 
@@ -86,8 +82,9 @@ def iterate_regression(TENSOR_SPECIFICATION, MAX_DEGREE):
 def init(ENVS):
 
     # set used envs on variables.
-    TIME_FOR_EACH_REGRESSION_LOOP = ENVS['TIME_FOR_EACH_REGRESSION_LOOP']
-    MAX_DEGREE = ENVS['MAX_REGRESSION_DEGREE']
+    time_for_each_regression_loop = ENVS['TIME_FOR_EACH_REGRESSION_LOOP']
+    max_degree = ENVS['MAX_REGRESSION_DEGREE']
+    data_set_hash = ""
 
     def generate_tensor_spec():
         # Performance
@@ -106,18 +103,29 @@ def init(ENVS):
         s = api_pb2.ipss__pb2.Tensor.Index()
         s.id = "solver"
         s.tag.extend(["SATsolver"])
-        with open(DIR + '.service/solver.field', 'rb') as file:
-            s.field.ParseFromString(file.read())
+        with open(DIR + '.service/solver.field', 'rb') as f:
+            s.field.ParseFromString(f.read())
 
-        TENSOR_SPECIFICATION = api_pb2.ipss__pb2.Tensor()
-        TENSOR_SPECIFICATION.index.extend([c, l, s, p])
-        TENSOR_SPECIFICATION.rank = 3
-        return TENSOR_SPECIFICATION
+        tensor_specification = api_pb2.ipss__pb2.Tensor()
+        tensor_specification.index.extend([c, l, s, p])
+        tensor_specification.rank = 3
+        return tensor_specification
 
     LOGGER('INIT REGRESSION THREAD '+ str(get_ident()))
     while True:
-        sleep(TIME_FOR_EACH_REGRESSION_LOOP)
-        iterate_regression(
-            MAX_DEGREE=MAX_DEGREE, 
-            TENSOR_SPECIFICATION=generate_tensor_spec()
-        )
+        sleep(time_for_each_regression_loop)
+
+        # Read solvers dataset
+        with open(DIR + 'solvers_dataset.bin', 'rb') as file:
+            data_set = solvers_dataset_pb2.DataSet()
+            data_set.ParseFromString(file.read())
+
+        # Obtiene una hash del dataset para saber si se han añadido datos.
+        actual_hash = hashlib.sha3_256(data_set.ParseFromString()).hexdigest()
+        if actual_hash != data_set_hash:
+            iterate_regression(
+                MAX_DEGREE=max_degree,
+                TENSOR_SPECIFICATION=generate_tensor_spec(),
+                data_set=data_set
+            )
+            data_set_hash = actual_hash
