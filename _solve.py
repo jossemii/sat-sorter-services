@@ -94,7 +94,7 @@ class SolverConfig(object):
                                          0].port)  # solo tomamos el primer slot. ¡suponemos que se encuentra alli toda la api!
 
         self.instances = []  # se da uso de una pila para que el 'maintainer' detecte las instancias que quedan en desuso,
-                             #  ya que quedarán estancadas al final de la pila.
+        #  ya que quedarán estancadas al final de la pila.
 
     def service_extended(self):
         config = True
@@ -287,7 +287,7 @@ class Session(metaclass=Singleton):
                     self.lock.release()
 
     def add_solver(self, solver_with_config: solvers_dataset_pb2.SolverWithConfig, solver_config_id: str):
-        LOGGER('ADDED NEW SOLVER '+str(solver_config_id))
+        LOGGER('ADDED NEW SOLVER ' + str(solver_config_id))
         self.lock.acquire()
         self.solvers.update({
             solver_config_id: SolverConfig(

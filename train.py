@@ -20,18 +20,18 @@ class Session(metaclass=Singleton):
 
         self.thread = None
         self.gateway_stub = gateway_pb2_grpc.GatewayStub(grpc.insecure_channel(self.GATEWAY_MAIN_DIR))
-        with open(DIR+'random.service', 'rb') as file:
+        with open(DIR + 'random.service', 'rb') as file:
             self.random_def = gateway_pb2.ipss__pb2.Service()
             self.random_def.ParseFromString(file.read())
 
         self.random_stub = None
         self.random_token = gateway_pb2.Token()
         self.solvers_dataset = solvers_dataset_pb2.DataSet()
-        self.solvers = [] # Lista de los solvers por hash.
-        self.solvers_dataset_lock = Lock() # Se usa al añadir un solver y durante cada iteracion de entrenamiento.
-        self.solvers_lock = Lock() # Se uso al añadir un solver ya que podrían añadirse varios concurrentemente.
+        self.solvers = []  # Lista de los solvers por hash.
+        self.solvers_dataset_lock = Lock()  # Se usa al añadir un solver y durante cada iteracion de entrenamiento.
+        self.solvers_lock = Lock()  # Se uso al añadir un solver ya que podrían añadirse varios concurrentemente.
         self.do_stop = False
-        self._solver = _solve.Session(ENVS=ENVS) # Using singleton pattern.
+        self._solver = _solve.Session(ENVS=ENVS)  # Using singleton pattern.
 
         # Random CNF Service.
         self.random_config = gateway_pb2.ipss__pb2.Configuration()
@@ -83,7 +83,7 @@ class Session(metaclass=Singleton):
         transport = gateway_pb2.ServiceTransport()
         for hash in self.random_def.hash:
             transport.hash = hash
-            if config: # Solo hace falta enviar la configuracion en el primer paquete.
+            if config:  # Solo hace falta enviar la configuracion en el primer paquete.
                 transport.config.CopyFrom(self.random_config)
                 config = False
             yield transport
@@ -98,14 +98,14 @@ class Session(metaclass=Singleton):
                 instance = self.gateway_stub.StartService(self.random_service_extended())
                 break
             except grpc.RpcError as e:
-                LOGGER('GRPC ERROR.'+ str(e))
+                LOGGER('GRPC ERROR.' + str(e))
                 sleep(1)
         uri = instance.instance.uri_slot[0].uri[0]
         self.random_stub = api_pb2_grpc.RandomStub(
-                grpc.insecure_channel(
-                    uri.ip+':'+str(uri.port)
-                )
+            grpc.insecure_channel(
+                uri.ip + ':' + str(uri.port)
             )
+        )
         self.random_token.CopyFrom(instance.token)
 
     def random_cnf(self):
@@ -120,7 +120,7 @@ class Session(metaclass=Singleton):
             except (grpc.RpcError, TimeoutError) as e:
                 if connection_errors < self.CONNECTION_ERRORS:
                     connection_errors = connection_errors + 1
-                    sleep(1) # Evita condiciones de carrera si lo ejecuta tras recibir la instancia.
+                    sleep(1)  # Evita condiciones de carrera si lo ejecuta tras recibir la instancia.
                     continue
                 else:
                     connection_errors = 0
