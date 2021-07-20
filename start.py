@@ -14,7 +14,7 @@ ENVS = {
     'TIME_FOR_EACH_REGRESSION_LOOP': 900,
     'CONNECTION_ERRORS': 5,
     'START_AVR_TIMEOUT': 30,
-    'MAX_WORKERS': 200,
+    'MAX_WORKERS': 20,
     'MAX_DISUSE_TIME_FACTOR': 1,
 }
 
@@ -38,10 +38,13 @@ if __name__ == "__main__":
     gateway_uri = config.gateway.uri_slot[0].uri[0]
     ENVS['GATEWAY_MAIN_DIR'] = gateway_uri.ip+':'+str(gateway_uri.port)
 
+    """
     for env_var in config.config.enviroment_variables:
         ENVS[env_var] = type(ENVS[env_var])(
             config.config.enviroment_variables[env_var].value
-            )
+            )    
+    """
+
 
     LOGGER('INIT START THREAD ' + str(get_ident()))
       
