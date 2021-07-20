@@ -35,9 +35,6 @@ class Session(metaclass=Singleton):
 
         # Random CNF Service.
         self.random_config = gateway_pb2.ipss__pb2.Configuration()
-        self.random_config.spec_slot.append(
-            self.random_def.api[0].port
-        )
 
     def stop_random(self):
         while True:

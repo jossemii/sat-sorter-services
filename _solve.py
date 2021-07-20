@@ -90,8 +90,6 @@ class SolverConfig(object):
         # Configuration.
         self.config = gateway_pb2.ipss__pb2.Configuration()
         self.config.enviroment_variables.update(solver_with_config.enviroment_variables)
-        self.config.spec_slot.append(solver_with_config.definition.api[
-                                         0].port)  # solo tomamos el primer slot. ¡suponemos que se encuentra alli toda la api!
 
         self.instances = []  # se da uso de una pila para que el 'maintainer' detecte las instancias que quedan en desuso,
         #  ya que quedarán estancadas al final de la pila.
