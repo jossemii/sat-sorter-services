@@ -8,7 +8,7 @@ import grpc, hashlib
 
 import api_pb2, api_pb2_grpc, gateway_pb2, gateway_pb2_grpc, solvers_dataset_pb2
 from singleton import Singleton
-from start import LOGGER
+from start import LOGGER, get_grpc_uri
 
 # -- HASH FUNCTIONS --
 SHAKE_256 = lambda value: "" if value is None else 'shake-256:0x' + hashlib.shake_256(value).hexdigest(32)
@@ -109,12 +109,18 @@ class SolverConfig(object):
         yield transport
 
     def launch_instance(self, gateway_stub) -> SolverInstance:
-        try:
-            instance = gateway_stub.StartService(self.service_extended())
-        except grpc.RpcError as e:
-            LOGGER('GRPC ERROR.' + str(e))
+        while True:
+            try:
+                instance = gateway_stub.StartService(self.service_extended())
+                break
+            except grpc.RpcError as e:
+                LOGGER('GRPC ERROR.' + str(e))
 
-        uri = instance.instance.uri_slot[0].uri[0]
+        try:
+            uri = get_grpc_uri(instance.instance)
+        except Exception as e:
+            LOGGER(str(e))
+            raise e
         LOGGER('THE URI FOR THE SOLVER ' + str(self.service_def.hash[0]) + ' is--> ' + str(uri))
 
         return SolverInstance(

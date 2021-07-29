@@ -1,7 +1,19 @@
 import logging
+
+import ipss_pb2
+
 logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s')
 LOGGER = lambda message: logging.getLogger().debug(message)
 DIR = '/satsorter/'
+
+def get_grpc_uri(instance: ipss_pb2.Instance) -> ipss_pb2.Instance.Uri:
+    for slot in instance.api.slot:
+        if 'grpc' in slot.transport_protocol.hash and 'http2' in slot.transport_protocol.hash:
+            # If the protobuf lib. supported map for this message it could be O(n).
+            for uri_slot in instance.uri_slot:
+                if uri_slot.internal_port == slot.port:
+                    return uri_slot.uri[0]
+    raise Exception('Grpc over Http/2 not supported on this service ' + str(instance))
 
 ENVS = {
     'GATEWAY_MAIN_DIR': '',
@@ -34,7 +46,7 @@ if __name__ == "__main__":
         open('/__config__', 'rb').read()
     )
 
-    gateway_uri = config.gateway.uri_slot[0].uri[0]
+    gateway_uri = get_grpc_uri(config.gateway)
     ENVS['GATEWAY_MAIN_DIR'] = gateway_uri.ip+':'+str(gateway_uri.port)
 
     """

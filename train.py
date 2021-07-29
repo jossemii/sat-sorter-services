@@ -4,7 +4,7 @@ from time import sleep
 import api_pb2, api_pb2_grpc, solvers_dataset_pb2, gateway_pb2, gateway_pb2_grpc
 from singleton import Singleton
 import _solve
-from start import LOGGER, DIR
+from start import LOGGER, DIR, get_grpc_uri
 
 
 class Session(metaclass=Singleton):
@@ -97,7 +97,7 @@ class Session(metaclass=Singleton):
             except grpc.RpcError as e:
                 LOGGER('GRPC ERROR.' + str(e))
                 sleep(1)
-        uri = instance.instance.uri_slot[0].uri[0]
+        uri = get_grpc_uri(instance.instance)
         self.random_stub = api_pb2_grpc.RandomStub(
             grpc.insecure_channel(
                 uri.ip + ':' + str(uri.port)
