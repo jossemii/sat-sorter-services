@@ -25,7 +25,7 @@ class Session(metaclass=Singleton):
             self.random_def.ParseFromString(file.read())
 
         self.random_stub = None
-        self.random_token = gateway_pb2.Token()
+        self.random_token = None
         self.solvers_dataset = solvers_dataset_pb2.DataSet()
         self.solvers = []  # Lista de los solvers por hash.
         self.solvers_dataset_lock = Lock()  # Se usa al añadir un solver y durante cada iteracion de entrenamiento.
@@ -39,7 +39,11 @@ class Session(metaclass=Singleton):
     def stop_random(self):
         while True:
             try:
-                self.gateway_stub.StopService(self.random_token)
+                self.gateway_stub.StopService(
+                    gateway_pb2.TokenMessage(
+                        token = self.random_token
+                    )
+                )
                 break
             except grpc.RpcError as e:
                 LOGGER('GRPC ERROR STOPPING RANDOM ' + str(e))
@@ -103,7 +107,7 @@ class Session(metaclass=Singleton):
                 uri.ip + ':' + str(uri.port)
             )
         )
-        self.random_token.CopyFrom(instance.token)
+        self.random_token = instance.token
 
     def random_cnf(self):
         connection_errors = 0

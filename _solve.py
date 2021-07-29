@@ -74,7 +74,9 @@ class SolverInstance(object):
         while True:
             try:
                 gateway_stub.StopService(
-                    self.token
+                    gateway_pb2.TokenMessage(
+                        token = self.token
+                    )
                 )
                 break
             except grpc.RpcError as e:
@@ -124,12 +126,12 @@ class SolverConfig(object):
         LOGGER('THE URI FOR THE SOLVER ' + str(self.service_def.hash[0]) + ' is--> ' + str(uri))
 
         return SolverInstance(
-            stub=api_pb2_grpc.SolverStub(
+            stub = api_pb2_grpc.SolverStub(
                 grpc.insecure_channel(
                     uri.ip + ':' + str(uri.port)
                 )
             ),
-            token=instance.token
+            token = instance.token
         )
 
     def add_instance(self, instance: SolverInstance, deep=False):

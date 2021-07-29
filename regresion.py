@@ -121,7 +121,9 @@ def init(ENVS):
             data_set.ParseFromString(file.read())
 
         # Obtiene una hash del dataset para saber si se han añadido datos.
-        actual_hash = hashlib.sha3_256(data_set.ParseFromString()).hexdigest()
+        actual_hash = hashlib.sha3_256(
+            data_set.SerializeToString()
+            ).hexdigest()
         if actual_hash != data_set_hash:
             iterate_regression(
                 MAX_DEGREE=max_degree,
