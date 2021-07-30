@@ -50,7 +50,12 @@ class Session(metaclass=Singleton):
                 sleep(1)
 
     def stop(self):
-        if self.do_stop and self.thread:
+        # Para evitar que la instrucción stop mate el hilo durante un entrenamiento,
+        #  y deje instancias fuera de pila y por tanto servicios zombie, el método stop 
+        #  emite el mensaje de que se debe de parar el entrenamiento en la siguiente vuelta, 
+        #  dando uso de do_stop=True, y a continuación espera a que el init salga del while 
+        #  con thread.join().
+        if not self.do_stop and self.thread:
             self.do_stop = True
             self.thread.join()
             self.stop_random()
@@ -164,9 +169,9 @@ class Session(metaclass=Singleton):
         solver.data[type_of_cnf].index = solver.data[type_of_cnf].index + 1
 
     def start(self):
-        if self.do_stop and self.thread: return None
+        if self.thread or self.do_stop: return None
         try:
-            self.thread = Thread(target=self.init, name='Trainer')
+            self.thread = Thread(target = self.init, name = 'Trainer')
             self.thread.start()
         except RuntimeError:
             LOGGER('Error: train thread was started and have an error.')
@@ -178,6 +183,8 @@ class Session(metaclass=Singleton):
         LOGGER('INICIANDO SERVICIO DE RANDOM CNF')
         self.init_random_cnf_service()
         LOGGER('hecho.')
+        # Si se emite una solicitud para detener el entrenamiento el hilo 
+        #  finalizará en la siguiente iteración.
         while not self.do_stop:
             if refresh < self.REFRESH:
                 LOGGER('REFRESH ES MENOR')

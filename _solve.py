@@ -71,6 +71,7 @@ class SolverInstance(object):
             return False
 
     def stop(self, gateway_stub):
+        LOGGER('Stops this instance with token ' + str(self.token))
         while True:
             try:
                 gateway_stub.StopService(
@@ -135,9 +136,11 @@ class SolverConfig(object):
         )
 
     def add_instance(self, instance: SolverInstance, deep=False):
+        LOGGER('Add instance ' + str(instance))
         self.instances.append(instance) if not deep else self.instances.insert(0, instance)
 
     def get_instance(self, deep=False) -> SolverInstance:
+        LOGGER('Get an instance')
         try:
             return self.instances.pop() if not deep else self.instances.pop(0)
         except IndexError:
@@ -182,7 +185,7 @@ class Session(metaclass=Singleton):
             instance = solver_config.get_instance()  # use the list like a stack.
             self.lock.release()
         except IndexError:
-            # Si no hay ninguna instancia disponible, deja el lock y manda al nodo una nueva.
+            # Si no hay ninguna instancia disponible, deja el lock y solicita al nodo una nueva.
             self.lock.release()
             instance = solver_config.launch_instance(self.gateway_stub)
 
@@ -219,7 +222,7 @@ class Session(metaclass=Singleton):
             interpretation, time = None, timeout
 
         # Si la instancia se encuentra en estado zombie
-        # la para, en caso contrario la introduce
+        # la detiene, en caso contrario la introduce
         #  de nuevo en su cola correspondiente.
         if instance.is_zombie(
                 self.SOLVER_PASS_TIMEOUT_TIMES,
