@@ -1,7 +1,7 @@
 import logging, ipss_pb2
 
 logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s')
-LOGGER = lambda message: logging.getLogger().debug('\n' + message + '\n')
+LOGGER = lambda message: logging.getLogger().debug(message + '\n')
 DIR = '/satsorter/'
 
 def get_grpc_uri(instance: ipss_pb2.Instance) -> ipss_pb2.Instance.Uri:

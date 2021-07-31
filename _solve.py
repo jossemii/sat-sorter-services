@@ -112,6 +112,7 @@ class SolverConfig(object):
         yield transport
 
     def launch_instance(self, gateway_stub) -> SolverInstance:
+        LOGGER('    launching new instance.')
         while True:
             try:
                 instance = gateway_stub.StartService(self.service_extended())
@@ -128,9 +129,9 @@ class SolverConfig(object):
 
         return SolverInstance(
             stub = api_pb2_grpc.SolverStub(
-                grpc.insecure_channel(
-                    uri.ip + ':' + str(uri.port)
-                )
+                    grpc.insecure_channel(
+                        uri.ip + ':' + str(uri.port)
+                    )
             ),
             token = instance.token
         )
@@ -140,10 +141,11 @@ class SolverConfig(object):
         self.instances.append(instance) if not deep else self.instances.insert(0, instance)
 
     def get_instance(self, deep=False) -> SolverInstance:
-        LOGGER('Get an instance')
+        LOGGER('Get an instance. deep ' + str(deep))
         try:
             return self.instances.pop() if not deep else self.instances.pop(0)
         except IndexError:
+            LOGGER('    list empty --> ' + str(self.instances))
             raise IndexError
 
 
@@ -169,7 +171,7 @@ class Session(metaclass=Singleton):
         LOGGER(str(timeout) + 'cnf want solvers lock' + str(self.lock.locked()))
         self.lock.acquire()
 
-        if solver_config_id not in self.solvers:
+        if solver_with_config and solver_config_id not in self.solvers:
             self.lock.release()
             LOGGER('ERROR SOLVING CNF, SOLVER_CONFIG_ID NOT IN _Solve.solvers list.' \
                    + str(self.solvers.keys()) + ' ' + str(solver_config_id))
@@ -300,7 +302,7 @@ class Session(metaclass=Singleton):
         self.lock.acquire()
         self.solvers.update({
             solver_config_id: SolverConfig(
-                solver_with_config=solver_with_config
+                solver_with_config = solver_with_config
             )
         })
         self.lock.release()
