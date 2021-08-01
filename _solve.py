@@ -112,10 +112,10 @@ class SolverConfig(object):
         yield transport
 
     def launch_instance(self, gateway_stub) -> SolverInstance:
-        LOGGER('    launching new instance.')
+        LOGGER('    launching new instance for solver ' + str(self.service_def.hash[0]))
         while True:
             try:
-                instance = gateway_stub.StartService(self.service_extended())
+                instance = gateway_stub.StartService(self.service_extended()) # Sin timeout, por si tiene que construirlo.
                 break
             except grpc.RpcError as e:
                 LOGGER('GRPC ERROR.' + str(e))
