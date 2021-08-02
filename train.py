@@ -37,6 +37,7 @@ class Session(metaclass=Singleton):
         self.random_config = gateway_pb2.ipss__pb2.Configuration()
 
     def stop_random(self):
+        LOGGER('Stopping random service.')
         while True:
             try:
                 self.gateway_stub.StopService(
@@ -56,6 +57,7 @@ class Session(metaclass=Singleton):
         #  dando uso de do_stop=True, y a continuación espera a que el init salga del while 
         #  con thread.join().
         if not self.do_stop and self.thread:
+            LOGGER('Stopping train.')
             self.do_stop = True
             self.thread.join()
             self.stop_random()
@@ -99,6 +101,7 @@ class Session(metaclass=Singleton):
         yield transport
 
     def init_random_cnf_service(self):
+        LOGGER('Launching random service instance.')
         while True:
             try:
                 instance = self.gateway_stub.StartService(self.random_service_extended())
@@ -177,7 +180,7 @@ class Session(metaclass=Singleton):
             LOGGER('Error: train thread was started and have an error.')
 
     def init(self):
-        LOGGER('TRAINER THREAD IS ' + str(get_ident()))
+        LOGGER('INICIANDO TRAINER, THREAD IS ' + str(get_ident()))
         refresh = 0
         timeout = self.TRAIN_SOLVERS_TIMEOUT
         LOGGER('INICIANDO SERVICIO DE RANDOM CNF')
