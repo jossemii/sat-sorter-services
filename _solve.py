@@ -11,8 +11,8 @@ from singleton import Singleton
 from start import LOGGER, get_grpc_uri
 
 # -- HASH FUNCTIONS --
-SHAKE_256 = lambda value: "" if value is None else 'shake-256:0x' + hashlib.shake_256(value).hexdigest(32)
-SHA3_256 = lambda value: "" if value is None else 'sha3-256:0x' + hashlib.sha3_256(value).hexdigest()
+SHAKE_256 = lambda value: "" if value is None else 'shake-256:' + hashlib.shake_256(value).hexdigest(32)
+SHA3_256 = lambda value: "" if value is None else 'sha3-256:' + hashlib.sha3_256(value).hexdigest()
 
 HASH_LIST = ['SHAKE_256', 'SHA3_256']
 
