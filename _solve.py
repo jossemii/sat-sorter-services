@@ -261,7 +261,7 @@ class Session(metaclass=Singleton):
                         list(self.solvers)[index]
                     ]
                     try:
-                        instance = solver_config.get_instance(deep=True)  # use the list like a queue
+                        instance = solver_config.get_instance(deep=True)
 
                         # Toma aqui el máximo tiempo de desuso para aprovechar el lock.
                         # Si salta una excepción la variable no vuelve a ser usada.
