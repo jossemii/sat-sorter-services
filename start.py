@@ -6,7 +6,7 @@ DIR = '/satsorter/'
 
 def get_grpc_uri(instance: ipss_pb2.Instance) -> ipss_pb2.Instance.Uri:
     for slot in instance.api.slot:
-        if 'grpc' in slot.transport_protocol.hash and 'http2' in slot.transport_protocol.hash:
+        if 'grpc' in slot.transport_protocol.hashtag.tag and 'http2' in slot.transport_protocol.hashtag.tag:
             # If the protobuf lib. supported map for this message it could be O(n).
             for uri_slot in instance.uri_slot:
                 if uri_slot.internal_port == slot.port:
@@ -27,6 +27,11 @@ ENVS = {
     'MAX_WORKERS': 20,
     'MAX_DISUSE_TIME_FACTOR': 1,
 }
+
+# -- The service use sha3-256 for identify internal objects. --
+SHA3_256_ID = bytes.fromhex("a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a")
+SHA3_256 = lambda value: "" if value is None else hashlib.sha3_256(value).digest()
+
 
 if __name__ == "__main__":
 
@@ -73,7 +78,9 @@ if __name__ == "__main__":
                 LOGGER('Wait more for it, tensor is not ready. ')
                 return api_pb2.Empty()
 
-            solver_config_id = hashlib.sha3_256(solver_with_config.SerializeToString()).hexdigest()
+            solver_config_id = SHA3_256(
+                value = solver_with_config.SerializeToString()
+            ).hex()
             LOGGER('USING SOLVER --> ' + str(solver_config_id))
             while True:
                 try:

@@ -10,13 +10,6 @@ import api_pb2, api_pb2_grpc, gateway_pb2, gateway_pb2_grpc, solvers_dataset_pb2
 from singleton import Singleton
 from start import LOGGER, get_grpc_uri
 
-# -- HASH FUNCTIONS --
-SHAKE_256 = lambda value: "" if value is None else 'shake-256:' + hashlib.shake_256(value).hexdigest(32)
-SHA3_256 = lambda value: "" if value is None else 'sha3-256:' + hashlib.sha3_256(value).hexdigest()
-
-HASH_LIST = ['SHAKE_256', 'SHA3_256']
-
-
 # Si se toma una instancia, se debe de asegurar que, o bien se agrega a su cola
 #  correspondiente, o bien se para. No asegurar esto ocasiona un bug importante
 #  ya que las instancias quedarían zombies en la red hasta que el clasificador
@@ -100,8 +93,8 @@ class SolverConfig(object):
     def service_extended(self):
         config = True
         transport = gateway_pb2.ServiceTransport()
-        for hash in self.service_def.hash:
-            transport.hash = hash
+        for hash in self.service_def.hashtag.hash:
+            transport.hash.CopyFrom(hash)
             if config:  # Solo hace falta enviar la configuracion en el primer paquete.
                 transport.config.CopyFrom(self.config)
                 config = False
@@ -112,7 +105,7 @@ class SolverConfig(object):
         yield transport
 
     def launch_instance(self, gateway_stub) -> SolverInstance:
-        LOGGER('    launching new instance for solver ' + str(self.service_def.hash[0]))
+        LOGGER('    launching new instance for solver ' + str(self.service_def.hashtag.hash[0].hex()))
         while True:
             try:
                 instance = gateway_stub.StartService(self.service_extended()) # Sin timeout, por si tiene que construirlo.
@@ -125,7 +118,7 @@ class SolverConfig(object):
         except Exception as e:
             LOGGER(str(e))
             raise e
-        LOGGER('THE URI FOR THE SOLVER ' + str(self.service_def.hash[0]) + ' is--> ' + str(uri))
+        LOGGER('THE URI FOR THE SOLVER ' + str(self.service_def.hashtag.hash[0].hex()) + ' is--> ' + str(uri))
 
         return SolverInstance(
             stub = api_pb2_grpc.SolverStub(

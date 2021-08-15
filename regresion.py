@@ -7,7 +7,7 @@ from skl2onnx import convert_sklearn
 from skl2onnx.common.data_types import Int64TensorType, FloatTensorType
 import api_pb2, solvers_dataset_pb2
 from threading import get_ident
-from start import DIR, LOGGER
+from start import DIR, LOGGER, SHA3_256
 
 def regression_with_degree(degree: int, input: np.array, output: np.array):
     poly = PolynomialFeatures(degree= degree, include_bias=False)
@@ -121,9 +121,9 @@ def init(ENVS):
             data_set.ParseFromString(file.read())
 
         # Obtiene una hash del dataset para saber si se han añadido datos.
-        actual_hash = hashlib.sha3_256(
-            data_set.SerializeToString()
-            ).hexdigest()
+        actual_hash = SHA3_256(
+            value = data_set.SerializeToString()
+            ).hex()
         if actual_hash != data_set_hash:
             iterate_regression(
                 MAX_DEGREE=max_degree,

@@ -4,7 +4,7 @@ from time import sleep
 import api_pb2, api_pb2_grpc, solvers_dataset_pb2, gateway_pb2, gateway_pb2_grpc
 from singleton import Singleton
 import _solve
-from start import LOGGER, DIR, get_grpc_uri
+from start import LOGGER, DIR, SHA3_256, SHA3_256_ID, get_grpc_uri
 
 
 class Session(metaclass=Singleton):
@@ -69,9 +69,9 @@ class Session(metaclass=Singleton):
         #  pero debe de contener si o si la sha3-256
         #  ya que el servicio no la calculará (ni comprobará).
 
-        for h in solver.hash:
-            if h.split(':')[0] == 'sha3-256':
-                hash = h.split(':')[1]
+        for h in solver.hashtag.hash:
+            if h.type == SHA3_256_ID:
+                hash = h.value.hex()
 
         self.solvers_lock.acquire()
         if hash and hash not in self.solvers:
@@ -80,7 +80,9 @@ class Session(metaclass=Singleton):
             p = solvers_dataset_pb2.DataSetInstance()
             p.solver.definition.CopyFrom(solver)
             # p.solver.enviroment_variables (Usamos las variables de entorno por defecto).
-            p.hash = hashlib.sha3_256(p.solver.SerializeToString()).hexdigest()
+            p.hash = SHA3_256(
+                value = p.solver.SerializeToString()
+            ).hex()
             self.solvers_dataset.data.append(p)
             self._solver.add_solver(solver_with_config=p.solver, solver_config_id=p.hash)
             self.solvers_dataset_lock.release()
@@ -89,8 +91,8 @@ class Session(metaclass=Singleton):
     def random_service_extended(self):
         config = True
         transport = gateway_pb2.ServiceTransport()
-        for hash in self.random_def.hash:
-            transport.hash = hash
+        for hash in self.random_def.hashtag.hash:
+            transport.hash.CopyFrom(hash)
             if config:  # Solo hace falta enviar la configuracion en el primer paquete.
                 transport.config.CopyFrom(self.random_config)
                 config = False

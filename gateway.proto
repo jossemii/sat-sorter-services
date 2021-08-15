@@ -14,8 +14,12 @@ message Instance {
 }
 
 message ServiceTransport {
+    message Hash {
+        bytes type = 1;
+        bytes value = 2;
+    }
     oneof oneOf{
-        string hash = 1;
+        ipss.HashTag.Hash hash = 1;
         ipss.Service service = 2;
     }
     optional ipss.Configuration config = 3;
