@@ -28,6 +28,7 @@ ENVS = {
     'MAX_DISUSE_TIME_FACTOR': 1,
 }
 
+import hashlib
 # -- The service use sha3-256 for identify internal objects. --
 SHA3_256_ID = bytes.fromhex("a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a")
 SHA3_256 = lambda value: "" if value is None else hashlib.sha3_256(value).digest()
@@ -35,8 +36,7 @@ SHA3_256 = lambda value: "" if value is None else hashlib.sha3_256(value).digest
 
 if __name__ == "__main__":
 
-    from time import sleep
-    import hashlib
+    from time import sleep    
     import train, _get, _solve
     from threading import get_ident, Thread
     import regresion
