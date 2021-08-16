@@ -54,6 +54,7 @@ def solver_regression(solver: dict, MAX_DEGREE):
     )
 
 def iterate_regression(TENSOR_SPECIFICATION, MAX_DEGREE, data_set):
+    LOGGER('ITERATING REGRESSION')
     onnx = api_pb2.onnx__pb2.ONNX()
     onnx.specification.CopyFrom(TENSOR_SPECIFICATION)
 
@@ -124,10 +125,12 @@ def init(ENVS):
         actual_hash = SHA3_256(
             value = data_set.SerializeToString()
             ).hex()
+        LOGGER('Check if dataset was modified ' + actual_hash + data_set_hash)
         if actual_hash != data_set_hash:
+            data_set_hash = actual_hash
             iterate_regression(
                 MAX_DEGREE=max_degree,
                 TENSOR_SPECIFICATION=generate_tensor_spec(),
                 data_set=data_set
             )
-            data_set_hash = actual_hash
+               

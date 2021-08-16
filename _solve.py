@@ -134,7 +134,8 @@ class SolverConfig(object):
         self.instances.append(instance) if not deep else self.instances.insert(0, instance)
 
     def get_instance(self, deep=False) -> SolverInstance:
-        LOGGER('Get an instance. deep ' + str(deep))
+        LOGGER('Get an instance of. deep ' + str(deep))
+        LOGGER('The solver ' + self.service_def.hashtag.hash[0].value.hex() + ' has ' + str(len(self.instances)) + 'instances.')
         try:
             return self.instances.pop() if not deep else self.instances.pop(0)
         except IndexError:
