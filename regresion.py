@@ -91,19 +91,19 @@ def init(ENVS):
         # Performance
         p = api_pb2.ipss__pb2.Tensor.Index()
         p.id = "score"
-        p.tag.extend(["performance"])
+        p.hashtag.tag.extend(["performance"])
         # Number clauses
         c = api_pb2.ipss__pb2.Tensor.Index()
         c.id = "clauses"
-        c.tag.extend(["number of clauses"])
+        c.hashtag.tag.extend(["number of clauses"])
         # Number of literals
         l = api_pb2.ipss__pb2.Tensor.Index()
         l.id = "literals"
-        l.tag.extend(["number of literals"])
+        l.hashtag.tag.extend(["number of literals"])
         # Solver services
         s = api_pb2.ipss__pb2.Tensor.Index()
         s.id = "solver"
-        s.tag.extend(["SATsolver"])
+        s.hashtag.tag.extend(["SATsolver"])
         with open(DIR + '.service/solver.field', 'rb') as f:
             s.field.ParseFromString(f.read())
 
