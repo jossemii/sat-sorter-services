@@ -105,7 +105,7 @@ class SolverConfig(object):
         yield transport
 
     def launch_instance(self, gateway_stub) -> SolverInstance:
-        LOGGER('    launching new instance for solver ' + str(self.service_def.hashtag.hash[0].hex()))
+        LOGGER('    launching new instance for solver ' + str(self.service_def.hashtag.hash[0].value.hex()))
         while True:
             try:
                 instance = gateway_stub.StartService(self.service_extended()) # Sin timeout, por si tiene que construirlo.
@@ -118,7 +118,7 @@ class SolverConfig(object):
         except Exception as e:
             LOGGER(str(e))
             raise e
-        LOGGER('THE URI FOR THE SOLVER ' + str(self.service_def.hashtag.hash[0].hex()) + ' is--> ' + str(uri))
+        LOGGER('THE URI FOR THE SOLVER ' + str(self.service_def.hashtag.hash[0].value.hex()) + ' is--> ' + str(uri))
 
         return SolverInstance(
             stub = api_pb2_grpc.SolverStub(
