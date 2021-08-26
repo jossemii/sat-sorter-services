@@ -1,10 +1,10 @@
-import logging, ipss_pb2
+import logging, hyweb_pb2
 
 logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s')
-LOGGER = lambda message: logging.getLogger().debug(message + '\n')
-DIR = '/satsorter/'
+LOGGER = lambda message: print(message + '\n')
+DIR = ''
 
-def get_grpc_uri(instance: ipss_pb2.Instance) -> ipss_pb2.Instance.Uri:
+def get_grpc_uri(instance: hyweb_pb2.Instance) -> hyweb_pb2.Instance.Uri:
     for slot in instance.api.slot:
         if 'grpc' in slot.transport_protocol.hashtag.tag and 'http2' in slot.transport_protocol.hashtag.tag:
             # If the protobuf lib. supported map for this message it could be O(n).
@@ -42,23 +42,7 @@ if __name__ == "__main__":
     import regresion
     import grpc, api_pb2, api_pb2_grpc
     from concurrent import futures
-
-    # Read __config__ file.
-    config = api_pb2.ipss__pb2.ConfigurationFile()
-    config.ParseFromString(
-        open('/__config__', 'rb').read()
-    )
-
-    gateway_uri = get_grpc_uri(config.gateway)
-    ENVS['GATEWAY_MAIN_DIR'] = gateway_uri.ip+':'+str(gateway_uri.port)
-
-    """
-    for env_var in config.config.enviroment_variables:
-        ENVS[env_var] = type(ENVS[env_var])(
-            config.config.enviroment_variables[env_var].value
-            )    
-    """
-
+    gateway_uri = '192.168.1.144:8080'
 
     LOGGER('INIT START THREAD ' + str(get_ident()))
       

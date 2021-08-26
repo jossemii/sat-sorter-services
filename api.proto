@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 import "onnx.proto";
-import "ipss.proto";
+import "hyweb.proto";
 
 // Solver
 message Interpretation {
@@ -37,7 +37,7 @@ service Solver {
     rpc StartTrain ( Empty) returns (Empty) {}
     rpc StopTrain ( Empty) returns (Empty) {}
     rpc GetTensor ( Empty) returns (stream tensor_onnx.ONNX) {}
-    rpc UploadSolver ( ipss.Service) returns (Empty) {}
+    rpc UploadSolver ( hyweb.Service) returns (Empty) {}
     rpc StreamLogs (Empty) returns (stream File){}
     rpc Solve(Cnf) returns (Interpretation) {}
 }

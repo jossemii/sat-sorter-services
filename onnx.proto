@@ -7,14 +7,14 @@
 // Licensed under the MIT license.
 
 syntax = "proto2";
-import "ipss.proto";
+import "hyweb.proto";
 
 package tensor_onnx;
 
 message ONNX {
-  required ipss.Tensor specification = 1;
+  required hyweb.Tensor specification = 1;
   message ONNXTensor {
-      optional ipss.Any element = 1;
+      optional hyweb.Any element = 1;
       required ModelProto model = 2;
   }
   repeated ONNXTensor tensor = 2;

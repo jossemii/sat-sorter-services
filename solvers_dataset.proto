@@ -1,5 +1,5 @@
 syntax = "proto3";
-import "ipss.proto";
+import "hyweb.proto";
 
 message Data {
     float score = 1;
@@ -7,8 +7,8 @@ message Data {
 }
 
 message SolverWithConfig {
-    ipss.Service definition = 1;
-    map<string, ipss.Any> enviroment_variables = 2;
+    hyweb.Service definition = 1;
+    map<string, hyweb.Any> enviroment_variables = 2;
 }
 
 message DataSetInstance {
