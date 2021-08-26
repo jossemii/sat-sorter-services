@@ -2,7 +2,7 @@ import logging, hyweb_pb2
 
 logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s')
 LOGGER = lambda message: print(message + '\n')
-DIR = ''
+DIR = '/satsorter/'
 
 def get_grpc_uri(instance: hyweb_pb2.Instance) -> hyweb_pb2.Instance.Uri:
     for slot in instance.api.slot:
@@ -42,7 +42,22 @@ if __name__ == "__main__":
     import regresion
     import grpc, api_pb2, api_pb2_grpc
     from concurrent import futures
-    gateway_uri = '192.168.1.144:8080'
+
+    # Read __config__ file.
+    config = api_pb2.ipss__pb2.ConfigurationFile()
+    config.ParseFromString(
+        open('/__config__', 'rb').read()
+    )
+
+    gateway_uri = get_grpc_uri(config.gateway)
+    ENVS['GATEWAY_MAIN_DIR'] = gateway_uri.ip+':'+str(gateway_uri.port)
+
+    """
+    for env_var in config.config.enviroment_variables:
+        ENVS[env_var] = type(ENVS[env_var])(
+            config.config.enviroment_variables[env_var].value
+            )    
+    """
 
     LOGGER('INIT START THREAD ' + str(get_ident()))
       
@@ -90,7 +105,7 @@ if __name__ == "__main__":
             return api_pb2.Empty()
 
         def GetTensor(self, request, context):
-            with open(ENVS['DIR'] + 'tensor.onnx', 'rb') as file:
+            with open(DIR + 'tensor.onnx', 'rb') as file:
                 while True:
                     tensor = api_pb2.onnx__pb2.ONNX()
                     tensor.ParseFromString(file.read())
