@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\nhyweb.proto\x12\x04hyweb\"9\n\x0cPrimitiveDef\x12\x0b\n\x03tag\x18\x01 \x03(\t\x12\x12\n\x05regex\x18\x02 \x01(\tH\x00\x88\x01\x01\x42\x08\n\x06_regex\"m\n\x07\x45numDef\x12\x0b\n\x03tag\x18\x01 \x03(\t\x12\'\n\x05value\x18\x02 \x03(\x0b\x32\x18.hyweb.EnumDef.ValueEntry\x1a,\n\nValueEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x05:\x02\x38\x01\"\x80\x01\n\x08\x46ieldDef\x12#\n\x07message\x18\x01 \x01(\x0b\x32\x10.hyweb.MessageDefH\x00\x12\'\n\tprimitive\x18\x02 \x01(\x0b\x32\x12.hyweb.PrimitiveDefH\x00\x12\x1d\n\x04\x65num\x18\x03 \x01(\x0b\x32\r.hyweb.EnumDefH\x00\x42\x07\n\x05value\"i\n\x08ParamDef\x12\r\n\x05index\x18\x01 \x01(\x05\x12\x0b\n\x03tag\x18\x02 \x03(\t\x12\x1d\n\x05\x66ield\x18\x03 \x01(\x0b\x32\x0e.hyweb.FieldDef\x12\x10\n\x08repeated\x18\x04 \x01(\x08\x12\x10\n\x08optional\x18\x05 \x01(\x08\"\x19\n\x08OneofDef\x12\r\n\x05index\x18\x01 \x03(\x05\"W\n\nMessageDef\x12\x0b\n\x03tag\x18\x01 \x03(\t\x12\x1d\n\x05param\x18\x02 \x03(\x0b\x32\x0e.hyweb.ParamDef\x12\x1d\n\x05oneof\x18\x03 \x03(\x0b\x32\x0e.hyweb.OneofDef\"\xa9\x01\n\tMethodDef\x12\r\n\x05index\x18\x01 \x01(\x05\x12\x0b\n\x03tag\x18\x02 \x03(\t\x12%\n\rinput_message\x18\x03 \x01(\x0b\x32\x0e.hyweb.FieldDef\x12\x17\n\x0fis_input_stream\x18\x04 \x01(\x08\x12&\n\x0eoutput_message\x18\x05 \x01(\x0b\x32\x0e.hyweb.FieldDef\x12\x18\n\x10is_output_stream\x18\x06 \x01(\x08\">\n\x0e\x41pplicationDef\x12\x0b\n\x03tag\x18\x01 \x03(\t\x12\x1f\n\x06method\x18\x02 \x03(\x0b\x32\x0f.hyweb.MethodDef\"3\n\x03\x41ny\x12\x1d\n\x05\x66ield\x18\x01 \x01(\x0b\x32\x0e.hyweb.FieldDef\x12\r\n\x05value\x18\x02 \x01(\x0c\"]\n\x07HashTag\x12 \n\x04hash\x18\x01 \x03(\x0b\x32\x12.hyweb.HashTag.Hash\x12\x0b\n\x03tag\x18\x02 \x03(\t\x1a#\n\x04Hash\x12\x0c\n\x04type\x18\x01 \x01(\x0c\x12\r\n\x05value\x18\x02 \x01(\x0c\".\n\x0cProtocolMesh\x12\x1e\n\x07hashtag\x18\x0f \x01(\x0b\x32\r.hyweb.HashTag\"D\n\x04Slot\x12\x0c\n\x04port\x18\x01 \x01(\x05\x12.\n\x12transport_protocol\x18\x02 \x01(\x0b\x32\x12.hyweb.ProtocolMesh\"K\n\x03\x41pi\x12*\n\x0c\x61pp_protocol\x18\x01 \x01(\x0b\x32\x14.hyweb.ApplicationDef\x12\x18\n\x04slot\x18\x02 \x03(\x0b\x32\n.hyweb.Slot\".\n\x0c\x41rchitecture\x12\x1e\n\x07hashtag\x18\x0f \x01(\x0b\x32\r.hyweb.HashTag\"\xbd\x01\n\nFilesystem\x12\x1e\n\x07hashtag\x18\x0f \x01(\x0b\x32\r.hyweb.HashTag\x12\'\n\x06\x62ranch\x18\x01 \x03(\x0b\x32\x17.hyweb.Filesystem.Branch\x1a\x66\n\x06\x42ranch\x12\x0e\n\x04\x66ile\x18\x01 \x01(\x0cH\x00\x12\x0e\n\x04link\x18\x02 \x01(\tH\x00\x12&\n\nfilesystem\x18\x03 \x01(\x0b\x32\x10.hyweb.FilesystemH\x00\x12\x0c\n\x04name\x18\x04 \x01(\tB\x06\n\x04item\"\x83\x02\n\tContainer\x12(\n\x0c\x61rchitecture\x18\x01 \x01(\x0b\x32\x12.hyweb.Architecture\x12$\n\nfilesystem\x18\x02 \x01(\x0b\x32\x10.hyweb.Filesystem\x12\x46\n\x14\x65nviroment_variables\x18\x03 \x03(\x0b\x32(.hyweb.Container.EnviromentVariablesEntry\x12\x12\n\nentrypoint\x18\x04 \x01(\t\x1aJ\n\x18\x45nviromentVariablesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x1d\n\x05value\x18\x02 \x01(\x0b\x32\x0e.hyweb.FieldDef:\x02\x38\x01\"\xad\x01\n\x06Tensor\x12\x1e\n\x07hashtag\x18\x0f \x01(\x0b\x32\r.hyweb.HashTag\x12!\n\x05index\x18\x01 \x03(\x0b\x32\x12.hyweb.Tensor.Index\x12\x0c\n\x04rank\x18\x02 \x01(\x05\x1aR\n\x05Index\x12\n\n\x02id\x18\x01 \x01(\t\x12\x1d\n\x05\x66ield\x18\x02 \x01(\x0b\x32\x0e.hyweb.FieldDef\x12\x1e\n\x07hashtag\x18\x0f \x01(\x0b\x32\r.hyweb.HashTag\"(\n\x06Ledger\x12\x1e\n\x07hashtag\x18\x0f \x01(\x0b\x32\r.hyweb.HashTag\"\xc3\x01\n\x07Service\x12\x1e\n\x07hashtag\x18\x0f \x01(\x0b\x32\r.hyweb.HashTag\x12 \n\x06syntax\x18\x01 \x01(\x0b\x32\x10.hyweb.MessageDef\x12\"\n\tcontainer\x18\x02 \x01(\x0b\x32\x0f.hyweb.Container\x12\x16\n\x03\x61pi\x18\x03 \x01(\x0b\x32\t.hyweb.Api\x12\x1c\n\x06tensor\x18\x04 \x01(\x0b\x32\x0c.hyweb.Tensor\x12\x1c\n\x06ledger\x18\x05 \x01(\x0b\x32\x0c.hyweb.Ledger\"\xb2\x01\n\x08Instance\x12\x16\n\x03\x61pi\x18\x01 \x01(\x0b\x32\t.hyweb.Api\x12)\n\x08uri_slot\x18\x02 \x03(\x0b\x32\x17.hyweb.Instance.Uri_Slot\x1a\x1f\n\x03Uri\x12\n\n\x02ip\x18\x01 \x01(\t\x12\x0c\n\x04port\x18\x02 \x01(\x05\x1a\x42\n\x08Uri_Slot\x12\x15\n\rinternal_port\x18\x01 \x01(\x05\x12\x1f\n\x03uri\x18\x02 \x03(\x0b\x32\x12.hyweb.Instance.Uri\"\x9d\x02\n\rConfiguration\x12J\n\x14\x65nviroment_variables\x18\x01 \x03(\x0b\x32,.hyweb.Configuration.EnviromentVariablesEntry\x12\x34\n\tspec_slot\x18\x02 \x03(\x0b\x32!.hyweb.Configuration.SpecSlotEntry\x1a\x45\n\x18\x45nviromentVariablesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x18\n\x05value\x18\x02 \x01(\x0b\x32\t.hyweb.Any:\x02\x38\x01\x1a\x43\n\rSpecSlotEntry\x12\x0b\n\x03key\x18\x01 \x01(\x05\x12!\n\x05value\x18\x02 \x01(\x0b\x32\x12.hyweb.ProtocolMesh:\x02\x38\x01\"\xad\x01\n\x11\x43onfigurationFile\x12\x1f\n\x07gateway\x18\x01 \x01(\x0b\x32\x0e.hyweb.Instance\x12#\n\x06\x63onfig\x18\x02 \x01(\x0b\x32\x13.hyweb.Configuration\x12(\n\x10tensor_instances\x18\x03 \x03(\x0b\x32\x0e.hyweb.Instance\x12(\n\x10ledger_instances\x18\x04 \x03(\x0b\x32\x0e.hyweb.Instanceb\x06proto3'
+  serialized_pb=b'\n\x0bhyweb.proto\x12\x05hyweb\"9\n\x0cPrimitiveDef\x12\x0b\n\x03tag\x18\x01 \x03(\t\x12\x12\n\x05regex\x18\x02 \x01(\tH\x00\x88\x01\x01\x42\x08\n\x06_regex\"n\n\x07\x45numDef\x12\x0b\n\x03tag\x18\x01 \x03(\t\x12(\n\x05value\x18\x02 \x03(\x0b\x32\x19.hyweb.EnumDef.ValueEntry\x1a,\n\nValueEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x05:\x02\x38\x01\"\x83\x01\n\x08\x46ieldDef\x12$\n\x07message\x18\x01 \x01(\x0b\x32\x11.hyweb.MessageDefH\x00\x12(\n\tprimitive\x18\x02 \x01(\x0b\x32\x13.hyweb.PrimitiveDefH\x00\x12\x1e\n\x04\x65num\x18\x03 \x01(\x0b\x32\x0e.hyweb.EnumDefH\x00\x42\x07\n\x05value\"j\n\x08ParamDef\x12\r\n\x05index\x18\x01 \x01(\x05\x12\x0b\n\x03tag\x18\x02 \x03(\t\x12\x1e\n\x05\x66ield\x18\x03 \x01(\x0b\x32\x0f.hyweb.FieldDef\x12\x10\n\x08repeated\x18\x04 \x01(\x08\x12\x10\n\x08optional\x18\x05 \x01(\x08\"\x19\n\x08OneofDef\x12\r\n\x05index\x18\x01 \x03(\x05\"Y\n\nMessageDef\x12\x0b\n\x03tag\x18\x01 \x03(\t\x12\x1e\n\x05param\x18\x02 \x03(\x0b\x32\x0f.hyweb.ParamDef\x12\x1e\n\x05oneof\x18\x03 \x03(\x0b\x32\x0f.hyweb.OneofDef\"\xab\x01\n\tMethodDef\x12\r\n\x05index\x18\x01 \x01(\x05\x12\x0b\n\x03tag\x18\x02 \x03(\t\x12&\n\rinput_message\x18\x03 \x01(\x0b\x32\x0f.hyweb.FieldDef\x12\x17\n\x0fis_input_stream\x18\x04 \x01(\x08\x12\'\n\x0eoutput_message\x18\x05 \x01(\x0b\x32\x0f.hyweb.FieldDef\x12\x18\n\x10is_output_stream\x18\x06 \x01(\x08\"?\n\x0e\x41pplicationDef\x12\x0b\n\x03tag\x18\x01 \x03(\t\x12 \n\x06method\x18\x02 \x03(\x0b\x32\x10.hyweb.MethodDef\"4\n\x03\x41ny\x12\x1e\n\x05\x66ield\x18\x01 \x01(\x0b\x32\x0f.hyweb.FieldDef\x12\r\n\x05value\x18\x02 \x01(\x0c\"^\n\x07HashTag\x12!\n\x04hash\x18\x01 \x03(\x0b\x32\x13.hyweb.HashTag.Hash\x12\x0b\n\x03tag\x18\x02 \x03(\t\x1a#\n\x04Hash\x12\x0c\n\x04type\x18\x01 \x01(\x0c\x12\r\n\x05value\x18\x02 \x01(\x0c\"/\n\x0cProtocolMesh\x12\x1f\n\x07hashtag\x18\x0f \x01(\x0b\x32\x0e.hyweb.HashTag\"E\n\x04Slot\x12\x0c\n\x04port\x18\x01 \x01(\x05\x12/\n\x12transport_protocol\x18\x02 \x01(\x0b\x32\x13.hyweb.ProtocolMesh\"M\n\x03\x41pi\x12+\n\x0c\x61pp_protocol\x18\x01 \x01(\x0b\x32\x15.hyweb.ApplicationDef\x12\x19\n\x04slot\x18\x02 \x03(\x0b\x32\x0b.hyweb.Slot\"/\n\x0c\x41rchitecture\x12\x1f\n\x07hashtag\x18\x0f \x01(\x0b\x32\x0e.hyweb.HashTag\"\xc0\x01\n\nFilesystem\x12\x1f\n\x07hashtag\x18\x0f \x01(\x0b\x32\x0e.hyweb.HashTag\x12(\n\x06\x62ranch\x18\x01 \x03(\x0b\x32\x18.hyweb.Filesystem.Branch\x1ag\n\x06\x42ranch\x12\x0e\n\x04\x66ile\x18\x01 \x01(\x0cH\x00\x12\x0e\n\x04link\x18\x02 \x01(\tH\x00\x12\'\n\nfilesystem\x18\x03 \x01(\x0b\x32\x11.hyweb.FilesystemH\x00\x12\x0c\n\x04name\x18\x04 \x01(\tB\x06\n\x04item\"\x87\x02\n\tContainer\x12)\n\x0c\x61rchitecture\x18\x01 \x01(\x0b\x32\x13.hyweb.Architecture\x12%\n\nfilesystem\x18\x02 \x01(\x0b\x32\x11.hyweb.Filesystem\x12G\n\x14\x65nviroment_variables\x18\x03 \x03(\x0b\x32).hyweb.Container.EnviromentVariablesEntry\x12\x12\n\nentrypoint\x18\x04 \x01(\t\x1aK\n\x18\x45nviromentVariablesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x1e\n\x05value\x18\x02 \x01(\x0b\x32\x0f.hyweb.FieldDef:\x02\x38\x01\"\xb1\x01\n\x06Tensor\x12\x1f\n\x07hashtag\x18\x0f \x01(\x0b\x32\x0e.hyweb.HashTag\x12\"\n\x05index\x18\x01 \x03(\x0b\x32\x13.hyweb.Tensor.Index\x12\x0c\n\x04rank\x18\x02 \x01(\x05\x1aT\n\x05Index\x12\n\n\x02id\x18\x01 \x01(\t\x12\x1e\n\x05\x66ield\x18\x02 \x01(\x0b\x32\x0f.hyweb.FieldDef\x12\x1f\n\x07hashtag\x18\x0f \x01(\x0b\x32\x0e.hyweb.HashTag\")\n\x06Ledger\x12\x1f\n\x07hashtag\x18\x0f \x01(\x0b\x32\x0e.hyweb.HashTag\"\xc9\x01\n\x07Service\x12\x1f\n\x07hashtag\x18\x0f \x01(\x0b\x32\x0e.hyweb.HashTag\x12!\n\x06syntax\x18\x01 \x01(\x0b\x32\x11.hyweb.MessageDef\x12#\n\tcontainer\x18\x02 \x01(\x0b\x32\x10.hyweb.Container\x12\x17\n\x03\x61pi\x18\x03 \x01(\x0b\x32\n.hyweb.Api\x12\x1d\n\x06tensor\x18\x04 \x01(\x0b\x32\r.hyweb.Tensor\x12\x1d\n\x06ledger\x18\x05 \x01(\x0b\x32\r.hyweb.Ledger\"\xb5\x01\n\x08Instance\x12\x17\n\x03\x61pi\x18\x01 \x01(\x0b\x32\n.hyweb.Api\x12*\n\x08uri_slot\x18\x02 \x03(\x0b\x32\x18.hyweb.Instance.Uri_Slot\x1a\x1f\n\x03Uri\x12\n\n\x02ip\x18\x01 \x01(\t\x12\x0c\n\x04port\x18\x02 \x01(\x05\x1a\x43\n\x08Uri_Slot\x12\x15\n\rinternal_port\x18\x01 \x01(\x05\x12 \n\x03uri\x18\x02 \x03(\x0b\x32\x13.hyweb.Instance.Uri\"\xa1\x02\n\rConfiguration\x12K\n\x14\x65nviroment_variables\x18\x01 \x03(\x0b\x32-.hyweb.Configuration.EnviromentVariablesEntry\x12\x35\n\tspec_slot\x18\x02 \x03(\x0b\x32\".hyweb.Configuration.SpecSlotEntry\x1a\x46\n\x18\x45nviromentVariablesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x19\n\x05value\x18\x02 \x01(\x0b\x32\n.hyweb.Any:\x02\x38\x01\x1a\x44\n\rSpecSlotEntry\x12\x0b\n\x03key\x18\x01 \x01(\x05\x12\"\n\x05value\x18\x02 \x01(\x0b\x32\x13.hyweb.ProtocolMesh:\x02\x38\x01\"\xb1\x01\n\x11\x43onfigurationFile\x12 \n\x07gateway\x18\x01 \x01(\x0b\x32\x0f.hyweb.Instance\x12$\n\x06\x63onfig\x18\x02 \x01(\x0b\x32\x14.hyweb.Configuration\x12)\n\x10tensor_instances\x18\x03 \x03(\x0b\x32\x0f.hyweb.Instance\x12)\n\x10ledger_instances\x18\x04 \x03(\x0b\x32\x0f.hyweb.Instanceb\x06proto3'
 )
 
 
@@ -64,8 +64,8 @@ _PRIMITIVEDEF = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=20,
-  serialized_end=77,
+  serialized_start=22,
+  serialized_end=79,
 )
 
 
@@ -103,8 +103,8 @@ _ENUMDEF_VALUEENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=144,
-  serialized_end=188,
+  serialized_start=147,
+  serialized_end=191,
 )
 
 _ENUMDEF = _descriptor.Descriptor(
@@ -141,8 +141,8 @@ _ENUMDEF = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=79,
-  serialized_end=188,
+  serialized_start=81,
+  serialized_end=191,
 )
 
 
@@ -192,8 +192,8 @@ _FIELDDEF = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=191,
-  serialized_end=319,
+  serialized_start=194,
+  serialized_end=325,
 )
 
 
@@ -252,8 +252,8 @@ _PARAMDEF = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=321,
-  serialized_end=426,
+  serialized_start=327,
+  serialized_end=433,
 )
 
 
@@ -284,8 +284,8 @@ _ONEOFDEF = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=428,
-  serialized_end=453,
+  serialized_start=435,
+  serialized_end=460,
 )
 
 
@@ -330,8 +330,8 @@ _MESSAGEDEF = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=455,
-  serialized_end=542,
+  serialized_start=462,
+  serialized_end=551,
 )
 
 
@@ -397,8 +397,8 @@ _METHODDEF = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=545,
-  serialized_end=714,
+  serialized_start=554,
+  serialized_end=725,
 )
 
 
@@ -436,8 +436,8 @@ _APPLICATIONDEF = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=716,
-  serialized_end=778,
+  serialized_start=727,
+  serialized_end=790,
 )
 
 
@@ -475,8 +475,8 @@ _ANY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=780,
-  serialized_end=831,
+  serialized_start=792,
+  serialized_end=844,
 )
 
 
@@ -514,8 +514,8 @@ _HASHTAG_HASH = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=891,
-  serialized_end=926,
+  serialized_start=905,
+  serialized_end=940,
 )
 
 _HASHTAG = _descriptor.Descriptor(
@@ -552,8 +552,8 @@ _HASHTAG = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=833,
-  serialized_end=926,
+  serialized_start=846,
+  serialized_end=940,
 )
 
 
@@ -584,8 +584,8 @@ _PROTOCOLMESH = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=928,
-  serialized_end=974,
+  serialized_start=942,
+  serialized_end=989,
 )
 
 
@@ -623,8 +623,8 @@ _SLOT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=976,
-  serialized_end=1044,
+  serialized_start=991,
+  serialized_end=1060,
 )
 
 
@@ -662,8 +662,8 @@ _API = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1046,
-  serialized_end=1121,
+  serialized_start=1062,
+  serialized_end=1139,
 )
 
 
@@ -694,8 +694,8 @@ _ARCHITECTURE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1123,
-  serialized_end=1169,
+  serialized_start=1141,
+  serialized_end=1188,
 )
 
 
@@ -752,8 +752,8 @@ _FILESYSTEM_BRANCH = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=1259,
-  serialized_end=1361,
+  serialized_start=1280,
+  serialized_end=1383,
 )
 
 _FILESYSTEM = _descriptor.Descriptor(
@@ -790,8 +790,8 @@ _FILESYSTEM = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1172,
-  serialized_end=1361,
+  serialized_start=1191,
+  serialized_end=1383,
 )
 
 
@@ -829,8 +829,8 @@ _CONTAINER_ENVIROMENTVARIABLESENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1549,
-  serialized_end=1623,
+  serialized_start=1574,
+  serialized_end=1649,
 )
 
 _CONTAINER = _descriptor.Descriptor(
@@ -881,8 +881,8 @@ _CONTAINER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1364,
-  serialized_end=1623,
+  serialized_start=1386,
+  serialized_end=1649,
 )
 
 
@@ -927,8 +927,8 @@ _TENSOR_INDEX = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1717,
-  serialized_end=1799,
+  serialized_start=1745,
+  serialized_end=1829,
 )
 
 _TENSOR = _descriptor.Descriptor(
@@ -972,8 +972,8 @@ _TENSOR = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1626,
-  serialized_end=1799,
+  serialized_start=1652,
+  serialized_end=1829,
 )
 
 
@@ -1004,8 +1004,8 @@ _LEDGER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1801,
-  serialized_end=1841,
+  serialized_start=1831,
+  serialized_end=1872,
 )
 
 
@@ -1071,8 +1071,8 @@ _SERVICE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1844,
-  serialized_end=2039,
+  serialized_start=1875,
+  serialized_end=2076,
 )
 
 
@@ -1110,8 +1110,8 @@ _INSTANCE_URI = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2121,
-  serialized_end=2152,
+  serialized_start=2160,
+  serialized_end=2191,
 )
 
 _INSTANCE_URI_SLOT = _descriptor.Descriptor(
@@ -1148,8 +1148,8 @@ _INSTANCE_URI_SLOT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2154,
-  serialized_end=2220,
+  serialized_start=2193,
+  serialized_end=2260,
 )
 
 _INSTANCE = _descriptor.Descriptor(
@@ -1186,8 +1186,8 @@ _INSTANCE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2042,
-  serialized_end=2220,
+  serialized_start=2079,
+  serialized_end=2260,
 )
 
 
@@ -1225,8 +1225,8 @@ _CONFIGURATION_ENVIROMENTVARIABLESENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2370,
-  serialized_end=2439,
+  serialized_start=2412,
+  serialized_end=2482,
 )
 
 _CONFIGURATION_SPECSLOTENTRY = _descriptor.Descriptor(
@@ -1263,8 +1263,8 @@ _CONFIGURATION_SPECSLOTENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2441,
-  serialized_end=2508,
+  serialized_start=2484,
+  serialized_end=2552,
 )
 
 _CONFIGURATION = _descriptor.Descriptor(
@@ -1301,8 +1301,8 @@ _CONFIGURATION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2223,
-  serialized_end=2508,
+  serialized_start=2263,
+  serialized_end=2552,
 )
 
 
@@ -1354,8 +1354,8 @@ _CONFIGURATIONFILE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2511,
-  serialized_end=2684,
+  serialized_start=2555,
+  serialized_end=2732,
 )
 
 _PRIMITIVEDEF.oneofs_by_name['_regex'].fields.append(

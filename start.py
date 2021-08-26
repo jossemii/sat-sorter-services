@@ -1,8 +1,8 @@
 import logging, hyweb_pb2
 
 logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s')
-LOGGER = lambda message: print(message + '\n')
-DIR = '/satsorter/'
+LOGGER = lambda message: logging.getLogger().debug(message + '\n')
+DIR = '/satsorter'
 
 def get_grpc_uri(instance: hyweb_pb2.Instance) -> hyweb_pb2.Instance.Uri:
     for slot in instance.api.slot:
@@ -42,7 +42,7 @@ if __name__ == "__main__":
     import regresion
     import grpc, api_pb2, api_pb2_grpc
     from concurrent import futures
-
+    
     # Read __config__ file.
     config = api_pb2.ipss__pb2.ConfigurationFile()
     config.ParseFromString(
@@ -58,7 +58,8 @@ if __name__ == "__main__":
             config.config.enviroment_variables[env_var].value
             )    
     """
-
+    
+    
     LOGGER('INIT START THREAD ' + str(get_ident()))
       
     Thread(target=regresion.init, name='Regression', args=(ENVS,)).start()   # Cuando se añadan los paquetes necesarios al .service/Dockerfile   
