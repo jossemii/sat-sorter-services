@@ -15,11 +15,11 @@ _sym_db = _symbol_database.Default()
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='hyweb.proto',
-  package='ipss',
+  package='hyweb',
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\nhyweb.proto\x12\x04ipss\"9\n\x0cPrimitiveDef\x12\x0b\n\x03tag\x18\x01 \x03(\t\x12\x12\n\x05regex\x18\x02 \x01(\tH\x00\x88\x01\x01\x42\x08\n\x06_regex\"m\n\x07\x45numDef\x12\x0b\n\x03tag\x18\x01 \x03(\t\x12\'\n\x05value\x18\x02 \x03(\x0b\x32\x18.ipss.EnumDef.ValueEntry\x1a,\n\nValueEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x05:\x02\x38\x01\"\x80\x01\n\x08\x46ieldDef\x12#\n\x07message\x18\x01 \x01(\x0b\x32\x10.ipss.MessageDefH\x00\x12\'\n\tprimitive\x18\x02 \x01(\x0b\x32\x12.ipss.PrimitiveDefH\x00\x12\x1d\n\x04\x65num\x18\x03 \x01(\x0b\x32\r.ipss.EnumDefH\x00\x42\x07\n\x05value\"i\n\x08ParamDef\x12\r\n\x05index\x18\x01 \x01(\x05\x12\x0b\n\x03tag\x18\x02 \x03(\t\x12\x1d\n\x05\x66ield\x18\x03 \x01(\x0b\x32\x0e.ipss.FieldDef\x12\x10\n\x08repeated\x18\x04 \x01(\x08\x12\x10\n\x08optional\x18\x05 \x01(\x08\"\x19\n\x08OneofDef\x12\r\n\x05index\x18\x01 \x03(\x05\"W\n\nMessageDef\x12\x0b\n\x03tag\x18\x01 \x03(\t\x12\x1d\n\x05param\x18\x02 \x03(\x0b\x32\x0e.ipss.ParamDef\x12\x1d\n\x05oneof\x18\x03 \x03(\x0b\x32\x0e.ipss.OneofDef\"\xa9\x01\n\tMethodDef\x12\r\n\x05index\x18\x01 \x01(\x05\x12\x0b\n\x03tag\x18\x02 \x03(\t\x12%\n\rinput_message\x18\x03 \x01(\x0b\x32\x0e.ipss.FieldDef\x12\x17\n\x0fis_input_stream\x18\x04 \x01(\x08\x12&\n\x0eoutput_message\x18\x05 \x01(\x0b\x32\x0e.ipss.FieldDef\x12\x18\n\x10is_output_stream\x18\x06 \x01(\x08\">\n\x0e\x41pplicationDef\x12\x0b\n\x03tag\x18\x01 \x03(\t\x12\x1f\n\x06method\x18\x02 \x03(\x0b\x32\x0f.ipss.MethodDef\"3\n\x03\x41ny\x12\x1d\n\x05\x66ield\x18\x01 \x01(\x0b\x32\x0e.ipss.FieldDef\x12\r\n\x05value\x18\x02 \x01(\x0c\"]\n\x07HashTag\x12 \n\x04hash\x18\x01 \x03(\x0b\x32\x12.ipss.HashTag.Hash\x12\x0b\n\x03tag\x18\x02 \x03(\t\x1a#\n\x04Hash\x12\x0c\n\x04type\x18\x01 \x01(\x0c\x12\r\n\x05value\x18\x02 \x01(\x0c\".\n\x0cProtocolMesh\x12\x1e\n\x07hashtag\x18\x0f \x01(\x0b\x32\r.ipss.HashTag\"D\n\x04Slot\x12\x0c\n\x04port\x18\x01 \x01(\x05\x12.\n\x12transport_protocol\x18\x02 \x01(\x0b\x32\x12.ipss.ProtocolMesh\"K\n\x03\x41pi\x12*\n\x0c\x61pp_protocol\x18\x01 \x01(\x0b\x32\x14.ipss.ApplicationDef\x12\x18\n\x04slot\x18\x02 \x03(\x0b\x32\n.ipss.Slot\".\n\x0c\x41rchitecture\x12\x1e\n\x07hashtag\x18\x0f \x01(\x0b\x32\r.ipss.HashTag\"\xbd\x01\n\nFilesystem\x12\x1e\n\x07hashtag\x18\x0f \x01(\x0b\x32\r.ipss.HashTag\x12\'\n\x06\x62ranch\x18\x01 \x03(\x0b\x32\x17.ipss.Filesystem.Branch\x1a\x66\n\x06\x42ranch\x12\x0e\n\x04\x66ile\x18\x01 \x01(\x0cH\x00\x12\x0e\n\x04link\x18\x02 \x01(\tH\x00\x12&\n\nfilesystem\x18\x03 \x01(\x0b\x32\x10.ipss.FilesystemH\x00\x12\x0c\n\x04name\x18\x04 \x01(\tB\x06\n\x04item\"\x83\x02\n\tContainer\x12(\n\x0c\x61rchitecture\x18\x01 \x01(\x0b\x32\x12.ipss.Architecture\x12$\n\nfilesystem\x18\x02 \x01(\x0b\x32\x10.ipss.Filesystem\x12\x46\n\x14\x65nviroment_variables\x18\x03 \x03(\x0b\x32(.ipss.Container.EnviromentVariablesEntry\x12\x12\n\nentrypoint\x18\x04 \x01(\t\x1aJ\n\x18\x45nviromentVariablesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x1d\n\x05value\x18\x02 \x01(\x0b\x32\x0e.ipss.FieldDef:\x02\x38\x01\"\xad\x01\n\x06Tensor\x12\x1e\n\x07hashtag\x18\x0f \x01(\x0b\x32\r.ipss.HashTag\x12!\n\x05index\x18\x01 \x03(\x0b\x32\x12.ipss.Tensor.Index\x12\x0c\n\x04rank\x18\x02 \x01(\x05\x1aR\n\x05Index\x12\n\n\x02id\x18\x01 \x01(\t\x12\x1d\n\x05\x66ield\x18\x02 \x01(\x0b\x32\x0e.ipss.FieldDef\x12\x1e\n\x07hashtag\x18\x0f \x01(\x0b\x32\r.ipss.HashTag\"(\n\x06Ledger\x12\x1e\n\x07hashtag\x18\x0f \x01(\x0b\x32\r.ipss.HashTag\"\xc3\x01\n\x07Service\x12\x1e\n\x07hashtag\x18\x0f \x01(\x0b\x32\r.ipss.HashTag\x12 \n\x06syntax\x18\x01 \x01(\x0b\x32\x10.ipss.MessageDef\x12\"\n\tcontainer\x18\x02 \x01(\x0b\x32\x0f.ipss.Container\x12\x16\n\x03\x61pi\x18\x03 \x01(\x0b\x32\t.ipss.Api\x12\x1c\n\x06tensor\x18\x04 \x01(\x0b\x32\x0c.ipss.Tensor\x12\x1c\n\x06ledger\x18\x05 \x01(\x0b\x32\x0c.ipss.Ledger\"\xb2\x01\n\x08Instance\x12\x16\n\x03\x61pi\x18\x01 \x01(\x0b\x32\t.ipss.Api\x12)\n\x08uri_slot\x18\x02 \x03(\x0b\x32\x17.ipss.Instance.Uri_Slot\x1a\x1f\n\x03Uri\x12\n\n\x02ip\x18\x01 \x01(\t\x12\x0c\n\x04port\x18\x02 \x01(\x05\x1a\x42\n\x08Uri_Slot\x12\x15\n\rinternal_port\x18\x01 \x01(\x05\x12\x1f\n\x03uri\x18\x02 \x03(\x0b\x32\x12.ipss.Instance.Uri\"\x9d\x02\n\rConfiguration\x12J\n\x14\x65nviroment_variables\x18\x01 \x03(\x0b\x32,.ipss.Configuration.EnviromentVariablesEntry\x12\x34\n\tspec_slot\x18\x02 \x03(\x0b\x32!.ipss.Configuration.SpecSlotEntry\x1a\x45\n\x18\x45nviromentVariablesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x18\n\x05value\x18\x02 \x01(\x0b\x32\t.ipss.Any:\x02\x38\x01\x1a\x43\n\rSpecSlotEntry\x12\x0b\n\x03key\x18\x01 \x01(\x05\x12!\n\x05value\x18\x02 \x01(\x0b\x32\x12.ipss.ProtocolMesh:\x02\x38\x01\"\xad\x01\n\x11\x43onfigurationFile\x12\x1f\n\x07gateway\x18\x01 \x01(\x0b\x32\x0e.ipss.Instance\x12#\n\x06\x63onfig\x18\x02 \x01(\x0b\x32\x13.ipss.Configuration\x12(\n\x10tensor_instances\x18\x03 \x03(\x0b\x32\x0e.ipss.Instance\x12(\n\x10ledger_instances\x18\x04 \x03(\x0b\x32\x0e.ipss.Instanceb\x06proto3'
+  serialized_pb=b'\n\nhyweb.proto\x12\x04hyweb\"9\n\x0cPrimitiveDef\x12\x0b\n\x03tag\x18\x01 \x03(\t\x12\x12\n\x05regex\x18\x02 \x01(\tH\x00\x88\x01\x01\x42\x08\n\x06_regex\"m\n\x07\x45numDef\x12\x0b\n\x03tag\x18\x01 \x03(\t\x12\'\n\x05value\x18\x02 \x03(\x0b\x32\x18.hyweb.EnumDef.ValueEntry\x1a,\n\nValueEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x05:\x02\x38\x01\"\x80\x01\n\x08\x46ieldDef\x12#\n\x07message\x18\x01 \x01(\x0b\x32\x10.hyweb.MessageDefH\x00\x12\'\n\tprimitive\x18\x02 \x01(\x0b\x32\x12.hyweb.PrimitiveDefH\x00\x12\x1d\n\x04\x65num\x18\x03 \x01(\x0b\x32\r.hyweb.EnumDefH\x00\x42\x07\n\x05value\"i\n\x08ParamDef\x12\r\n\x05index\x18\x01 \x01(\x05\x12\x0b\n\x03tag\x18\x02 \x03(\t\x12\x1d\n\x05\x66ield\x18\x03 \x01(\x0b\x32\x0e.hyweb.FieldDef\x12\x10\n\x08repeated\x18\x04 \x01(\x08\x12\x10\n\x08optional\x18\x05 \x01(\x08\"\x19\n\x08OneofDef\x12\r\n\x05index\x18\x01 \x03(\x05\"W\n\nMessageDef\x12\x0b\n\x03tag\x18\x01 \x03(\t\x12\x1d\n\x05param\x18\x02 \x03(\x0b\x32\x0e.hyweb.ParamDef\x12\x1d\n\x05oneof\x18\x03 \x03(\x0b\x32\x0e.hyweb.OneofDef\"\xa9\x01\n\tMethodDef\x12\r\n\x05index\x18\x01 \x01(\x05\x12\x0b\n\x03tag\x18\x02 \x03(\t\x12%\n\rinput_message\x18\x03 \x01(\x0b\x32\x0e.hyweb.FieldDef\x12\x17\n\x0fis_input_stream\x18\x04 \x01(\x08\x12&\n\x0eoutput_message\x18\x05 \x01(\x0b\x32\x0e.hyweb.FieldDef\x12\x18\n\x10is_output_stream\x18\x06 \x01(\x08\">\n\x0e\x41pplicationDef\x12\x0b\n\x03tag\x18\x01 \x03(\t\x12\x1f\n\x06method\x18\x02 \x03(\x0b\x32\x0f.hyweb.MethodDef\"3\n\x03\x41ny\x12\x1d\n\x05\x66ield\x18\x01 \x01(\x0b\x32\x0e.hyweb.FieldDef\x12\r\n\x05value\x18\x02 \x01(\x0c\"]\n\x07HashTag\x12 \n\x04hash\x18\x01 \x03(\x0b\x32\x12.hyweb.HashTag.Hash\x12\x0b\n\x03tag\x18\x02 \x03(\t\x1a#\n\x04Hash\x12\x0c\n\x04type\x18\x01 \x01(\x0c\x12\r\n\x05value\x18\x02 \x01(\x0c\".\n\x0cProtocolMesh\x12\x1e\n\x07hashtag\x18\x0f \x01(\x0b\x32\r.hyweb.HashTag\"D\n\x04Slot\x12\x0c\n\x04port\x18\x01 \x01(\x05\x12.\n\x12transport_protocol\x18\x02 \x01(\x0b\x32\x12.hyweb.ProtocolMesh\"K\n\x03\x41pi\x12*\n\x0c\x61pp_protocol\x18\x01 \x01(\x0b\x32\x14.hyweb.ApplicationDef\x12\x18\n\x04slot\x18\x02 \x03(\x0b\x32\n.hyweb.Slot\".\n\x0c\x41rchitecture\x12\x1e\n\x07hashtag\x18\x0f \x01(\x0b\x32\r.hyweb.HashTag\"\xbd\x01\n\nFilesystem\x12\x1e\n\x07hashtag\x18\x0f \x01(\x0b\x32\r.hyweb.HashTag\x12\'\n\x06\x62ranch\x18\x01 \x03(\x0b\x32\x17.hyweb.Filesystem.Branch\x1a\x66\n\x06\x42ranch\x12\x0e\n\x04\x66ile\x18\x01 \x01(\x0cH\x00\x12\x0e\n\x04link\x18\x02 \x01(\tH\x00\x12&\n\nfilesystem\x18\x03 \x01(\x0b\x32\x10.hyweb.FilesystemH\x00\x12\x0c\n\x04name\x18\x04 \x01(\tB\x06\n\x04item\"\x83\x02\n\tContainer\x12(\n\x0c\x61rchitecture\x18\x01 \x01(\x0b\x32\x12.hyweb.Architecture\x12$\n\nfilesystem\x18\x02 \x01(\x0b\x32\x10.hyweb.Filesystem\x12\x46\n\x14\x65nviroment_variables\x18\x03 \x03(\x0b\x32(.hyweb.Container.EnviromentVariablesEntry\x12\x12\n\nentrypoint\x18\x04 \x01(\t\x1aJ\n\x18\x45nviromentVariablesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x1d\n\x05value\x18\x02 \x01(\x0b\x32\x0e.hyweb.FieldDef:\x02\x38\x01\"\xad\x01\n\x06Tensor\x12\x1e\n\x07hashtag\x18\x0f \x01(\x0b\x32\r.hyweb.HashTag\x12!\n\x05index\x18\x01 \x03(\x0b\x32\x12.hyweb.Tensor.Index\x12\x0c\n\x04rank\x18\x02 \x01(\x05\x1aR\n\x05Index\x12\n\n\x02id\x18\x01 \x01(\t\x12\x1d\n\x05\x66ield\x18\x02 \x01(\x0b\x32\x0e.hyweb.FieldDef\x12\x1e\n\x07hashtag\x18\x0f \x01(\x0b\x32\r.hyweb.HashTag\"(\n\x06Ledger\x12\x1e\n\x07hashtag\x18\x0f \x01(\x0b\x32\r.hyweb.HashTag\"\xc3\x01\n\x07Service\x12\x1e\n\x07hashtag\x18\x0f \x01(\x0b\x32\r.hyweb.HashTag\x12 \n\x06syntax\x18\x01 \x01(\x0b\x32\x10.hyweb.MessageDef\x12\"\n\tcontainer\x18\x02 \x01(\x0b\x32\x0f.hyweb.Container\x12\x16\n\x03\x61pi\x18\x03 \x01(\x0b\x32\t.hyweb.Api\x12\x1c\n\x06tensor\x18\x04 \x01(\x0b\x32\x0c.hyweb.Tensor\x12\x1c\n\x06ledger\x18\x05 \x01(\x0b\x32\x0c.hyweb.Ledger\"\xb2\x01\n\x08Instance\x12\x16\n\x03\x61pi\x18\x01 \x01(\x0b\x32\t.hyweb.Api\x12)\n\x08uri_slot\x18\x02 \x03(\x0b\x32\x17.hyweb.Instance.Uri_Slot\x1a\x1f\n\x03Uri\x12\n\n\x02ip\x18\x01 \x01(\t\x12\x0c\n\x04port\x18\x02 \x01(\x05\x1a\x42\n\x08Uri_Slot\x12\x15\n\rinternal_port\x18\x01 \x01(\x05\x12\x1f\n\x03uri\x18\x02 \x03(\x0b\x32\x12.hyweb.Instance.Uri\"\x9d\x02\n\rConfiguration\x12J\n\x14\x65nviroment_variables\x18\x01 \x03(\x0b\x32,.hyweb.Configuration.EnviromentVariablesEntry\x12\x34\n\tspec_slot\x18\x02 \x03(\x0b\x32!.hyweb.Configuration.SpecSlotEntry\x1a\x45\n\x18\x45nviromentVariablesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x18\n\x05value\x18\x02 \x01(\x0b\x32\t.hyweb.Any:\x02\x38\x01\x1a\x43\n\rSpecSlotEntry\x12\x0b\n\x03key\x18\x01 \x01(\x05\x12!\n\x05value\x18\x02 \x01(\x0b\x32\x12.hyweb.ProtocolMesh:\x02\x38\x01\"\xad\x01\n\x11\x43onfigurationFile\x12\x1f\n\x07gateway\x18\x01 \x01(\x0b\x32\x0e.hyweb.Instance\x12#\n\x06\x63onfig\x18\x02 \x01(\x0b\x32\x13.hyweb.Configuration\x12(\n\x10tensor_instances\x18\x03 \x03(\x0b\x32\x0e.hyweb.Instance\x12(\n\x10ledger_instances\x18\x04 \x03(\x0b\x32\x0e.hyweb.Instanceb\x06proto3'
 )
 
 
@@ -27,21 +27,21 @@ DESCRIPTOR = _descriptor.FileDescriptor(
 
 _PRIMITIVEDEF = _descriptor.Descriptor(
   name='PrimitiveDef',
-  full_name='ipss.PrimitiveDef',
+  full_name='hyweb.PrimitiveDef',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='tag', full_name='ipss.PrimitiveDef.tag', index=0,
+      name='tag', full_name='hyweb.PrimitiveDef.tag', index=0,
       number=1, type=9, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='regex', full_name='ipss.PrimitiveDef.regex', index=1,
+      name='regex', full_name='hyweb.PrimitiveDef.regex', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -59,7 +59,7 @@ _PRIMITIVEDEF = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
     _descriptor.OneofDescriptor(
-      name='_regex', full_name='ipss.PrimitiveDef._regex',
+      name='_regex', full_name='hyweb.PrimitiveDef._regex',
       index=0, containing_type=None,
       create_key=_descriptor._internal_create_key,
     fields=[]),
@@ -71,21 +71,21 @@ _PRIMITIVEDEF = _descriptor.Descriptor(
 
 _ENUMDEF_VALUEENTRY = _descriptor.Descriptor(
   name='ValueEntry',
-  full_name='ipss.EnumDef.ValueEntry',
+  full_name='hyweb.EnumDef.ValueEntry',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='key', full_name='ipss.EnumDef.ValueEntry.key', index=0,
+      name='key', full_name='hyweb.EnumDef.ValueEntry.key', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='value', full_name='ipss.EnumDef.ValueEntry.value', index=1,
+      name='value', full_name='hyweb.EnumDef.ValueEntry.value', index=1,
       number=2, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -109,21 +109,21 @@ _ENUMDEF_VALUEENTRY = _descriptor.Descriptor(
 
 _ENUMDEF = _descriptor.Descriptor(
   name='EnumDef',
-  full_name='ipss.EnumDef',
+  full_name='hyweb.EnumDef',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='tag', full_name='ipss.EnumDef.tag', index=0,
+      name='tag', full_name='hyweb.EnumDef.tag', index=0,
       number=1, type=9, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='value', full_name='ipss.EnumDef.value', index=1,
+      name='value', full_name='hyweb.EnumDef.value', index=1,
       number=2, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -148,28 +148,28 @@ _ENUMDEF = _descriptor.Descriptor(
 
 _FIELDDEF = _descriptor.Descriptor(
   name='FieldDef',
-  full_name='ipss.FieldDef',
+  full_name='hyweb.FieldDef',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='message', full_name='ipss.FieldDef.message', index=0,
+      name='message', full_name='hyweb.FieldDef.message', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='primitive', full_name='ipss.FieldDef.primitive', index=1,
+      name='primitive', full_name='hyweb.FieldDef.primitive', index=1,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='enum', full_name='ipss.FieldDef.enum', index=2,
+      name='enum', full_name='hyweb.FieldDef.enum', index=2,
       number=3, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -187,7 +187,7 @@ _FIELDDEF = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
     _descriptor.OneofDescriptor(
-      name='value', full_name='ipss.FieldDef.value',
+      name='value', full_name='hyweb.FieldDef.value',
       index=0, containing_type=None,
       create_key=_descriptor._internal_create_key,
     fields=[]),
@@ -199,42 +199,42 @@ _FIELDDEF = _descriptor.Descriptor(
 
 _PARAMDEF = _descriptor.Descriptor(
   name='ParamDef',
-  full_name='ipss.ParamDef',
+  full_name='hyweb.ParamDef',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='index', full_name='ipss.ParamDef.index', index=0,
+      name='index', full_name='hyweb.ParamDef.index', index=0,
       number=1, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='tag', full_name='ipss.ParamDef.tag', index=1,
+      name='tag', full_name='hyweb.ParamDef.tag', index=1,
       number=2, type=9, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='field', full_name='ipss.ParamDef.field', index=2,
+      name='field', full_name='hyweb.ParamDef.field', index=2,
       number=3, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='repeated', full_name='ipss.ParamDef.repeated', index=3,
+      name='repeated', full_name='hyweb.ParamDef.repeated', index=3,
       number=4, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='optional', full_name='ipss.ParamDef.optional', index=4,
+      name='optional', full_name='hyweb.ParamDef.optional', index=4,
       number=5, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
@@ -259,14 +259,14 @@ _PARAMDEF = _descriptor.Descriptor(
 
 _ONEOFDEF = _descriptor.Descriptor(
   name='OneofDef',
-  full_name='ipss.OneofDef',
+  full_name='hyweb.OneofDef',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='index', full_name='ipss.OneofDef.index', index=0,
+      name='index', full_name='hyweb.OneofDef.index', index=0,
       number=1, type=5, cpp_type=1, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -291,28 +291,28 @@ _ONEOFDEF = _descriptor.Descriptor(
 
 _MESSAGEDEF = _descriptor.Descriptor(
   name='MessageDef',
-  full_name='ipss.MessageDef',
+  full_name='hyweb.MessageDef',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='tag', full_name='ipss.MessageDef.tag', index=0,
+      name='tag', full_name='hyweb.MessageDef.tag', index=0,
       number=1, type=9, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='param', full_name='ipss.MessageDef.param', index=1,
+      name='param', full_name='hyweb.MessageDef.param', index=1,
       number=2, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='oneof', full_name='ipss.MessageDef.oneof', index=2,
+      name='oneof', full_name='hyweb.MessageDef.oneof', index=2,
       number=3, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -337,49 +337,49 @@ _MESSAGEDEF = _descriptor.Descriptor(
 
 _METHODDEF = _descriptor.Descriptor(
   name='MethodDef',
-  full_name='ipss.MethodDef',
+  full_name='hyweb.MethodDef',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='index', full_name='ipss.MethodDef.index', index=0,
+      name='index', full_name='hyweb.MethodDef.index', index=0,
       number=1, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='tag', full_name='ipss.MethodDef.tag', index=1,
+      name='tag', full_name='hyweb.MethodDef.tag', index=1,
       number=2, type=9, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='input_message', full_name='ipss.MethodDef.input_message', index=2,
+      name='input_message', full_name='hyweb.MethodDef.input_message', index=2,
       number=3, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='is_input_stream', full_name='ipss.MethodDef.is_input_stream', index=3,
+      name='is_input_stream', full_name='hyweb.MethodDef.is_input_stream', index=3,
       number=4, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='output_message', full_name='ipss.MethodDef.output_message', index=4,
+      name='output_message', full_name='hyweb.MethodDef.output_message', index=4,
       number=5, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='is_output_stream', full_name='ipss.MethodDef.is_output_stream', index=5,
+      name='is_output_stream', full_name='hyweb.MethodDef.is_output_stream', index=5,
       number=6, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
@@ -404,21 +404,21 @@ _METHODDEF = _descriptor.Descriptor(
 
 _APPLICATIONDEF = _descriptor.Descriptor(
   name='ApplicationDef',
-  full_name='ipss.ApplicationDef',
+  full_name='hyweb.ApplicationDef',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='tag', full_name='ipss.ApplicationDef.tag', index=0,
+      name='tag', full_name='hyweb.ApplicationDef.tag', index=0,
       number=1, type=9, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='method', full_name='ipss.ApplicationDef.method', index=1,
+      name='method', full_name='hyweb.ApplicationDef.method', index=1,
       number=2, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -443,21 +443,21 @@ _APPLICATIONDEF = _descriptor.Descriptor(
 
 _ANY = _descriptor.Descriptor(
   name='Any',
-  full_name='ipss.Any',
+  full_name='hyweb.Any',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='field', full_name='ipss.Any.field', index=0,
+      name='field', full_name='hyweb.Any.field', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='value', full_name='ipss.Any.value', index=1,
+      name='value', full_name='hyweb.Any.value', index=1,
       number=2, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
@@ -482,21 +482,21 @@ _ANY = _descriptor.Descriptor(
 
 _HASHTAG_HASH = _descriptor.Descriptor(
   name='Hash',
-  full_name='ipss.HashTag.Hash',
+  full_name='hyweb.HashTag.Hash',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='type', full_name='ipss.HashTag.Hash.type', index=0,
+      name='type', full_name='hyweb.HashTag.Hash.type', index=0,
       number=1, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='value', full_name='ipss.HashTag.Hash.value', index=1,
+      name='value', full_name='hyweb.HashTag.Hash.value', index=1,
       number=2, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
@@ -520,21 +520,21 @@ _HASHTAG_HASH = _descriptor.Descriptor(
 
 _HASHTAG = _descriptor.Descriptor(
   name='HashTag',
-  full_name='ipss.HashTag',
+  full_name='hyweb.HashTag',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='hash', full_name='ipss.HashTag.hash', index=0,
+      name='hash', full_name='hyweb.HashTag.hash', index=0,
       number=1, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='tag', full_name='ipss.HashTag.tag', index=1,
+      name='tag', full_name='hyweb.HashTag.tag', index=1,
       number=2, type=9, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -559,14 +559,14 @@ _HASHTAG = _descriptor.Descriptor(
 
 _PROTOCOLMESH = _descriptor.Descriptor(
   name='ProtocolMesh',
-  full_name='ipss.ProtocolMesh',
+  full_name='hyweb.ProtocolMesh',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='hashtag', full_name='ipss.ProtocolMesh.hashtag', index=0,
+      name='hashtag', full_name='hyweb.ProtocolMesh.hashtag', index=0,
       number=15, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -591,21 +591,21 @@ _PROTOCOLMESH = _descriptor.Descriptor(
 
 _SLOT = _descriptor.Descriptor(
   name='Slot',
-  full_name='ipss.Slot',
+  full_name='hyweb.Slot',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='port', full_name='ipss.Slot.port', index=0,
+      name='port', full_name='hyweb.Slot.port', index=0,
       number=1, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='transport_protocol', full_name='ipss.Slot.transport_protocol', index=1,
+      name='transport_protocol', full_name='hyweb.Slot.transport_protocol', index=1,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -630,21 +630,21 @@ _SLOT = _descriptor.Descriptor(
 
 _API = _descriptor.Descriptor(
   name='Api',
-  full_name='ipss.Api',
+  full_name='hyweb.Api',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='app_protocol', full_name='ipss.Api.app_protocol', index=0,
+      name='app_protocol', full_name='hyweb.Api.app_protocol', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='slot', full_name='ipss.Api.slot', index=1,
+      name='slot', full_name='hyweb.Api.slot', index=1,
       number=2, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -669,14 +669,14 @@ _API = _descriptor.Descriptor(
 
 _ARCHITECTURE = _descriptor.Descriptor(
   name='Architecture',
-  full_name='ipss.Architecture',
+  full_name='hyweb.Architecture',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='hashtag', full_name='ipss.Architecture.hashtag', index=0,
+      name='hashtag', full_name='hyweb.Architecture.hashtag', index=0,
       number=15, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -701,35 +701,35 @@ _ARCHITECTURE = _descriptor.Descriptor(
 
 _FILESYSTEM_BRANCH = _descriptor.Descriptor(
   name='Branch',
-  full_name='ipss.Filesystem.Branch',
+  full_name='hyweb.Filesystem.Branch',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='file', full_name='ipss.Filesystem.Branch.file', index=0,
+      name='file', full_name='hyweb.Filesystem.Branch.file', index=0,
       number=1, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='link', full_name='ipss.Filesystem.Branch.link', index=1,
+      name='link', full_name='hyweb.Filesystem.Branch.link', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='filesystem', full_name='ipss.Filesystem.Branch.filesystem', index=2,
+      name='filesystem', full_name='hyweb.Filesystem.Branch.filesystem', index=2,
       number=3, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='name', full_name='ipss.Filesystem.Branch.name', index=3,
+      name='name', full_name='hyweb.Filesystem.Branch.name', index=3,
       number=4, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -747,7 +747,7 @@ _FILESYSTEM_BRANCH = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
     _descriptor.OneofDescriptor(
-      name='item', full_name='ipss.Filesystem.Branch.item',
+      name='item', full_name='hyweb.Filesystem.Branch.item',
       index=0, containing_type=None,
       create_key=_descriptor._internal_create_key,
     fields=[]),
@@ -758,21 +758,21 @@ _FILESYSTEM_BRANCH = _descriptor.Descriptor(
 
 _FILESYSTEM = _descriptor.Descriptor(
   name='Filesystem',
-  full_name='ipss.Filesystem',
+  full_name='hyweb.Filesystem',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='hashtag', full_name='ipss.Filesystem.hashtag', index=0,
+      name='hashtag', full_name='hyweb.Filesystem.hashtag', index=0,
       number=15, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='branch', full_name='ipss.Filesystem.branch', index=1,
+      name='branch', full_name='hyweb.Filesystem.branch', index=1,
       number=1, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -797,21 +797,21 @@ _FILESYSTEM = _descriptor.Descriptor(
 
 _CONTAINER_ENVIROMENTVARIABLESENTRY = _descriptor.Descriptor(
   name='EnviromentVariablesEntry',
-  full_name='ipss.Container.EnviromentVariablesEntry',
+  full_name='hyweb.Container.EnviromentVariablesEntry',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='key', full_name='ipss.Container.EnviromentVariablesEntry.key', index=0,
+      name='key', full_name='hyweb.Container.EnviromentVariablesEntry.key', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='value', full_name='ipss.Container.EnviromentVariablesEntry.value', index=1,
+      name='value', full_name='hyweb.Container.EnviromentVariablesEntry.value', index=1,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -835,35 +835,35 @@ _CONTAINER_ENVIROMENTVARIABLESENTRY = _descriptor.Descriptor(
 
 _CONTAINER = _descriptor.Descriptor(
   name='Container',
-  full_name='ipss.Container',
+  full_name='hyweb.Container',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='architecture', full_name='ipss.Container.architecture', index=0,
+      name='architecture', full_name='hyweb.Container.architecture', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='filesystem', full_name='ipss.Container.filesystem', index=1,
+      name='filesystem', full_name='hyweb.Container.filesystem', index=1,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='enviroment_variables', full_name='ipss.Container.enviroment_variables', index=2,
+      name='enviroment_variables', full_name='hyweb.Container.enviroment_variables', index=2,
       number=3, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='entrypoint', full_name='ipss.Container.entrypoint', index=3,
+      name='entrypoint', full_name='hyweb.Container.entrypoint', index=3,
       number=4, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -888,28 +888,28 @@ _CONTAINER = _descriptor.Descriptor(
 
 _TENSOR_INDEX = _descriptor.Descriptor(
   name='Index',
-  full_name='ipss.Tensor.Index',
+  full_name='hyweb.Tensor.Index',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='id', full_name='ipss.Tensor.Index.id', index=0,
+      name='id', full_name='hyweb.Tensor.Index.id', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='field', full_name='ipss.Tensor.Index.field', index=1,
+      name='field', full_name='hyweb.Tensor.Index.field', index=1,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='hashtag', full_name='ipss.Tensor.Index.hashtag', index=2,
+      name='hashtag', full_name='hyweb.Tensor.Index.hashtag', index=2,
       number=15, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -933,28 +933,28 @@ _TENSOR_INDEX = _descriptor.Descriptor(
 
 _TENSOR = _descriptor.Descriptor(
   name='Tensor',
-  full_name='ipss.Tensor',
+  full_name='hyweb.Tensor',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='hashtag', full_name='ipss.Tensor.hashtag', index=0,
+      name='hashtag', full_name='hyweb.Tensor.hashtag', index=0,
       number=15, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='index', full_name='ipss.Tensor.index', index=1,
+      name='index', full_name='hyweb.Tensor.index', index=1,
       number=1, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='rank', full_name='ipss.Tensor.rank', index=2,
+      name='rank', full_name='hyweb.Tensor.rank', index=2,
       number=2, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -979,14 +979,14 @@ _TENSOR = _descriptor.Descriptor(
 
 _LEDGER = _descriptor.Descriptor(
   name='Ledger',
-  full_name='ipss.Ledger',
+  full_name='hyweb.Ledger',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='hashtag', full_name='ipss.Ledger.hashtag', index=0,
+      name='hashtag', full_name='hyweb.Ledger.hashtag', index=0,
       number=15, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -1011,49 +1011,49 @@ _LEDGER = _descriptor.Descriptor(
 
 _SERVICE = _descriptor.Descriptor(
   name='Service',
-  full_name='ipss.Service',
+  full_name='hyweb.Service',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='hashtag', full_name='ipss.Service.hashtag', index=0,
+      name='hashtag', full_name='hyweb.Service.hashtag', index=0,
       number=15, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='syntax', full_name='ipss.Service.syntax', index=1,
+      name='syntax', full_name='hyweb.Service.syntax', index=1,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='container', full_name='ipss.Service.container', index=2,
+      name='container', full_name='hyweb.Service.container', index=2,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='api', full_name='ipss.Service.api', index=3,
+      name='api', full_name='hyweb.Service.api', index=3,
       number=3, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='tensor', full_name='ipss.Service.tensor', index=4,
+      name='tensor', full_name='hyweb.Service.tensor', index=4,
       number=4, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='ledger', full_name='ipss.Service.ledger', index=5,
+      name='ledger', full_name='hyweb.Service.ledger', index=5,
       number=5, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -1078,21 +1078,21 @@ _SERVICE = _descriptor.Descriptor(
 
 _INSTANCE_URI = _descriptor.Descriptor(
   name='Uri',
-  full_name='ipss.Instance.Uri',
+  full_name='hyweb.Instance.Uri',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='ip', full_name='ipss.Instance.Uri.ip', index=0,
+      name='ip', full_name='hyweb.Instance.Uri.ip', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='port', full_name='ipss.Instance.Uri.port', index=1,
+      name='port', full_name='hyweb.Instance.Uri.port', index=1,
       number=2, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -1116,21 +1116,21 @@ _INSTANCE_URI = _descriptor.Descriptor(
 
 _INSTANCE_URI_SLOT = _descriptor.Descriptor(
   name='Uri_Slot',
-  full_name='ipss.Instance.Uri_Slot',
+  full_name='hyweb.Instance.Uri_Slot',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='internal_port', full_name='ipss.Instance.Uri_Slot.internal_port', index=0,
+      name='internal_port', full_name='hyweb.Instance.Uri_Slot.internal_port', index=0,
       number=1, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='uri', full_name='ipss.Instance.Uri_Slot.uri', index=1,
+      name='uri', full_name='hyweb.Instance.Uri_Slot.uri', index=1,
       number=2, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -1154,21 +1154,21 @@ _INSTANCE_URI_SLOT = _descriptor.Descriptor(
 
 _INSTANCE = _descriptor.Descriptor(
   name='Instance',
-  full_name='ipss.Instance',
+  full_name='hyweb.Instance',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='api', full_name='ipss.Instance.api', index=0,
+      name='api', full_name='hyweb.Instance.api', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='uri_slot', full_name='ipss.Instance.uri_slot', index=1,
+      name='uri_slot', full_name='hyweb.Instance.uri_slot', index=1,
       number=2, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -1193,21 +1193,21 @@ _INSTANCE = _descriptor.Descriptor(
 
 _CONFIGURATION_ENVIROMENTVARIABLESENTRY = _descriptor.Descriptor(
   name='EnviromentVariablesEntry',
-  full_name='ipss.Configuration.EnviromentVariablesEntry',
+  full_name='hyweb.Configuration.EnviromentVariablesEntry',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='key', full_name='ipss.Configuration.EnviromentVariablesEntry.key', index=0,
+      name='key', full_name='hyweb.Configuration.EnviromentVariablesEntry.key', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='value', full_name='ipss.Configuration.EnviromentVariablesEntry.value', index=1,
+      name='value', full_name='hyweb.Configuration.EnviromentVariablesEntry.value', index=1,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -1231,21 +1231,21 @@ _CONFIGURATION_ENVIROMENTVARIABLESENTRY = _descriptor.Descriptor(
 
 _CONFIGURATION_SPECSLOTENTRY = _descriptor.Descriptor(
   name='SpecSlotEntry',
-  full_name='ipss.Configuration.SpecSlotEntry',
+  full_name='hyweb.Configuration.SpecSlotEntry',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='key', full_name='ipss.Configuration.SpecSlotEntry.key', index=0,
+      name='key', full_name='hyweb.Configuration.SpecSlotEntry.key', index=0,
       number=1, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='value', full_name='ipss.Configuration.SpecSlotEntry.value', index=1,
+      name='value', full_name='hyweb.Configuration.SpecSlotEntry.value', index=1,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -1269,21 +1269,21 @@ _CONFIGURATION_SPECSLOTENTRY = _descriptor.Descriptor(
 
 _CONFIGURATION = _descriptor.Descriptor(
   name='Configuration',
-  full_name='ipss.Configuration',
+  full_name='hyweb.Configuration',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='enviroment_variables', full_name='ipss.Configuration.enviroment_variables', index=0,
+      name='enviroment_variables', full_name='hyweb.Configuration.enviroment_variables', index=0,
       number=1, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='spec_slot', full_name='ipss.Configuration.spec_slot', index=1,
+      name='spec_slot', full_name='hyweb.Configuration.spec_slot', index=1,
       number=2, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -1308,35 +1308,35 @@ _CONFIGURATION = _descriptor.Descriptor(
 
 _CONFIGURATIONFILE = _descriptor.Descriptor(
   name='ConfigurationFile',
-  full_name='ipss.ConfigurationFile',
+  full_name='hyweb.ConfigurationFile',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='gateway', full_name='ipss.ConfigurationFile.gateway', index=0,
+      name='gateway', full_name='hyweb.ConfigurationFile.gateway', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='config', full_name='ipss.ConfigurationFile.config', index=1,
+      name='config', full_name='hyweb.ConfigurationFile.config', index=1,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='tensor_instances', full_name='ipss.ConfigurationFile.tensor_instances', index=2,
+      name='tensor_instances', full_name='hyweb.ConfigurationFile.tensor_instances', index=2,
       number=3, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='ledger_instances', full_name='ipss.ConfigurationFile.ledger_instances', index=3,
+      name='ledger_instances', full_name='hyweb.ConfigurationFile.ledger_instances', index=3,
       number=4, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -1460,8 +1460,8 @@ _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 PrimitiveDef = _reflection.GeneratedProtocolMessageType('PrimitiveDef', (_message.Message,), {
   'DESCRIPTOR' : _PRIMITIVEDEF,
-  '__module__' : 'ipss_pb2'
-  # @@protoc_insertion_point(class_scope:ipss.PrimitiveDef)
+  '__module__' : 'hyweb_pb2'
+  # @@protoc_insertion_point(class_scope:hyweb.PrimitiveDef)
   })
 _sym_db.RegisterMessage(PrimitiveDef)
 
@@ -1469,63 +1469,63 @@ EnumDef = _reflection.GeneratedProtocolMessageType('EnumDef', (_message.Message,
 
   'ValueEntry' : _reflection.GeneratedProtocolMessageType('ValueEntry', (_message.Message,), {
     'DESCRIPTOR' : _ENUMDEF_VALUEENTRY,
-    '__module__' : 'ipss_pb2'
-    # @@protoc_insertion_point(class_scope:ipss.EnumDef.ValueEntry)
+    '__module__' : 'hyweb_pb2'
+    # @@protoc_insertion_point(class_scope:hyweb.EnumDef.ValueEntry)
     })
   ,
   'DESCRIPTOR' : _ENUMDEF,
-  '__module__' : 'ipss_pb2'
-  # @@protoc_insertion_point(class_scope:ipss.EnumDef)
+  '__module__' : 'hyweb_pb2'
+  # @@protoc_insertion_point(class_scope:hyweb.EnumDef)
   })
 _sym_db.RegisterMessage(EnumDef)
 _sym_db.RegisterMessage(EnumDef.ValueEntry)
 
 FieldDef = _reflection.GeneratedProtocolMessageType('FieldDef', (_message.Message,), {
   'DESCRIPTOR' : _FIELDDEF,
-  '__module__' : 'ipss_pb2'
-  # @@protoc_insertion_point(class_scope:ipss.FieldDef)
+  '__module__' : 'hyweb_pb2'
+  # @@protoc_insertion_point(class_scope:hyweb.FieldDef)
   })
 _sym_db.RegisterMessage(FieldDef)
 
 ParamDef = _reflection.GeneratedProtocolMessageType('ParamDef', (_message.Message,), {
   'DESCRIPTOR' : _PARAMDEF,
-  '__module__' : 'ipss_pb2'
-  # @@protoc_insertion_point(class_scope:ipss.ParamDef)
+  '__module__' : 'hyweb_pb2'
+  # @@protoc_insertion_point(class_scope:hyweb.ParamDef)
   })
 _sym_db.RegisterMessage(ParamDef)
 
 OneofDef = _reflection.GeneratedProtocolMessageType('OneofDef', (_message.Message,), {
   'DESCRIPTOR' : _ONEOFDEF,
-  '__module__' : 'ipss_pb2'
-  # @@protoc_insertion_point(class_scope:ipss.OneofDef)
+  '__module__' : 'hyweb_pb2'
+  # @@protoc_insertion_point(class_scope:hyweb.OneofDef)
   })
 _sym_db.RegisterMessage(OneofDef)
 
 MessageDef = _reflection.GeneratedProtocolMessageType('MessageDef', (_message.Message,), {
   'DESCRIPTOR' : _MESSAGEDEF,
-  '__module__' : 'ipss_pb2'
-  # @@protoc_insertion_point(class_scope:ipss.MessageDef)
+  '__module__' : 'hyweb_pb2'
+  # @@protoc_insertion_point(class_scope:hyweb.MessageDef)
   })
 _sym_db.RegisterMessage(MessageDef)
 
 MethodDef = _reflection.GeneratedProtocolMessageType('MethodDef', (_message.Message,), {
   'DESCRIPTOR' : _METHODDEF,
-  '__module__' : 'ipss_pb2'
-  # @@protoc_insertion_point(class_scope:ipss.MethodDef)
+  '__module__' : 'hyweb_pb2'
+  # @@protoc_insertion_point(class_scope:hyweb.MethodDef)
   })
 _sym_db.RegisterMessage(MethodDef)
 
 ApplicationDef = _reflection.GeneratedProtocolMessageType('ApplicationDef', (_message.Message,), {
   'DESCRIPTOR' : _APPLICATIONDEF,
-  '__module__' : 'ipss_pb2'
-  # @@protoc_insertion_point(class_scope:ipss.ApplicationDef)
+  '__module__' : 'hyweb_pb2'
+  # @@protoc_insertion_point(class_scope:hyweb.ApplicationDef)
   })
 _sym_db.RegisterMessage(ApplicationDef)
 
 Any = _reflection.GeneratedProtocolMessageType('Any', (_message.Message,), {
   'DESCRIPTOR' : _ANY,
-  '__module__' : 'ipss_pb2'
-  # @@protoc_insertion_point(class_scope:ipss.Any)
+  '__module__' : 'hyweb_pb2'
+  # @@protoc_insertion_point(class_scope:hyweb.Any)
   })
 _sym_db.RegisterMessage(Any)
 
@@ -1533,42 +1533,42 @@ HashTag = _reflection.GeneratedProtocolMessageType('HashTag', (_message.Message,
 
   'Hash' : _reflection.GeneratedProtocolMessageType('Hash', (_message.Message,), {
     'DESCRIPTOR' : _HASHTAG_HASH,
-    '__module__' : 'ipss_pb2'
-    # @@protoc_insertion_point(class_scope:ipss.HashTag.Hash)
+    '__module__' : 'hyweb_pb2'
+    # @@protoc_insertion_point(class_scope:hyweb.HashTag.Hash)
     })
   ,
   'DESCRIPTOR' : _HASHTAG,
-  '__module__' : 'ipss_pb2'
-  # @@protoc_insertion_point(class_scope:ipss.HashTag)
+  '__module__' : 'hyweb_pb2'
+  # @@protoc_insertion_point(class_scope:hyweb.HashTag)
   })
 _sym_db.RegisterMessage(HashTag)
 _sym_db.RegisterMessage(HashTag.Hash)
 
 ProtocolMesh = _reflection.GeneratedProtocolMessageType('ProtocolMesh', (_message.Message,), {
   'DESCRIPTOR' : _PROTOCOLMESH,
-  '__module__' : 'ipss_pb2'
-  # @@protoc_insertion_point(class_scope:ipss.ProtocolMesh)
+  '__module__' : 'hyweb_pb2'
+  # @@protoc_insertion_point(class_scope:hyweb.ProtocolMesh)
   })
 _sym_db.RegisterMessage(ProtocolMesh)
 
 Slot = _reflection.GeneratedProtocolMessageType('Slot', (_message.Message,), {
   'DESCRIPTOR' : _SLOT,
-  '__module__' : 'ipss_pb2'
-  # @@protoc_insertion_point(class_scope:ipss.Slot)
+  '__module__' : 'hyweb_pb2'
+  # @@protoc_insertion_point(class_scope:hyweb.Slot)
   })
 _sym_db.RegisterMessage(Slot)
 
 Api = _reflection.GeneratedProtocolMessageType('Api', (_message.Message,), {
   'DESCRIPTOR' : _API,
-  '__module__' : 'ipss_pb2'
-  # @@protoc_insertion_point(class_scope:ipss.Api)
+  '__module__' : 'hyweb_pb2'
+  # @@protoc_insertion_point(class_scope:hyweb.Api)
   })
 _sym_db.RegisterMessage(Api)
 
 Architecture = _reflection.GeneratedProtocolMessageType('Architecture', (_message.Message,), {
   'DESCRIPTOR' : _ARCHITECTURE,
-  '__module__' : 'ipss_pb2'
-  # @@protoc_insertion_point(class_scope:ipss.Architecture)
+  '__module__' : 'hyweb_pb2'
+  # @@protoc_insertion_point(class_scope:hyweb.Architecture)
   })
 _sym_db.RegisterMessage(Architecture)
 
@@ -1576,13 +1576,13 @@ Filesystem = _reflection.GeneratedProtocolMessageType('Filesystem', (_message.Me
 
   'Branch' : _reflection.GeneratedProtocolMessageType('Branch', (_message.Message,), {
     'DESCRIPTOR' : _FILESYSTEM_BRANCH,
-    '__module__' : 'ipss_pb2'
-    # @@protoc_insertion_point(class_scope:ipss.Filesystem.Branch)
+    '__module__' : 'hyweb_pb2'
+    # @@protoc_insertion_point(class_scope:hyweb.Filesystem.Branch)
     })
   ,
   'DESCRIPTOR' : _FILESYSTEM,
-  '__module__' : 'ipss_pb2'
-  # @@protoc_insertion_point(class_scope:ipss.Filesystem)
+  '__module__' : 'hyweb_pb2'
+  # @@protoc_insertion_point(class_scope:hyweb.Filesystem)
   })
 _sym_db.RegisterMessage(Filesystem)
 _sym_db.RegisterMessage(Filesystem.Branch)
@@ -1591,13 +1591,13 @@ Container = _reflection.GeneratedProtocolMessageType('Container', (_message.Mess
 
   'EnviromentVariablesEntry' : _reflection.GeneratedProtocolMessageType('EnviromentVariablesEntry', (_message.Message,), {
     'DESCRIPTOR' : _CONTAINER_ENVIROMENTVARIABLESENTRY,
-    '__module__' : 'ipss_pb2'
-    # @@protoc_insertion_point(class_scope:ipss.Container.EnviromentVariablesEntry)
+    '__module__' : 'hyweb_pb2'
+    # @@protoc_insertion_point(class_scope:hyweb.Container.EnviromentVariablesEntry)
     })
   ,
   'DESCRIPTOR' : _CONTAINER,
-  '__module__' : 'ipss_pb2'
-  # @@protoc_insertion_point(class_scope:ipss.Container)
+  '__module__' : 'hyweb_pb2'
+  # @@protoc_insertion_point(class_scope:hyweb.Container)
   })
 _sym_db.RegisterMessage(Container)
 _sym_db.RegisterMessage(Container.EnviromentVariablesEntry)
@@ -1606,28 +1606,28 @@ Tensor = _reflection.GeneratedProtocolMessageType('Tensor', (_message.Message,),
 
   'Index' : _reflection.GeneratedProtocolMessageType('Index', (_message.Message,), {
     'DESCRIPTOR' : _TENSOR_INDEX,
-    '__module__' : 'ipss_pb2'
-    # @@protoc_insertion_point(class_scope:ipss.Tensor.Index)
+    '__module__' : 'hyweb_pb2'
+    # @@protoc_insertion_point(class_scope:hyweb.Tensor.Index)
     })
   ,
   'DESCRIPTOR' : _TENSOR,
-  '__module__' : 'ipss_pb2'
-  # @@protoc_insertion_point(class_scope:ipss.Tensor)
+  '__module__' : 'hyweb_pb2'
+  # @@protoc_insertion_point(class_scope:hyweb.Tensor)
   })
 _sym_db.RegisterMessage(Tensor)
 _sym_db.RegisterMessage(Tensor.Index)
 
 Ledger = _reflection.GeneratedProtocolMessageType('Ledger', (_message.Message,), {
   'DESCRIPTOR' : _LEDGER,
-  '__module__' : 'ipss_pb2'
-  # @@protoc_insertion_point(class_scope:ipss.Ledger)
+  '__module__' : 'hyweb_pb2'
+  # @@protoc_insertion_point(class_scope:hyweb.Ledger)
   })
 _sym_db.RegisterMessage(Ledger)
 
 Service = _reflection.GeneratedProtocolMessageType('Service', (_message.Message,), {
   'DESCRIPTOR' : _SERVICE,
-  '__module__' : 'ipss_pb2'
-  # @@protoc_insertion_point(class_scope:ipss.Service)
+  '__module__' : 'hyweb_pb2'
+  # @@protoc_insertion_point(class_scope:hyweb.Service)
   })
 _sym_db.RegisterMessage(Service)
 
@@ -1635,20 +1635,20 @@ Instance = _reflection.GeneratedProtocolMessageType('Instance', (_message.Messag
 
   'Uri' : _reflection.GeneratedProtocolMessageType('Uri', (_message.Message,), {
     'DESCRIPTOR' : _INSTANCE_URI,
-    '__module__' : 'ipss_pb2'
-    # @@protoc_insertion_point(class_scope:ipss.Instance.Uri)
+    '__module__' : 'hyweb_pb2'
+    # @@protoc_insertion_point(class_scope:hyweb.Instance.Uri)
     })
   ,
 
   'Uri_Slot' : _reflection.GeneratedProtocolMessageType('Uri_Slot', (_message.Message,), {
     'DESCRIPTOR' : _INSTANCE_URI_SLOT,
-    '__module__' : 'ipss_pb2'
-    # @@protoc_insertion_point(class_scope:ipss.Instance.Uri_Slot)
+    '__module__' : 'hyweb_pb2'
+    # @@protoc_insertion_point(class_scope:hyweb.Instance.Uri_Slot)
     })
   ,
   'DESCRIPTOR' : _INSTANCE,
-  '__module__' : 'ipss_pb2'
-  # @@protoc_insertion_point(class_scope:ipss.Instance)
+  '__module__' : 'hyweb_pb2'
+  # @@protoc_insertion_point(class_scope:hyweb.Instance)
   })
 _sym_db.RegisterMessage(Instance)
 _sym_db.RegisterMessage(Instance.Uri)
@@ -1658,20 +1658,20 @@ Configuration = _reflection.GeneratedProtocolMessageType('Configuration', (_mess
 
   'EnviromentVariablesEntry' : _reflection.GeneratedProtocolMessageType('EnviromentVariablesEntry', (_message.Message,), {
     'DESCRIPTOR' : _CONFIGURATION_ENVIROMENTVARIABLESENTRY,
-    '__module__' : 'ipss_pb2'
-    # @@protoc_insertion_point(class_scope:ipss.Configuration.EnviromentVariablesEntry)
+    '__module__' : 'hyweb_pb2'
+    # @@protoc_insertion_point(class_scope:hyweb.Configuration.EnviromentVariablesEntry)
     })
   ,
 
   'SpecSlotEntry' : _reflection.GeneratedProtocolMessageType('SpecSlotEntry', (_message.Message,), {
     'DESCRIPTOR' : _CONFIGURATION_SPECSLOTENTRY,
-    '__module__' : 'ipss_pb2'
-    # @@protoc_insertion_point(class_scope:ipss.Configuration.SpecSlotEntry)
+    '__module__' : 'hyweb_pb2'
+    # @@protoc_insertion_point(class_scope:hyweb.Configuration.SpecSlotEntry)
     })
   ,
   'DESCRIPTOR' : _CONFIGURATION,
-  '__module__' : 'ipss_pb2'
-  # @@protoc_insertion_point(class_scope:ipss.Configuration)
+  '__module__' : 'hyweb_pb2'
+  # @@protoc_insertion_point(class_scope:hyweb.Configuration)
   })
 _sym_db.RegisterMessage(Configuration)
 _sym_db.RegisterMessage(Configuration.EnviromentVariablesEntry)
@@ -1679,8 +1679,8 @@ _sym_db.RegisterMessage(Configuration.SpecSlotEntry)
 
 ConfigurationFile = _reflection.GeneratedProtocolMessageType('ConfigurationFile', (_message.Message,), {
   'DESCRIPTOR' : _CONFIGURATIONFILE,
-  '__module__' : 'ipss_pb2'
-  # @@protoc_insertion_point(class_scope:ipss.ConfigurationFile)
+  '__module__' : 'hyweb_pb2'
+  # @@protoc_insertion_point(class_scope:hyweb.ConfigurationFile)
   })
 _sym_db.RegisterMessage(ConfigurationFile)
 

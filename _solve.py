@@ -80,11 +80,11 @@ class SolverInstance(object):
 
 class SolverConfig(object):
     def __init__(self, solver_with_config: solvers_dataset_pb2.SolverWithConfig):
-        self.service_def = gateway_pb2.ipss__pb2.Service()
+        self.service_def = gateway_pb2.hyweb__pb2.Service()
         self.service_def.CopyFrom(solver_with_config.definition)
 
         # Configuration.
-        self.config = gateway_pb2.ipss__pb2.Configuration()
+        self.config = gateway_pb2.hyweb__pb2.Configuration()
         self.config.enviroment_variables.update(solver_with_config.enviroment_variables)
 
         self.instances = []  # se da uso de una pila para que el 'maintainer' detecte las instancias que quedan en desuso,

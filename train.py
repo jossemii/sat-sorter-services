@@ -21,7 +21,7 @@ class Session(metaclass=Singleton):
         self.thread = None
         self.gateway_stub = gateway_pb2_grpc.GatewayStub(grpc.insecure_channel(self.GATEWAY_MAIN_DIR))
         with open(DIR + 'random.service', 'rb') as file:
-            self.random_def = gateway_pb2.ipss__pb2.Service()
+            self.random_def = gateway_pb2.hyweb__pb2.Service()
             self.random_def.ParseFromString(file.read())
 
         self.random_stub = None
@@ -34,7 +34,7 @@ class Session(metaclass=Singleton):
         self._solver = _solve.Session(ENVS=ENVS)  # Using singleton pattern.
 
         # Random CNF Service.
-        self.random_config = gateway_pb2.ipss__pb2.Configuration()
+        self.random_config = gateway_pb2.hyweb__pb2.Configuration()
 
     def stop_random(self):
         LOGGER('Stopping random service.')
@@ -64,7 +64,7 @@ class Session(metaclass=Singleton):
             self.do_stop = False
             self.thread = None
 
-    def load_solver(self, solver: solvers_dataset_pb2.ipss__pb2.Service):
+    def load_solver(self, solver: solvers_dataset_pb2.hyweb__pb2.Service):
         # Se puede cargar un solver sin estar completo, 
         #  pero debe de contener si o si la sha3-256
         #  ya que el servicio no la calculará (ni comprobará).

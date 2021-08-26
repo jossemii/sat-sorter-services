@@ -89,25 +89,25 @@ def init(ENVS):
 
     def generate_tensor_spec():
         # Performance
-        p = api_pb2.ipss__pb2.Tensor.Index()
+        p = api_pb2.hyweb__pb2.Tensor.Index()
         p.id = "score"
         p.hashtag.tag.extend(["performance"])
         # Number clauses
-        c = api_pb2.ipss__pb2.Tensor.Index()
+        c = api_pb2.hyweb__pb2.Tensor.Index()
         c.id = "clauses"
         c.hashtag.tag.extend(["number of clauses"])
         # Number of literals
-        l = api_pb2.ipss__pb2.Tensor.Index()
+        l = api_pb2.hyweb__pb2.Tensor.Index()
         l.id = "literals"
         l.hashtag.tag.extend(["number of literals"])
         # Solver services
-        s = api_pb2.ipss__pb2.Tensor.Index()
+        s = api_pb2.hyweb__pb2.Tensor.Index()
         s.id = "solver"
         s.hashtag.tag.extend(["SATsolver"])
         with open(DIR + '.service/solver.field', 'rb') as f:
             s.field.ParseFromString(f.read())
 
-        tensor_specification = api_pb2.ipss__pb2.Tensor()
+        tensor_specification = api_pb2.hyweb__pb2.Tensor()
         tensor_specification.index.extend([c, l, s, p])
         tensor_specification.rank = 3
         return tensor_specification
