@@ -2,7 +2,7 @@ import logging, hyweb_pb2
 
 logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s')
 LOGGER = lambda message: logging.getLogger().debug(message + '\n')
-DIR = '/satsorter'
+DIR = '/satsorter/'
 
 def get_grpc_uri(instance: hyweb_pb2.Instance) -> hyweb_pb2.Instance.Uri:
     for slot in instance.api.slot:
