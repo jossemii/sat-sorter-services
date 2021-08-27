@@ -44,7 +44,7 @@ if __name__ == "__main__":
     from concurrent import futures
     
     # Read __config__ file.
-    config = api_pb2.ipss__pb2.ConfigurationFile()
+    config = api_pb2.hyweb__pb2.ConfigurationFile()
     config.ParseFromString(
         open('/__config__', 'rb').read()
     )
