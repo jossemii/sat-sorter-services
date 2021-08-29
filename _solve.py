@@ -8,7 +8,7 @@ import grpc, hashlib
 
 import api_pb2, api_pb2_grpc, gateway_pb2, gateway_pb2_grpc, solvers_dataset_pb2
 from singleton import Singleton
-from start import LOGGER, get_grpc_uri
+from start import LOGGER, SHA3_256, get_grpc_uri
 
 # Si se toma una instancia, se debe de asegurar que, o bien se agrega a su cola
 #  correspondiente, o bien se para. No asegurar esto ocasiona un bug importante
@@ -171,10 +171,10 @@ class Session(metaclass=Singleton):
                    + str(self.solvers.keys()) + ' ' + str(solver_config_id))
 
             self.add_solver(
-                solver_config_id=solver_config_id,
-                solver_with_config=solver_with_config
+                solver_config_id = solver_config_id,
+                solver_with_config = solver_with_config
             )
-            return Error
+            raise Exception('Was not possible to solve it, solver added now.')
 
         solver_config = self.solvers[solver_config_id]
         try:
@@ -254,6 +254,7 @@ class Session(metaclass=Singleton):
                     solver_config = self.solvers[
                         list(self.solvers)[index]
                     ]
+                    index += 1
                     try:
                         instance = solver_config.get_instance(deep=True)
 
@@ -265,7 +266,7 @@ class Session(metaclass=Singleton):
                         self.lock.release()
                         continue
                 except IndexError:
-                    # Se han recorrido todos los solvers.
+                    LOGGER('Se han recorrido todos los solvers.')
                     self.lock.release()
                     break
                 except Exception as e:
@@ -278,7 +279,7 @@ class Session(metaclass=Singleton):
                 # En caso de que lleve mas de demasiado tiempo sin usarse.
                 # o se encuentre en estado 'zombie'
                 if datetime.now() - instance.use_datetime > timedelta(
-                        minutes=max_disuse_time) \
+                        minutes = max_disuse_time) \
                         or instance.is_zombie(
                     self.SOLVER_PASS_TIMEOUT_TIMES,
                     self.TRAIN_SOLVERS_TIMEOUT,
@@ -288,15 +289,21 @@ class Session(metaclass=Singleton):
                 # En caso contrario añade de nuevo la instancia a su respectiva cola.
                 else:
                     self.lock.acquire()
-                    solver_config.add_instance(instance, deep=True)
+                    solver_config.add_instance(instance, deep = True)
                     self.lock.release()
 
     def add_solver(self, solver_with_config: solvers_dataset_pb2.SolverWithConfig, solver_config_id: str):
-        LOGGER('ADDED NEW SOLVER ' + str(solver_config_id))
+        if solver_config_id != SHA3_256(
+            value = solver_with_config.SerializeToString()
+        ).hex():
+            LOGGER('Solver config not valid ', solver_with_config, solver_config_id)
+            raise Exception('Solver config not valid ', solver_with_config, solver_config_id)
+
         self.lock.acquire()
         self.solvers.update({
-            solver_config_id: SolverConfig(
+            solver_config_id : SolverConfig(
                 solver_with_config = solver_with_config
             )
         })
         self.lock.release()
+        LOGGER('ADDED NEW SOLVER ' + str(solver_config_id))

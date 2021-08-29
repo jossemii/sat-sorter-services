@@ -26,7 +26,7 @@ def solver_regression(solver: dict, MAX_DEGREE):
     # Get input variables. Num of cnf variables and Num of cnf clauses.
     # num_clauses : num_literals
     input = np.array(
-        [[int(var) for var in value.split(':')] for value in solver]
+        [[int(var) for var in cnf.split(':')] for cnf in solver]
     ).reshape(-1, 2)
 
     # Get output variable. Score.
@@ -55,25 +55,25 @@ def solver_regression(solver: dict, MAX_DEGREE):
         ]
     )
 
-def iterate_regression(TENSOR_SPECIFICATION, MAX_DEGREE, data_set) -> api_pb2.onnx__pb2.ONNX:
+def iterate_regression(TENSOR_SPECIFICATION: api_pb2.hyweb__pb2.Tensor, MAX_DEGREE: int, data_set: solvers_dataset_pb2.DataSet) -> api_pb2.onnx__pb2.ONNX:
     LOGGER('ITERATING REGRESSION')
     onnx = api_pb2.onnx__pb2.ONNX()
     onnx.specification.CopyFrom(TENSOR_SPECIFICATION)
 
     # Make regression for each solver.
-    for s in data_set.data:
+    for solver_data in data_set.data.values():
         # Si hemos tomado menos de cinco ejemplos, podemos esperar a la siguiente iteración.
-        if len(s.data) < 5: break
-        LOGGER('SOLVER --> ' + str(s.solver.definition))
+        if len(solver_data.data) < 5: break
+        LOGGER('SOLVER --> ' + str(solver_data.solver.definition))
         # ONNXTensor
         tensor = api_pb2.onnx__pb2.ONNX.ONNXTensor()
-        tensor.element.value = s.solver.SerializeToString()
+        tensor.element.value = solver_data.solver.SerializeToString()
         # We need to serialize and parse the buffer because the clases are provided by different proto files.
         #  It is because import the onnx-ml.proto on skl2onnx lib to our onnx.proto was impossible.
         #  The CopyFrom method checks the package name, so it thinks that are different messages. But we know
         #  that it's not true.
         tensor.model.ParseFromString(
-            solver_regression(solver=dict(s.data), MAX_DEGREE=MAX_DEGREE).SerializeToString()
+            solver_regression(solver = solver_data.data, MAX_DEGREE = MAX_DEGREE).SerializeToString()
             )
         onnx.tensor.append( tensor )
         LOGGER(' ****** ')
@@ -85,34 +85,31 @@ class Session(metaclass=Singleton):
     def __init__(self, ENVS) -> None:
         self.lock = threading.Lock()
         self.data_set = solvers_dataset_pb2.DataSet()
-        self.onnx = api_pb2.onnx__pb2.ONNX()
+        self.onnx = None
         Thread(target=self.init, name='Regression', args=(ENVS,)).start()
 
     # Add new data
     def add_data(self, new_data_set: solvers_dataset_pb2.DataSet) -> None:
         self.lock.acquire()
         for hash, solver_data in new_data_set.data.items():
-            if hash in self.data:
-                for cnf, data in solver_data.data:
-                    if cnf in self.data[hash].data:
-                        self.data[hash].data[cnf].score = sum([
-                            (self.data[hash].data[cnf].index * self.data[hash].data[cnf].score),
+            if hash in self.data_set.data:
+                for cnf, data in solver_data.data.items():
+                    if cnf in self.data_set.data[hash].data:
+                        self.data_set.data[hash].data[cnf].score = sum([
+                            (self.data_set.data[hash].data[cnf].index * self.data_set.data[hash].data[cnf].score),
                             data.index * data.score,
-                        ]) / (self.data[hash].data[cnf].index + data.index)
-                        self.data[hash].data[cnf].index = self.data[hash].data[cnf].index + data.index
+                        ]) / (self.data_set.data[hash].data[cnf].index + data.index)
+                        self.data_set.data[hash].data[cnf].index = self.data_set.data[hash].data[cnf].index + data.index
                         
                     else:
-                        self.data[hash].data.update({
-                            cnf : data
-                        })
+                        self.data_set.data[hash].data[cnf].CopyFrom(data)
             else:
-                self.data.update({
-                    hash : solver_data
-                })
+                self.data_set.data[hash].CopyFrom(solver_data)
         self.lock.release()
+        LOGGER('Dataset updated. ')
 
     # Return the tensor for the grpc stream method.
-    def get_tensor(self) -> api_pb2.onnx__pb2.ONNX:
+    def get_tensor(self) -> api_pb2.onnx__pb2.ONNX or None:
         # No hay condiciones de carrera aunque lo reescriba en ese momento.
         return self.onnx
     
@@ -169,6 +166,7 @@ class Session(metaclass=Singleton):
                 data_set.CopyFrom(self.data_set)
                 self.lock.release()
 
+                if not self.onnx: self.onnx = api_pb2.onnx__pb2.ONNX()
                 self.onnx.CopyFrom(
                     iterate_regression(
                         MAX_DEGREE=max_degree,

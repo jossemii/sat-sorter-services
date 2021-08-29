@@ -82,11 +82,11 @@ class Session(metaclass=Singleton):
             p = solvers_dataset_pb2.DataSetInstance()
             p.solver.definition.CopyFrom(solver)
             # p.solver.enviroment_variables (Usamos las variables de entorno por defecto).
-            p.hash = SHA3_256(
-                value = p.solver.SerializeToString()
-            ).hex()
-            self.solvers_dataset.data.append(p)
-            self._solver.add_solver(solver_with_config=p.solver, solver_config_id=p.hash)
+            hash = SHA3_256(
+                    value = p.solver.SerializeToString()
+                ).hex()
+            self.solvers_dataset.data[hash].CopyFrom(p)
+            self._solver.add_solver(solver_with_config=p.solver, solver_config_id=hash)
             self.solvers_dataset_lock.release()
         self.solvers_lock.release()
 

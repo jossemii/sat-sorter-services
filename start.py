@@ -16,7 +16,7 @@ def get_grpc_uri(instance: hyweb_pb2.Instance) -> hyweb_pb2.Instance.Uri:
 ENVS = {
     'GATEWAY_MAIN_DIR': '',
     'SAVE_TRAIN_DATA': 2,
-    'MAINTENANCE_SLEEP_TIME': 100,
+    'MAINTENANCE_SLEEP_TIME': 60,
     'SOLVER_PASS_TIMEOUT_TIMES': 5,
     'SOLVER_FAILED_ATTEMPTS': 5,
     'TRAIN_SOLVERS_TIMEOUT': 30,
@@ -47,7 +47,7 @@ if __name__ == "__main__":
     config = api_pb2.hyweb__pb2.ConfigurationFile()
     config.ParseFromString(
         open('/__config__', 'rb').read()
-    )
+    )    
 
     gateway_uri = get_grpc_uri(config.gateway)
     ENVS['GATEWAY_MAIN_DIR'] = gateway_uri.ip+':'+str(gateway_uri.port)
@@ -70,12 +70,14 @@ if __name__ == "__main__":
     class SolverServicer(api_pb2_grpc.SolverServicer):
 
         def Solve(self, request, context):
-            try:
+            tensor = _regresion.get_tensor()
+            if tensor:
+                
                 solver_with_config = _get.cnf(
                     cnf = request,
-                    tensors = _regresion.get_tensor()
+                    tensors = tensor
                 )
-            except FileNotFoundError:
+            else:
                 LOGGER('Wait more for it, tensor is not ready. ')
                 return api_pb2.Empty()
 
@@ -83,7 +85,7 @@ if __name__ == "__main__":
                 value = solver_with_config.SerializeToString()
             ).hex()
             LOGGER('USING SOLVER --> ' + str(solver_config_id))
-            while True:
+            for i in range(5):
                 try:
                     return _solver.cnf(
                         cnf=request,
@@ -92,7 +94,9 @@ if __name__ == "__main__":
                     )[0]
                 except Exception as e:
                     LOGGER('ERROR SOLVING A CNF ON Solve ' + str(e))
+                    sleep(1)
                     continue
+            raise Exception
 
         def StreamLogs(self, request, context):
             with open('app.log') as file:
@@ -153,6 +157,7 @@ if __name__ == "__main__":
 
         def AddDataSet(self, request, context):
             _regresion.add_data(new_data_set = request)
+            return api_pb2.Empty()
 
 
     # create a gRPC server
