@@ -1,6 +1,8 @@
 syntax = "proto3";
 import "hyweb.proto";
 
+package dataset;
+
 message Data {
     float score = 1;
     int32 index = 2;
@@ -14,9 +16,9 @@ message SolverWithConfig {
 message DataSetInstance {
     SolverWithConfig solver = 1;
     map<string, Data> data = 2;
-    string hash = 3; // identifica el Solver con una configuracion determinada.( hash.value.hex() )
 }
 
 message DataSet {
-    repeated DataSetInstance data = 1;
+    // identifica el Solver con una configuracion determinada.( hash.value.hex() ) de sha3-256
+    map<string, DataSetInstance> data = 1;
 }

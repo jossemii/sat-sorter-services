@@ -5,6 +5,7 @@ import grpc
 import api_pb2 as api__pb2
 import hyweb_pb2 as hyweb__pb2
 import onnx_pb2 as onnx__pb2
+import solvers_dataset_pb2 as solvers__dataset__pb2
 
 
 class RandomStub(object):
@@ -107,6 +108,21 @@ class SolverStub(object):
                 request_serializer=api__pb2.Cnf.SerializeToString,
                 response_deserializer=api__pb2.Interpretation.FromString,
                 )
+        self.AddTensor = channel.unary_unary(
+                '/Solver/AddTensor',
+                request_serializer=onnx__pb2.ONNX.SerializeToString,
+                response_deserializer=api__pb2.Empty.FromString,
+                )
+        self.GetDataSet = channel.unary_unary(
+                '/Solver/GetDataSet',
+                request_serializer=api__pb2.Empty.SerializeToString,
+                response_deserializer=solvers__dataset__pb2.DataSet.FromString,
+                )
+        self.AddDataSet = channel.unary_unary(
+                '/Solver/AddDataSet',
+                request_serializer=solvers__dataset__pb2.DataSet.SerializeToString,
+                response_deserializer=api__pb2.Empty.FromString,
+                )
 
 
 class SolverServicer(object):
@@ -148,6 +164,25 @@ class SolverServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def AddTensor(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetDataSet(self, request, context):
+        """Hasta que se implemente AddTensor.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def AddDataSet(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_SolverServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -180,6 +215,21 @@ def add_SolverServicer_to_server(servicer, server):
                     servicer.Solve,
                     request_deserializer=api__pb2.Cnf.FromString,
                     response_serializer=api__pb2.Interpretation.SerializeToString,
+            ),
+            'AddTensor': grpc.unary_unary_rpc_method_handler(
+                    servicer.AddTensor,
+                    request_deserializer=onnx__pb2.ONNX.FromString,
+                    response_serializer=api__pb2.Empty.SerializeToString,
+            ),
+            'GetDataSet': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetDataSet,
+                    request_deserializer=api__pb2.Empty.FromString,
+                    response_serializer=solvers__dataset__pb2.DataSet.SerializeToString,
+            ),
+            'AddDataSet': grpc.unary_unary_rpc_method_handler(
+                    servicer.AddDataSet,
+                    request_deserializer=solvers__dataset__pb2.DataSet.FromString,
+                    response_serializer=api__pb2.Empty.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -290,5 +340,56 @@ class Solver(object):
         return grpc.experimental.unary_unary(request, target, '/Solver/Solve',
             api__pb2.Cnf.SerializeToString,
             api__pb2.Interpretation.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def AddTensor(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/Solver/AddTensor',
+            onnx__pb2.ONNX.SerializeToString,
+            api__pb2.Empty.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def GetDataSet(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/Solver/GetDataSet',
+            api__pb2.Empty.SerializeToString,
+            solvers__dataset__pb2.DataSet.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def AddDataSet(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/Solver/AddDataSet',
+            solvers__dataset__pb2.DataSet.SerializeToString,
+            api__pb2.Empty.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

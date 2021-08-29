@@ -38,9 +38,9 @@ if __name__ == "__main__":
 
     from time import sleep    
     import train, _get, _solve
-    from threading import get_ident, Thread
+    from threading import get_ident
     import regresion
-    import grpc, api_pb2, api_pb2_grpc
+    import grpc, api_pb2, api_pb2_grpc, solvers_dataset_pb2
     from concurrent import futures
     
     # Read __config__ file.
@@ -62,7 +62,7 @@ if __name__ == "__main__":
     
     LOGGER('INIT START THREAD ' + str(get_ident()))
       
-    Thread(target=regresion.init, name='Regression', args=(ENVS,)).start()   # Cuando se añadan los paquetes necesarios al .service/Dockerfile   
+    _regresion = regresion.Session(ENVS=ENVS)
     trainer = train.Session(ENVS=ENVS)
     _solver = _solve.Session(ENVS=ENVS)
 
@@ -72,7 +72,8 @@ if __name__ == "__main__":
         def Solve(self, request, context):
             try:
                 solver_with_config = _get.cnf(
-                    cnf=request
+                    cnf = request,
+                    tensors = _regresion.get_tensor()
                 )
             except FileNotFoundError:
                 LOGGER('Wait more for it, tensor is not ready. ')
@@ -106,12 +107,9 @@ if __name__ == "__main__":
             return api_pb2.Empty()
 
         def GetTensor(self, request, context):
-            with open(DIR + 'tensor.onnx', 'rb') as file:
-                while True:
-                    tensor = api_pb2.onnx__pb2.ONNX()
-                    tensor.ParseFromString(file.read())
-                    yield tensor
-                    sleep(ENVS['TIME_FOR_EACH_REGRESSION_LOOP'])
+            while True:
+                yield _regresion.get_tensor()
+                sleep(ENVS['TIME_FOR_EACH_REGRESSION_LOOP'])
 
         def StartTrain(self, request, context):
             trainer.start()
@@ -120,6 +118,41 @@ if __name__ == "__main__":
         def StopTrain(self, request, context):
             trainer.stop()
             return api_pb2.Empty()
+
+        # Integrate other tensor
+        def AddTensor(self, request, context):
+            new_data_set = solvers_dataset_pb2.DataSet()
+            for t in request.tensor:
+                hash = hashlib.sha3_256(t.element.SerializeToString()).hexdigest()
+                data =  solvers_dataset_pb2.DataSetInstance()
+                try:
+                    data.solver.CopyFrom( t.element )
+                except:
+                    LOGGER('El elemento del tensor parede no ser un SolverWithConfig.')
+
+                # Se extraen datos del tensor.
+                # Debe de probar el nivel de ajuste que tiene en un punto determinado
+                #  para obtener un indice.
+                # data.data.update({})
+                #TODO
+
+                new_data_set.data.update({
+                    hash : data
+                })
+
+            _regresion.add_data( #TODO
+                new_data_set = new_data_set
+            )
+
+            return api_pb2.Empty()
+
+        
+        # Hasta que se implemente AddTensor.
+        def GetDataSet(self, request, context):
+            return _regresion.get_data_set()
+
+        def AddDataSet(self, request, context):
+            _regresion.add_data(new_data_set = request)
 
 
     # create a gRPC server

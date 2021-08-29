@@ -2,6 +2,7 @@ syntax = "proto3";
 
 import "onnx.proto";
 import "hyweb.proto";
+import "solvers_dataset.proto";
 
 // Solver
 message Interpretation {
@@ -40,4 +41,9 @@ service Solver {
     rpc UploadSolver ( hyweb.Service) returns (Empty) {}
     rpc StreamLogs (Empty) returns (stream File){}
     rpc Solve(Cnf) returns (Interpretation) {}
+    rpc AddTensor( tensor_onnx.ONNX) returns (Empty) {}
+
+    // Hasta que se implemente AddTensor.
+    rpc GetDataSet( Empty) returns (dataset.DataSet) {}
+    rpc AddDataSet( dataset.DataSet) returns (Empty) {}
 }

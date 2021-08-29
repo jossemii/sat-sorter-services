@@ -1,3 +1,4 @@
+import regresion
 from threading import get_ident, Thread, Lock
 import grpc, hashlib
 from time import sleep
@@ -32,6 +33,7 @@ class Session(metaclass=Singleton):
         self.solvers_lock = Lock()  # Se uso al añadir un solver ya que podrían añadirse varios concurrentemente.
         self.do_stop = False
         self._solver = _solve.Session(ENVS=ENVS)  # Using singleton pattern.
+        self._regresion = regresion.Session(ENVS=ENVS)  # Using singleton pattern.
 
         # Random CNF Service.
         self.random_config = gateway_pb2.hyweb__pb2.Configuration()
@@ -166,7 +168,7 @@ class Session(metaclass=Singleton):
                 if abs(literal) > num_literals:
                     num_literals = abs(literal)
         type_of_cnf = str(num_clauses) + ':' + str(num_literals)
-        if type_of_cnf in solver.data:
+        if type_of_cnf not in solver.data:
             solver.data[type_of_cnf].index = 1
             solver.data[type_of_cnf].score = 0
         solver.data[type_of_cnf].score = (solver.data[type_of_cnf].score * solver.data[type_of_cnf].index + score) / (
@@ -200,11 +202,11 @@ class Session(metaclass=Singleton):
                 insats = []  # Solvers que afirman la insatisfactibilidad junto con su respectivo tiempo.
                 LOGGER('VAMOS A PROBAR LOS SOLVERS')
                 self.solvers_dataset_lock.acquire()
-                for solver in self.solvers_dataset.data:
+                for hash, solver_data in self.solvers_dataset.data.items():
                     if self.do_stop: break
-                    LOGGER('SOLVER --> ' + str(solver.hash))
+                    LOGGER('SOLVER --> ' + str(hash))
                     try:
-                        interpretation, time = self._solver.cnf(cnf=cnf, solver_config_id=solver.hash, timeout=timeout)
+                        interpretation, time = self._solver.cnf(cnf=cnf, solver_config_id=hash, timeout=timeout)
                     except Exception as e:
                         LOGGER('INTERNAL ERROR SOLVING A CNF ON TRAIN ' + str(e))
                         interpretation, time = None, timeout
@@ -213,7 +215,7 @@ class Session(metaclass=Singleton):
                     # tras muchas iteraciones no debería suponer un problema en el tensor.
                     if not interpretation or not interpretation.satisfiable or len(interpretation.variable) == 0:
                         insats.append({
-                            'solver': solver,
+                            'solver': solver_data,
                             'time': time
                         })
                     else:
@@ -227,7 +229,7 @@ class Session(metaclass=Singleton):
                             score = float(-1 / time)
                         self.updateScore(
                             cnf=cnf,
-                            solver=solver,
+                            solver=solver_data,
                             score=score
                         )
                 self.solvers_dataset_lock.release()
@@ -244,5 +246,4 @@ class Session(metaclass=Singleton):
             else:
                 LOGGER('ACTUALIZA EL DATASET')
                 refresh = 0
-                with open(DIR + 'solvers_dataset.bin', 'wb') as file:
-                    file.write(self.solvers_dataset.SerializeToString())
+                self._regresion.add_data(new_data_set = self.solvers_dataset)

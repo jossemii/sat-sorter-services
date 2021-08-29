@@ -13,6 +13,7 @@ _sym_db = _symbol_database.Default()
 
 import onnx_pb2 as onnx__pb2
 import hyweb_pb2 as hyweb__pb2
+import solvers_dataset_pb2 as solvers__dataset__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
@@ -21,9 +22,9 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\tapi.proto\x1a\nonnx.proto\x1a\x0bhyweb.proto\"L\n\x0eInterpretation\x12\x10\n\x08variable\x18\x01 \x03(\x05\x12\x18\n\x0bsatisfiable\x18\x02 \x01(\x08H\x00\x88\x01\x01\x42\x0e\n\x0c_satisfiable\"\x19\n\x06\x43lause\x12\x0f\n\x07literal\x18\x01 \x03(\x05\"\x1e\n\x03\x43nf\x12\x17\n\x06\x63lause\x18\x01 \x03(\x0b\x32\x07.Clause\"\x07\n\x05\x45mpty\"\x14\n\x04\x46ile\x12\x0c\n\x04\x66ile\x18\x01 \x01(\t2%\n\x06Random\x12\x1b\n\tRandomCnf\x12\x06.Empty\x1a\x04.Cnf\"\x00\x32\xe0\x01\n\x06Solver\x12\x1e\n\nStartTrain\x12\x06.Empty\x1a\x06.Empty\"\x00\x12\x1d\n\tStopTrain\x12\x06.Empty\x1a\x06.Empty\"\x00\x12*\n\tGetTensor\x12\x06.Empty\x1a\x11.tensor_onnx.ONNX\"\x00\x30\x01\x12(\n\x0cUploadSolver\x12\x0e.hyweb.Service\x1a\x06.Empty\"\x00\x12\x1f\n\nStreamLogs\x12\x06.Empty\x1a\x05.File\"\x00\x30\x01\x12 \n\x05Solve\x12\x04.Cnf\x1a\x0f.Interpretation\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\tapi.proto\x1a\nonnx.proto\x1a\x0bhyweb.proto\x1a\x15solvers_dataset.proto\"L\n\x0eInterpretation\x12\x10\n\x08variable\x18\x01 \x03(\x05\x12\x18\n\x0bsatisfiable\x18\x02 \x01(\x08H\x00\x88\x01\x01\x42\x0e\n\x0c_satisfiable\"\x19\n\x06\x43lause\x12\x0f\n\x07literal\x18\x01 \x03(\x05\"\x1e\n\x03\x43nf\x12\x17\n\x06\x63lause\x18\x01 \x03(\x0b\x32\x07.Clause\"\x07\n\x05\x45mpty\"\x14\n\x04\x46ile\x12\x0c\n\x04\x66ile\x18\x01 \x01(\t2%\n\x06Random\x12\x1b\n\tRandomCnf\x12\x06.Empty\x1a\x04.Cnf\"\x00\x32\xde\x02\n\x06Solver\x12\x1e\n\nStartTrain\x12\x06.Empty\x1a\x06.Empty\"\x00\x12\x1d\n\tStopTrain\x12\x06.Empty\x1a\x06.Empty\"\x00\x12*\n\tGetTensor\x12\x06.Empty\x1a\x11.tensor_onnx.ONNX\"\x00\x30\x01\x12(\n\x0cUploadSolver\x12\x0e.hyweb.Service\x1a\x06.Empty\"\x00\x12\x1f\n\nStreamLogs\x12\x06.Empty\x1a\x05.File\"\x00\x30\x01\x12 \n\x05Solve\x12\x04.Cnf\x1a\x0f.Interpretation\"\x00\x12(\n\tAddTensor\x12\x11.tensor_onnx.ONNX\x1a\x06.Empty\"\x00\x12(\n\nGetDataSet\x12\x06.Empty\x1a\x10.dataset.DataSet\"\x00\x12(\n\nAddDataSet\x12\x10.dataset.DataSet\x1a\x06.Empty\"\x00\x62\x06proto3'
   ,
-  dependencies=[onnx__pb2.DESCRIPTOR,hyweb__pb2.DESCRIPTOR,])
+  dependencies=[onnx__pb2.DESCRIPTOR,hyweb__pb2.DESCRIPTOR,solvers__dataset__pb2.DESCRIPTOR,])
 
 
 
@@ -67,8 +68,8 @@ _INTERPRETATION = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=38,
-  serialized_end=114,
+  serialized_start=61,
+  serialized_end=137,
 )
 
 
@@ -99,8 +100,8 @@ _CLAUSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=116,
-  serialized_end=141,
+  serialized_start=139,
+  serialized_end=164,
 )
 
 
@@ -131,8 +132,8 @@ _CNF = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=143,
-  serialized_end=173,
+  serialized_start=166,
+  serialized_end=196,
 )
 
 
@@ -156,8 +157,8 @@ _EMPTY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=175,
-  serialized_end=182,
+  serialized_start=198,
+  serialized_end=205,
 )
 
 
@@ -188,8 +189,8 @@ _FILE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=184,
-  serialized_end=204,
+  serialized_start=207,
+  serialized_end=227,
 )
 
 _INTERPRETATION.oneofs_by_name['_satisfiable'].fields.append(
@@ -247,8 +248,8 @@ _RANDOM = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=206,
-  serialized_end=243,
+  serialized_start=229,
+  serialized_end=266,
   methods=[
   _descriptor.MethodDescriptor(
     name='RandomCnf',
@@ -273,8 +274,8 @@ _SOLVER = _descriptor.ServiceDescriptor(
   index=1,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=246,
-  serialized_end=470,
+  serialized_start=269,
+  serialized_end=619,
   methods=[
   _descriptor.MethodDescriptor(
     name='StartTrain',
@@ -333,6 +334,36 @@ _SOLVER = _descriptor.ServiceDescriptor(
     containing_service=None,
     input_type=_CNF,
     output_type=_INTERPRETATION,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name='AddTensor',
+    full_name='Solver.AddTensor',
+    index=6,
+    containing_service=None,
+    input_type=onnx__pb2._ONNX,
+    output_type=_EMPTY,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name='GetDataSet',
+    full_name='Solver.GetDataSet',
+    index=7,
+    containing_service=None,
+    input_type=_EMPTY,
+    output_type=solvers__dataset__pb2._DATASET,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name='AddDataSet',
+    full_name='Solver.AddDataSet',
+    index=8,
+    containing_service=None,
+    input_type=solvers__dataset__pb2._DATASET,
+    output_type=_EMPTY,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),

@@ -28,24 +28,17 @@ def data(cnf: api_pb2.Cnf) -> dict:
     ]
 
 
-def cnf(cnf: api_pb2.Cnf) -> solvers_dataset_pb2.SolverWithConfig:
-    try:
-        LOGGER('GET CNF: selecting a solver ...')
-        with open(DIR + 'tensor.onnx', 'rb') as file:
-            tensors = onnx_pb2.ONNX()
-            tensors.ParseFromString(file.read())
-
-            best_solver = solvers_dataset_pb2.SolverWithConfig()
-            best_score = None
-            for tensor in tensors.tensor:
-                LOGGER('GET CNF: getting the score for a specific tensor.')
-                score = get_score(model=tensor.model, _cnf=data(cnf=cnf))
-                LOGGER('GET CNF: the score is '+str(score))
-                if not best_score or best_score < score:
-                    LOGGER('     now is the best score.')
-                    best_score = score
-                    best_solver.ParseFromString(tensor.element.value)
-            LOGGER('GET CNF finished process.')
-            return best_solver
-    except FileNotFoundError:
-        raise FileNotFoundError
+def cnf(cnf: api_pb2.Cnf, tensors: onnx_pb2.ONNX) -> solvers_dataset_pb2.SolverWithConfig:
+    LOGGER('GET CNF: selecting a solver ...')
+    best_solver = solvers_dataset_pb2.SolverWithConfig()
+    best_score = None
+    for tensor in tensors.tensor:
+        LOGGER('GET CNF: getting the score for a specific tensor.')
+        score = get_score(model=tensor.model, _cnf=data(cnf=cnf))
+        LOGGER('GET CNF: the score is '+str(score))
+        if not best_score or best_score < score:
+            LOGGER('     now is the best score.')
+            best_score = score
+            best_solver.ParseFromString(tensor.element.value)
+    LOGGER('GET CNF finished process.')
+    return best_solver

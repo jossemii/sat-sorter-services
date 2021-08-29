@@ -1,14 +1,16 @@
-import hashlib
+from singleton import Singleton
+import threading
 from time import sleep
 import numpy as np
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 from skl2onnx import convert_sklearn
-from skl2onnx.common.data_types import Int64TensorType, FloatTensorType
+from skl2onnx.common.data_types import Int64TensorType
 import api_pb2, solvers_dataset_pb2
-from threading import get_ident
+from threading import Thread, get_ident
 from start import DIR, LOGGER, SHA3_256
 
+# Update the tensor with the dataset.
 def regression_with_degree(degree: int, input: np.array, output: np.array):
     poly = PolynomialFeatures(degree= degree, include_bias=False)
     input = poly.fit_transform(input)
@@ -53,7 +55,7 @@ def solver_regression(solver: dict, MAX_DEGREE):
         ]
     )
 
-def iterate_regression(TENSOR_SPECIFICATION, MAX_DEGREE, data_set):
+def iterate_regression(TENSOR_SPECIFICATION, MAX_DEGREE, data_set) -> api_pb2.onnx__pb2.ONNX:
     LOGGER('ITERATING REGRESSION')
     onnx = api_pb2.onnx__pb2.ONNX()
     onnx.specification.CopyFrom(TENSOR_SPECIFICATION)
@@ -76,61 +78,101 @@ def iterate_regression(TENSOR_SPECIFICATION, MAX_DEGREE, data_set):
         onnx.tensor.append( tensor )
         LOGGER(' ****** ')
 
-    # Write tensors
-    with open(DIR+'tensor.onnx', 'wb') as file:
-        file.write(onnx.SerializeToString())
+    return onnx
 
-def init(ENVS):
+class Session(metaclass=Singleton):
 
-    # set used envs on variables.
-    time_for_each_regression_loop = ENVS['TIME_FOR_EACH_REGRESSION_LOOP']
-    max_degree = ENVS['MAX_REGRESSION_DEGREE']
-    data_set_hash = ""
+    def __init__(self, ENVS) -> None:
+        self.lock = threading.Lock()
+        self.data_set = solvers_dataset_pb2.DataSet()
+        self.onnx = api_pb2.onnx__pb2.ONNX()
+        Thread(target=self.init, name='Regression', args=(ENVS,)).start()
 
-    def generate_tensor_spec():
-        # Performance
-        p = api_pb2.hyweb__pb2.Tensor.Index()
-        p.id = "score"
-        p.hashtag.tag.extend(["performance"])
-        # Number clauses
-        c = api_pb2.hyweb__pb2.Tensor.Index()
-        c.id = "clauses"
-        c.hashtag.tag.extend(["number of clauses"])
-        # Number of literals
-        l = api_pb2.hyweb__pb2.Tensor.Index()
-        l.id = "literals"
-        l.hashtag.tag.extend(["number of literals"])
-        # Solver services
-        s = api_pb2.hyweb__pb2.Tensor.Index()
-        s.id = "solver"
-        s.hashtag.tag.extend(["SATsolver"])
-        with open(DIR + '.service/solver.field', 'rb') as f:
-            s.field.ParseFromString(f.read())
+    # Add new data
+    def add_data(self, new_data_set: solvers_dataset_pb2.DataSet) -> None:
+        self.lock.acquire()
+        for hash, solver_data in new_data_set.data.items():
+            if hash in self.data:
+                for cnf, data in solver_data.data:
+                    if cnf in self.data[hash].data:
+                        self.data[hash].data[cnf].score = sum([
+                            (self.data[hash].data[cnf].index * self.data[hash].data[cnf].score),
+                            data.index * data.score,
+                        ]) / (self.data[hash].data[cnf].index + data.index)
+                        self.data[hash].data[cnf].index = self.data[hash].data[cnf].index + data.index
+                        
+                    else:
+                        self.data[hash].data.update({
+                            cnf : data
+                        })
+            else:
+                self.data.update({
+                    hash : solver_data
+                })
+        self.lock.release()
 
-        tensor_specification = api_pb2.hyweb__pb2.Tensor()
-        tensor_specification.index.extend([c, l, s, p])
-        tensor_specification.rank = 3
-        return tensor_specification
+    # Return the tensor for the grpc stream method.
+    def get_tensor(self) -> api_pb2.onnx__pb2.ONNX:
+        # No hay condiciones de carrera aunque lo reescriba en ese momento.
+        return self.onnx
+    
+    # Hasta que se implemente AddTensor en el clasificador.
+    def get_data_set(self) -> solvers_dataset_pb2.DataSet:
+        return self.data_set
 
-    LOGGER('INIT REGRESSION THREAD '+ str(get_ident()))
-    while True:
-        sleep(time_for_each_regression_loop)
+    def init(self, ENVS):
+        # set used envs on variables.
+        time_for_each_regression_loop = ENVS['TIME_FOR_EACH_REGRESSION_LOOP']
+        max_degree = ENVS['MAX_REGRESSION_DEGREE']
+        data_set_hash = ""
 
-        # Read solvers dataset
-        with open(DIR + 'solvers_dataset.bin', 'rb') as file:
-            data_set = solvers_dataset_pb2.DataSet()
-            data_set.ParseFromString(file.read())
+        def generate_tensor_spec():
+            # Performance
+            p = api_pb2.hyweb__pb2.Tensor.Index()
+            p.id = "score"
+            p.hashtag.tag.extend(["performance"])
+            # Number clauses
+            c = api_pb2.hyweb__pb2.Tensor.Index()
+            c.id = "clauses"
+            c.hashtag.tag.extend(["number of clauses"])
+            # Number of literals
+            l = api_pb2.hyweb__pb2.Tensor.Index()
+            l.id = "literals"
+            l.hashtag.tag.extend(["number of literals"])
+            # Solver services
+            s = api_pb2.hyweb__pb2.Tensor.Index()
+            s.id = "solver"
+            s.hashtag.tag.extend(["SATsolver"])
+            with open(DIR + '.service/solver.field', 'rb') as f:
+                s.field.ParseFromString(f.read())
 
-        # Obtiene una hash del dataset para saber si se han añadido datos.
-        actual_hash = SHA3_256(
-            value = data_set.SerializeToString()
-            ).hex()
-        LOGGER('Check if dataset was modified ' + actual_hash + data_set_hash)
-        if actual_hash != data_set_hash:
-            data_set_hash = actual_hash
-            iterate_regression(
-                MAX_DEGREE=max_degree,
-                TENSOR_SPECIFICATION=generate_tensor_spec(),
-                data_set=data_set
-            )
-               
+            tensor_specification = api_pb2.hyweb__pb2.Tensor()
+            tensor_specification.index.extend([c, l, s, p])
+            tensor_specification.rank = 3
+            return tensor_specification
+
+        LOGGER('INIT REGRESSION THREAD '+ str(get_ident()))
+        while True:
+            sleep(time_for_each_regression_loop)
+
+            # Obtiene una hash del dataset para saber si se han añadido datos.
+            actual_hash = SHA3_256(
+                value = self.data_set.SerializeToString()
+                ).hex()
+            LOGGER('Check if dataset was modified ' + actual_hash + data_set_hash)
+            if actual_hash != data_set_hash:
+                data_set_hash = actual_hash
+                
+                # Se evita crear condiciones de carrera.
+                self.lock.acquire()
+                data_set = solvers_dataset_pb2.DataSet()
+                data_set.CopyFrom(self.data_set)
+                self.lock.release()
+
+                self.onnx.CopyFrom(
+                    iterate_regression(
+                        MAX_DEGREE=max_degree,
+                        TENSOR_SPECIFICATION=generate_tensor_spec(),
+                        data_set = data_set
+                    )
+                )
