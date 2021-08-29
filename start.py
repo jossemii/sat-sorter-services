@@ -1,4 +1,5 @@
 import logging, hyweb_pb2
+from iterators import TimeoutIterator
 
 logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s')
 LOGGER = lambda message: logging.getLogger().debug(message + '\n')
@@ -37,9 +38,8 @@ SHA3_256 = lambda value: "" if value is None else hashlib.sha3_256(value).digest
 if __name__ == "__main__":
 
     from time import sleep    
-    import train, _get, _solve
+    import train, _get, _solve, regresion
     from threading import get_ident
-    import regresion
     import grpc, api_pb2, api_pb2_grpc, solvers_dataset_pb2
     from concurrent import futures
     
@@ -104,7 +104,11 @@ if __name__ == "__main__":
                     f = api_pb2.File()
                     f.file = file.read()
                     yield f
-                    sleep(1)
+                    yield next(TimeoutIterator(
+                            _regresion.stream_logs(),
+                            timeout = 0.2
+                        ))
+                    
 
         def UploadSolver(self, request, context):
             trainer.load_solver(request)

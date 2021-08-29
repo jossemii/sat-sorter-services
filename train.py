@@ -1,6 +1,6 @@
 import regresion
 from threading import get_ident, Thread, Lock
-import grpc, hashlib
+import grpc
 from time import sleep
 import api_pb2, api_pb2_grpc, solvers_dataset_pb2, gateway_pb2, gateway_pb2_grpc
 from singleton import Singleton

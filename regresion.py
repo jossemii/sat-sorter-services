@@ -1,176 +1,138 @@
-from singleton import Singleton
 import threading
 from time import sleep
-import numpy as np
-from sklearn.linear_model import LinearRegression
-from sklearn.preprocessing import PolynomialFeatures
-from skl2onnx import convert_sklearn
-from skl2onnx.common.data_types import Int64TensorType
-import api_pb2, solvers_dataset_pb2
-from threading import Thread, get_ident
-from start import DIR, LOGGER, SHA3_256
-
-# Update the tensor with the dataset.
-def regression_with_degree(degree: int, input: np.array, output: np.array):
-    poly = PolynomialFeatures(degree= degree, include_bias=False)
-    input = poly.fit_transform(input)
-
-    # Create a model of regression.
-    model = LinearRegression().fit(input, output)
-    return {
-        'coefficient': model.score(input, output),
-        'model': model
-    }
-
-def solver_regression(solver: dict, MAX_DEGREE):
-    # Get input variables. Num of cnf variables and Num of cnf clauses.
-    # num_clauses : num_literals
-    input = np.array(
-        [[int(var) for var in cnf.split(':')] for cnf in solver]
-    ).reshape(-1, 2)
-
-    # Get output variable. Score.
-    output = np.array(
-        [value.score for value in solver.values()]
-    ).reshape(-1, 1)
-    if len(input) != len(output):
-        raise Exception('Error en solvers dataset, faltan scores.')
-
-    best_tensor = {'coefficient': 0}
-    for degree in range(1, MAX_DEGREE+1):
-        LOGGER(' DEGREE --> ' + str(degree))
-        tensor = regression_with_degree(degree=degree, input=input, output=output)
-        LOGGER('                R2 --> ' + str(tensor['coefficient']))
-        if tensor['coefficient'] > best_tensor['coefficient']:
-            best_tensor = tensor
-    
-    # Convert into ONNX format
-    #   In the case that best_tensor hasn't got an model means
-    #    that linear regression could not perform.
-    return convert_sklearn(
-        best_tensor['model'],
-        initial_types=[
-            ('X', Int64TensorType([None, 2])), # we need to use None for dynamic number of inputs because of changes in latest onnxruntime.
-                                                # The shape is , the first dimension is the number of rows followed by the number of features.
-        ]
-    )
-
-def iterate_regression(TENSOR_SPECIFICATION: api_pb2.hyweb__pb2.Tensor, MAX_DEGREE: int, data_set: solvers_dataset_pb2.DataSet) -> api_pb2.onnx__pb2.ONNX:
-    LOGGER('ITERATING REGRESSION')
-    onnx = api_pb2.onnx__pb2.ONNX()
-    onnx.specification.CopyFrom(TENSOR_SPECIFICATION)
-
-    # Make regression for each solver.
-    for solver_data in data_set.data.values():
-        # Si hemos tomado menos de cinco ejemplos, podemos esperar a la siguiente iteración.
-        if len(solver_data.data) < 5: break
-        LOGGER('SOLVER --> ' + str(solver_data.solver.definition))
-        # ONNXTensor
-        tensor = api_pb2.onnx__pb2.ONNX.ONNXTensor()
-        tensor.element.value = solver_data.solver.SerializeToString()
-        # We need to serialize and parse the buffer because the clases are provided by different proto files.
-        #  It is because import the onnx-ml.proto on skl2onnx lib to our onnx.proto was impossible.
-        #  The CopyFrom method checks the package name, so it thinks that are different messages. But we know
-        #  that it's not true.
-        tensor.model.ParseFromString(
-            solver_regression(solver = solver_data.data, MAX_DEGREE = MAX_DEGREE).SerializeToString()
-            )
-        onnx.tensor.append( tensor )
-        LOGGER(' ****** ')
-
-    return onnx
+from typing import Iterator
+from singleton import Singleton
+from start import LOGGER, get_grpc_uri, DIR
+import grpc, solvers_dataset_pb2, api_pb2, gateway_pb2_grpc, regresion_pb2_grpc, gateway_pb2
 
 class Session(metaclass=Singleton):
 
     def __init__(self, ENVS) -> None:
-        self.lock = threading.Lock()
-        self.data_set = solvers_dataset_pb2.DataSet()
-        self.onnx = None
-        Thread(target=self.init, name='Regression', args=(ENVS,)).start()
+        with open(DIR + 'random.service', 'rb') as file:
+            self.definition = gateway_pb2.hyweb__pb2.Service()
+            self.definition.ParseFromString(file.read())
+        self.config = gateway_pb2.hyweb__pb2.Configuration()
 
-    # Add new data
-    def add_data(self, new_data_set: solvers_dataset_pb2.DataSet) -> None:
-        self.lock.acquire()
-        for hash, solver_data in new_data_set.data.items():
-            if hash in self.data_set.data:
-                for cnf, data in solver_data.data.items():
-                    if cnf in self.data_set.data[hash].data:
-                        self.data_set.data[hash].data[cnf].score = sum([
-                            (self.data_set.data[hash].data[cnf].index * self.data_set.data[hash].data[cnf].score),
-                            data.index * data.score,
-                        ]) / (self.data_set.data[hash].data[cnf].index + data.index)
-                        self.data_set.data[hash].data[cnf].index = self.data_set.data[hash].data[cnf].index + data.index
-                        
-                    else:
-                        self.data_set.data[hash].data[cnf].CopyFrom(data)
-            else:
-                self.data_set.data[hash].CopyFrom(solver_data)
-        self.lock.release()
-        LOGGER('Dataset updated. ')
+        self.GATEWAY_MAIN_DIR = ENVS['GATEWAY_MAIN_DIR']
+        self.CONNECTION_ERRORS = ENVS['CONNECTION_ERRORS']
+        self.START_AVR_TIMEOUT = ENVS['START_AVR_TIMEOUT']
+        
+        self.gateway_stub = gateway_pb2_grpc.GatewayStub(
+            grpc.insecure_channel(self.GATEWAY_MAIN_DIR)
+            )
+        self.stub = None
+        self.token = None
+        self.lock = threading.Lock() #TODO
+        self.connection_errors = 0
+        self.init_service()
 
-    # Return the tensor for the grpc stream method.
-    def get_tensor(self) -> api_pb2.onnx__pb2.ONNX or None:
-        # No hay condiciones de carrera aunque lo reescriba en ese momento.
-        return self.onnx
-    
-    # Hasta que se implemente AddTensor en el clasificador.
-    def get_data_set(self) -> solvers_dataset_pb2.DataSet:
-        return self.data_set
+    def service_extended(self):
+        config = True
+        transport = gateway_pb2.ServiceTransport()
+        for hash in self.definition.hashtag.hash:
+            transport.hash.CopyFrom(hash)
+            if config:  # Solo hace falta enviar la configuracion en el primer paquete.
+                transport.config.CopyFrom(self.config)
+                config = False
+            yield transport
+        transport.ClearField('hash')
+        if config: transport.config.CopyFrom(self.config)
+        transport.service.CopyFrom(self.definition)
+        yield transport
 
-    def init(self, ENVS):
-        # set used envs on variables.
-        time_for_each_regression_loop = ENVS['TIME_FOR_EACH_REGRESSION_LOOP']
-        max_degree = ENVS['MAX_REGRESSION_DEGREE']
-        data_set_hash = ""
-
-        def generate_tensor_spec():
-            # Performance
-            p = api_pb2.hyweb__pb2.Tensor.Index()
-            p.id = "score"
-            p.hashtag.tag.extend(["performance"])
-            # Number clauses
-            c = api_pb2.hyweb__pb2.Tensor.Index()
-            c.id = "clauses"
-            c.hashtag.tag.extend(["number of clauses"])
-            # Number of literals
-            l = api_pb2.hyweb__pb2.Tensor.Index()
-            l.id = "literals"
-            l.hashtag.tag.extend(["number of literals"])
-            # Solver services
-            s = api_pb2.hyweb__pb2.Tensor.Index()
-            s.id = "solver"
-            s.hashtag.tag.extend(["SATsolver"])
-            with open(DIR + '.service/solver.field', 'rb') as f:
-                s.field.ParseFromString(f.read())
-
-            tensor_specification = api_pb2.hyweb__pb2.Tensor()
-            tensor_specification.index.extend([c, l, s, p])
-            tensor_specification.rank = 3
-            return tensor_specification
-
-        LOGGER('INIT REGRESSION THREAD '+ str(get_ident()))
+    def init_service(self):
+        LOGGER('Launching regresion service instance.')
         while True:
-            sleep(time_for_each_regression_loop)
+            try:
+                instance = self.gateway_stub.StartService(
+                    self.service_extended()
+                    )
+                break
+            except grpc.RpcError as e:
+                LOGGER('GRPC ERROR.' + str(e))
+                sleep(1)
+        uri = get_grpc_uri(instance.instance)
+        self.stub = regresion_pb2_grpc.RegresionStub(
+            grpc.insecure_channel(
+                uri.ip + ':' + str(uri.port)
+            )
+        )
+        self.token = instance.token
 
-            # Obtiene una hash del dataset para saber si se han añadido datos.
-            actual_hash = SHA3_256(
-                value = self.data_set.SerializeToString()
-                ).hex()
-            LOGGER('Check if dataset was modified ' + actual_hash + data_set_hash)
-            if actual_hash != data_set_hash:
-                data_set_hash = actual_hash
-                
-                # Se evita crear condiciones de carrera.
-                self.lock.acquire()
-                data_set = solvers_dataset_pb2.DataSet()
-                data_set.CopyFrom(self.data_set)
-                self.lock.release()
-
-                if not self.onnx: self.onnx = api_pb2.onnx__pb2.ONNX()
-                self.onnx.CopyFrom(
-                    iterate_regression(
-                        MAX_DEGREE=max_degree,
-                        TENSOR_SPECIFICATION=generate_tensor_spec(),
-                        data_set = data_set
+    def stop(self):
+        LOGGER('Stopping regresion service instance.')
+        while True:
+            try:
+                self.gateway_stub.StopService(
+                    gateway_pb2.TokenMessage(
+                        token = self.token
                     )
                 )
+                break
+            except grpc.RpcError as e:
+                LOGGER('Grpc Error stopping regresion ' + str(e))
+                sleep(1)
+
+    def error_control(self, e):
+        self.lock.acquire()
+        if self.connection_errors < self.CONNECTION_ERRORS:
+            self.connection_errors = self.connection_errors + 1
+            sleep(1)  # Evita condiciones de carrera si lo ejecuta tras recibir la instancia. TODO
+        else:
+            self.connection_errors = 0
+            self.signal.
+            LOGGER('Errors occurs on regresion method --> ' + str(e))
+            LOGGER('Vamos a cambiar el servicio de regresion')
+            self.stop()
+            self.init_service()
+            LOGGER('listo. ahora vamos a probar otra vez.')
+        self.lock.release()  
+
+
+    # --> Grpc methods <--
+    # Add new data
+    def add_data(self, new_data_set: solvers_dataset_pb2.DataSet) -> None:
+        while True:
+            try:
+                LOGGER('Send data to regresion.')
+                self.stub.AddDataSet(
+                    request=new_data_set,
+                    timeout=self.START_AVR_TIMEOUT
+                )
+            except (grpc.RpcError, TimeoutError) as e:
+                self.error_control(e)
+
+    # Return the tensor from the grpc stream method.
+    def get_tensor(self) -> Iterator[api_pb2.onnx__pb2.ONNX, None, None]:
+        while True:
+            try:
+                LOGGER('Get tensor from regresion.')
+                for t in self.stub.GetTensor(
+                    request=api_pb2.Empty(),
+                    timeout=self.START_AVR_TIMEOUT
+                ): yield t
+            except (grpc.RpcError, TimeoutError) as e:
+                self.error_control(e)
+
+    # Hasta que se implemente AddTensor en el clasificador.
+    def get_data_set(self) -> solvers_dataset_pb2.DataSet:
+        while True:
+            try:
+                LOGGER('Get dataset from regresion.')
+                return self.stub.GetDataSet(
+                    request=api_pb2.Empty(),
+                    timeout=self.START_AVR_TIMEOUT
+                )
+            except (grpc.RpcError, TimeoutError) as e:
+                self.error_control(e)
+
+    def stream_logs(self) -> Iterator[api_pb2.File, None, None]:
+        while True:
+            try:
+                LOGGER('Streaming logs from regresion.')
+                for file in self.stub.StreamLogs(
+                    request=api_pb2.Empty(),
+                    timeout=self.START_AVR_TIMEOUT
+                ): yield file
+            except (grpc.RpcError, TimeoutError) as e:
+                self.error_control(e)
