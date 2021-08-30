@@ -80,7 +80,6 @@ class Session(metaclass=Singleton):
             sleep(1)  # Evita condiciones de carrera si lo ejecuta tras recibir la instancia. TODO
         else:
             self.connection_errors = 0
-            self.signal.
             LOGGER('Errors occurs on regresion method --> ' + str(e))
             LOGGER('Vamos a cambiar el servicio de regresion')
             self.stop()

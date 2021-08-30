@@ -2,8 +2,8 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
+import api_pb2 as api__pb2
 import onnx_pb2 as onnx__pb2
-import regresion_pb2 as regresion__pb2
 import solvers_dataset_pb2 as solvers__dataset__pb2
 
 
@@ -18,23 +18,23 @@ class RegresionStub(object):
         """
         self.StreamLogs = channel.unary_stream(
                 '/Regresion/StreamLogs',
-                request_serializer=regresion__pb2.Empty.SerializeToString,
-                response_deserializer=regresion__pb2.File.FromString,
+                request_serializer=api__pb2.Empty.SerializeToString,
+                response_deserializer=api__pb2.File.FromString,
                 )
         self.GetTensor = channel.unary_stream(
                 '/Regresion/GetTensor',
-                request_serializer=regresion__pb2.Empty.SerializeToString,
+                request_serializer=api__pb2.Empty.SerializeToString,
                 response_deserializer=onnx__pb2.ONNX.FromString,
                 )
         self.GetDataSet = channel.unary_unary(
                 '/Regresion/GetDataSet',
-                request_serializer=regresion__pb2.Empty.SerializeToString,
+                request_serializer=api__pb2.Empty.SerializeToString,
                 response_deserializer=solvers__dataset__pb2.DataSet.FromString,
                 )
         self.AddDataSet = channel.unary_unary(
                 '/Regresion/AddDataSet',
                 request_serializer=solvers__dataset__pb2.DataSet.SerializeToString,
-                response_deserializer=regresion__pb2.Empty.FromString,
+                response_deserializer=api__pb2.Empty.FromString,
                 )
 
 
@@ -71,23 +71,23 @@ def add_RegresionServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'StreamLogs': grpc.unary_stream_rpc_method_handler(
                     servicer.StreamLogs,
-                    request_deserializer=regresion__pb2.Empty.FromString,
-                    response_serializer=regresion__pb2.File.SerializeToString,
+                    request_deserializer=api__pb2.Empty.FromString,
+                    response_serializer=api__pb2.File.SerializeToString,
             ),
             'GetTensor': grpc.unary_stream_rpc_method_handler(
                     servicer.GetTensor,
-                    request_deserializer=regresion__pb2.Empty.FromString,
+                    request_deserializer=api__pb2.Empty.FromString,
                     response_serializer=onnx__pb2.ONNX.SerializeToString,
             ),
             'GetDataSet': grpc.unary_unary_rpc_method_handler(
                     servicer.GetDataSet,
-                    request_deserializer=regresion__pb2.Empty.FromString,
+                    request_deserializer=api__pb2.Empty.FromString,
                     response_serializer=solvers__dataset__pb2.DataSet.SerializeToString,
             ),
             'AddDataSet': grpc.unary_unary_rpc_method_handler(
                     servicer.AddDataSet,
                     request_deserializer=solvers__dataset__pb2.DataSet.FromString,
-                    response_serializer=regresion__pb2.Empty.SerializeToString,
+                    response_serializer=api__pb2.Empty.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -111,8 +111,8 @@ class Regresion(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_stream(request, target, '/Regresion/StreamLogs',
-            regresion__pb2.Empty.SerializeToString,
-            regresion__pb2.File.FromString,
+            api__pb2.Empty.SerializeToString,
+            api__pb2.File.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -128,7 +128,7 @@ class Regresion(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_stream(request, target, '/Regresion/GetTensor',
-            regresion__pb2.Empty.SerializeToString,
+            api__pb2.Empty.SerializeToString,
             onnx__pb2.ONNX.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
@@ -145,7 +145,7 @@ class Regresion(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/Regresion/GetDataSet',
-            regresion__pb2.Empty.SerializeToString,
+            api__pb2.Empty.SerializeToString,
             solvers__dataset__pb2.DataSet.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
@@ -163,6 +163,6 @@ class Regresion(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/Regresion/AddDataSet',
             solvers__dataset__pb2.DataSet.SerializeToString,
-            regresion__pb2.Empty.FromString,
+            api__pb2.Empty.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

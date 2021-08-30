@@ -4,6 +4,8 @@ import "onnx.proto";
 import "hyweb.proto";
 import "solvers_dataset.proto";
 
+package api;
+
 // Solver
 message Interpretation {
     repeated int32 variable = 1;

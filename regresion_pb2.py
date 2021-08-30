@@ -13,6 +13,7 @@ _sym_db = _symbol_database.Default()
 
 import onnx_pb2 as onnx__pb2
 import solvers_dataset_pb2 as solvers__dataset__pb2
+import api_pb2 as api__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
@@ -21,86 +22,13 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0fregresion.proto\x1a\nonnx.proto\x1a\x15solvers_dataset.proto\"\x07\n\x05\x45mpty\"\x14\n\x04\x46ile\x12\x0c\n\x04\x66ile\x18\x01 \x01(\t2\xac\x01\n\tRegresion\x12\x1f\n\nStreamLogs\x12\x06.Empty\x1a\x05.File\"\x00\x30\x01\x12*\n\tGetTensor\x12\x06.Empty\x1a\x11.tensor_onnx.ONNX\"\x00\x30\x01\x12(\n\nGetDataSet\x12\x06.Empty\x1a\x10.dataset.DataSet\"\x00\x12(\n\nAddDataSet\x12\x10.dataset.DataSet\x1a\x06.Empty\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\x0fregresion.proto\x1a\nonnx.proto\x1a\x15solvers_dataset.proto\x1a\tapi.proto2\xc0\x01\n\tRegresion\x12\'\n\nStreamLogs\x12\n.api.Empty\x1a\t.api.File\"\x00\x30\x01\x12.\n\tGetTensor\x12\n.api.Empty\x1a\x11.tensor_onnx.ONNX\"\x00\x30\x01\x12,\n\nGetDataSet\x12\n.api.Empty\x1a\x10.dataset.DataSet\"\x00\x12,\n\nAddDataSet\x12\x10.dataset.DataSet\x1a\n.api.Empty\"\x00\x62\x06proto3'
   ,
-  dependencies=[onnx__pb2.DESCRIPTOR,solvers__dataset__pb2.DESCRIPTOR,])
+  dependencies=[onnx__pb2.DESCRIPTOR,solvers__dataset__pb2.DESCRIPTOR,api__pb2.DESCRIPTOR,])
 
 
 
-
-_EMPTY = _descriptor.Descriptor(
-  name='Empty',
-  full_name='Empty',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=54,
-  serialized_end=61,
-)
-
-
-_FILE = _descriptor.Descriptor(
-  name='File',
-  full_name='File',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='file', full_name='File.file', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=63,
-  serialized_end=83,
-)
-
-DESCRIPTOR.message_types_by_name['Empty'] = _EMPTY
-DESCRIPTOR.message_types_by_name['File'] = _FILE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
-
-Empty = _reflection.GeneratedProtocolMessageType('Empty', (_message.Message,), {
-  'DESCRIPTOR' : _EMPTY,
-  '__module__' : 'regresion_pb2'
-  # @@protoc_insertion_point(class_scope:Empty)
-  })
-_sym_db.RegisterMessage(Empty)
-
-File = _reflection.GeneratedProtocolMessageType('File', (_message.Message,), {
-  'DESCRIPTOR' : _FILE,
-  '__module__' : 'regresion_pb2'
-  # @@protoc_insertion_point(class_scope:File)
-  })
-_sym_db.RegisterMessage(File)
 
 
 
@@ -111,7 +39,7 @@ _REGRESION = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=86,
+  serialized_start=66,
   serialized_end=258,
   methods=[
   _descriptor.MethodDescriptor(
@@ -119,8 +47,8 @@ _REGRESION = _descriptor.ServiceDescriptor(
     full_name='Regresion.StreamLogs',
     index=0,
     containing_service=None,
-    input_type=_EMPTY,
-    output_type=_FILE,
+    input_type=api__pb2._EMPTY,
+    output_type=api__pb2._FILE,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),
@@ -129,7 +57,7 @@ _REGRESION = _descriptor.ServiceDescriptor(
     full_name='Regresion.GetTensor',
     index=1,
     containing_service=None,
-    input_type=_EMPTY,
+    input_type=api__pb2._EMPTY,
     output_type=onnx__pb2._ONNX,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
@@ -139,7 +67,7 @@ _REGRESION = _descriptor.ServiceDescriptor(
     full_name='Regresion.GetDataSet',
     index=2,
     containing_service=None,
-    input_type=_EMPTY,
+    input_type=api__pb2._EMPTY,
     output_type=solvers__dataset__pb2._DATASET,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
@@ -150,7 +78,7 @@ _REGRESION = _descriptor.ServiceDescriptor(
     index=3,
     containing_service=None,
     input_type=solvers__dataset__pb2._DATASET,
-    output_type=_EMPTY,
+    output_type=api__pb2._EMPTY,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),
