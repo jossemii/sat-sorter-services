@@ -8,7 +8,7 @@ import grpc, solvers_dataset_pb2, api_pb2, gateway_pb2_grpc, regresion_pb2_grpc,
 class Session(metaclass=Singleton):
 
     def __init__(self, ENVS) -> None:
-        with open(DIR + 'random.service', 'rb') as file:
+        with open(DIR + 'regresion.service', 'rb') as file:
             self.definition = gateway_pb2.hyweb__pb2.Service()
             self.definition.ParseFromString(file.read())
         self.config = gateway_pb2.hyweb__pb2.Configuration()
