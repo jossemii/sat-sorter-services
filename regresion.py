@@ -1,6 +1,6 @@
 import threading
 from time import sleep
-from typing import Iterator
+from typing import Generator
 from singleton import Singleton
 from start import LOGGER, get_grpc_uri, DIR
 import grpc, solvers_dataset_pb2, api_pb2, gateway_pb2_grpc, regresion_pb2_grpc, gateway_pb2
@@ -102,7 +102,7 @@ class Session(metaclass=Singleton):
                 self.error_control(e)
 
     # Return the tensor from the grpc stream method.
-    def get_tensor(self) -> Iterator[api_pb2.onnx__pb2.ONNX, None, None]:
+    def get_tensor(self) -> Generator[api_pb2.onnx__pb2.ONNX, None, None]:
         while True:
             try:
                 LOGGER('Get tensor from regresion.')
@@ -125,7 +125,7 @@ class Session(metaclass=Singleton):
             except (grpc.RpcError, TimeoutError) as e:
                 self.error_control(e)
 
-    def stream_logs(self) -> Iterator[api_pb2.File, None, None]:
+    def stream_logs(self) -> Generator[api_pb2.File, None, None]:
         while True:
             try:
                 LOGGER('Streaming logs from regresion.')
