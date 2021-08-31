@@ -1,4 +1,4 @@
-    from threading import get_ident
+from threading import get_ident
 from time import sleep
 import _solve, regresion
 
