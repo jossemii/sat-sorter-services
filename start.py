@@ -70,7 +70,7 @@ if __name__ == "__main__":
     class SolverServicer(api_pb2_grpc.SolverServicer):
 
         def Solve(self, request, context):
-            tensor = _regresion.get_tensor()
+            tensor = next(_regresion.get_tensor())
             if tensor:
                 
                 solver_with_config = _get.cnf(

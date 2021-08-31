@@ -98,6 +98,7 @@ class Session(metaclass=Singleton):
                     request=new_data_set,
                     timeout=self.START_AVR_TIMEOUT
                 )
+                break
             except (grpc.RpcError, TimeoutError) as e:
                 self.error_control(e)
 
