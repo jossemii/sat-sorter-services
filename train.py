@@ -246,4 +246,9 @@ class Session(metaclass=Singleton):
             else:
                 LOGGER('ACTUALIZA EL DATASET')
                 refresh = 0
+                self.solvers_dataset_lock.acquire()
                 self._regresion.add_data(new_data_set = self.solvers_dataset)
+                # No formatear los datos cada vez provocaría que el regresion realizara equívocamente la media, pues 
+                # estaría contando los datos anteriores una y otra vez.
+                self.solvers_dataset = solvers_dataset_pb2.DataSet()
+                self.solvers_dataset_lock.release()

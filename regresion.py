@@ -22,7 +22,7 @@ class Session(metaclass=Singleton):
             )
         self.stub = None
         self.token = None
-        self.lock = threading.Lock() #TODO
+        self.lock = threading.Lock()
         self.connection_errors = 0
         self.init_service()
 
@@ -59,6 +59,13 @@ class Session(metaclass=Singleton):
         )
         self.token = instance.token
 
+        try:
+            with open('dataset.bin', 'rb') as f:
+                self.add_data(
+                    new_data_set = f.read().ParseFromString()
+                )
+        except: pass # Si no tenemos dataset no pasa nada.
+
     def stop(self):
         LOGGER('Stopping regresion service instance.')
         while True:
@@ -87,6 +94,12 @@ class Session(metaclass=Singleton):
             LOGGER('listo. ahora vamos a probar otra vez.')
         self.lock.release()  
 
+    def maintenance(self):
+        # Guarda el data-set en el Clasificador cada cierto tiempo.
+        with open('dataset.bin', 'wb') as f:
+            f.write(
+                self.get_data_set().SerializeToString()
+            )
 
     # --> Grpc methods <--
     # Add new data
@@ -104,17 +117,26 @@ class Session(metaclass=Singleton):
 
     # Return the tensor from the grpc stream method.
     def get_tensor(self) -> Generator[api_pb2.onnx__pb2.ONNX, None, None]:
-        while True:
+        itents = 0
+        while itents < (self.CONNECTION_ERRORS - self.connection_errors):
             try:
                 LOGGER('Get tensor from regresion.')
                 for t in self.stub.GetTensor(
                     request=api_pb2.Empty(),
                     timeout=self.START_AVR_TIMEOUT
                 ): yield t
-            except (grpc.RpcError, TimeoutError) as e:
+            except (TimeoutError) as e:
                 self.error_control(e)
+                itents += 1
+                # Si retorna se han  realizado demasiados intentos salta una excepción, 
+                # de lo contrario esperaría a una nueva instancia del Regresion, subirle 
+                # el dataset y que este dijera que no tiene el tensor.
+            except:
+                # Si retorna None salta una excepción al serializar.
+                break
+        raise Exception
 
-    # Hasta que se implemente AddTensor en el clasificador.
+
     def get_data_set(self) -> solvers_dataset_pb2.DataSet:
         while True:
             try:

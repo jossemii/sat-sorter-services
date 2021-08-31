@@ -1,4 +1,6 @@
 import logging, hyweb_pb2
+from threading import Thread
+from maintainer import maintainer
 from iterators import TimeoutIterator
 
 logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s')
@@ -16,7 +18,7 @@ def get_grpc_uri(instance: hyweb_pb2.Instance) -> hyweb_pb2.Instance.Uri:
 
 ENVS = {
     'GATEWAY_MAIN_DIR': '',
-    'SAVE_TRAIN_DATA': 2,
+    'SAVE_TRAIN_DATA': 10,
     'MAINTENANCE_SLEEP_TIME': 60,
     'SOLVER_PASS_TIMEOUT_TIMES': 5,
     'SOLVER_FAILED_ATTEMPTS': 5,
@@ -65,20 +67,19 @@ if __name__ == "__main__":
     _regresion = regresion.Session(ENVS=ENVS)
     trainer = train.Session(ENVS=ENVS)
     _solver = _solve.Session(ENVS=ENVS)
+    Thread(target=maintainer, name='Maintainer', args=(ENVS, LOGGER, )).start()
 
 
     class SolverServicer(api_pb2_grpc.SolverServicer):
 
         def Solve(self, request, context):
-            tensor = next(_regresion.get_tensor())
-            if tensor:
-                
+            try:
                 solver_with_config = _get.cnf(
                     cnf = request,
-                    tensors = tensor
+                    tensors = next(_regresion.get_tensor())
                 )
-            else:
-                LOGGER('Wait more for it, tensor is not ready. ')
+            except:
+                LOGGER('Wait more for it, tensor is not ready yet. ')
                 return api_pb2.Empty()
 
             solver_config_id = SHA3_256(
@@ -151,14 +152,12 @@ if __name__ == "__main__":
             _regresion.add_data( #TODO
                 new_data_set = new_data_set
             )
-
             return api_pb2.Empty()
 
-        
-        # Hasta que se implemente AddTensor.
         def GetDataSet(self, request, context):
             return _regresion.get_data_set()
-
+        
+        # Hasta que se implemente AddTensor.
         def AddDataSet(self, request, context):
             _regresion.add_data(new_data_set = request)
             return api_pb2.Empty()
