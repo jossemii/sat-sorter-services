@@ -88,7 +88,7 @@ class SolverStub(object):
                 request_serializer=api__pb2.Empty.SerializeToString,
                 response_deserializer=api__pb2.Empty.FromString,
                 )
-        self.GetTensor = channel.unary_stream(
+        self.GetTensor = channel.unary_unary(
                 '/api.Solver/GetTensor',
                 request_serializer=api__pb2.Empty.SerializeToString,
                 response_deserializer=onnx__pb2.ONNX.FromString,
@@ -196,7 +196,7 @@ def add_SolverServicer_to_server(servicer, server):
                     request_deserializer=api__pb2.Empty.FromString,
                     response_serializer=api__pb2.Empty.SerializeToString,
             ),
-            'GetTensor': grpc.unary_stream_rpc_method_handler(
+            'GetTensor': grpc.unary_unary_rpc_method_handler(
                     servicer.GetTensor,
                     request_deserializer=api__pb2.Empty.FromString,
                     response_serializer=onnx__pb2.ONNX.SerializeToString,
@@ -286,7 +286,7 @@ class Solver(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_stream(request, target, '/api.Solver/GetTensor',
+        return grpc.experimental.unary_unary(request, target, '/api.Solver/GetTensor',
             api__pb2.Empty.SerializeToString,
             onnx__pb2.ONNX.FromString,
             options, channel_credentials,

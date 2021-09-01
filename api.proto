@@ -39,7 +39,7 @@ message File {
 service Solver {
     rpc StartTrain ( Empty) returns (Empty) {}
     rpc StopTrain ( Empty) returns (Empty) {}
-    rpc GetTensor ( Empty) returns (stream tensor_onnx.ONNX) {}
+    rpc GetTensor ( Empty) returns (tensor_onnx.ONNX) {}
     rpc UploadSolver ( hyweb.Service) returns (Empty) {}
     rpc StreamLogs (Empty) returns (stream File){}
     rpc Solve(Cnf) returns (Interpretation) {}

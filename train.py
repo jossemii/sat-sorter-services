@@ -66,7 +66,7 @@ class Session(metaclass=Singleton):
             self.do_stop = False
             self.thread = None
 
-    def load_solver(self, solver: solvers_dataset_pb2.hyweb__pb2.Service):
+    def load_solver(self, solver: solvers_dataset_pb2.hyweb__pb2.Service) -> None:
         # Se puede cargar un solver sin estar completo, 
         #  pero debe de contener si o si la sha3-256
         #  ya que el servicio no la calculará (ni comprobará).
@@ -78,6 +78,7 @@ class Session(metaclass=Singleton):
         self.solvers_lock.acquire()
         if hash and hash not in self.solvers:
             self.solvers.append(hash)
+
             self.solvers_dataset_lock.acquire()
             p = solvers_dataset_pb2.DataSetInstance()
             p.solver.definition.CopyFrom(solver)
@@ -88,7 +89,14 @@ class Session(metaclass=Singleton):
             self.solvers_dataset.data[hash].CopyFrom(p)
             self._solver.add_solver(solver_with_config=p.solver, solver_config_id=hash)
             self.solvers_dataset_lock.release()
+            
         self.solvers_lock.release()
+
+    def clear_dataset(self) -> None:
+        self.solvers_dataset_lock.acquire()
+        for solver in self.solvers_dataset.data.values():
+            solver.ClearField('data')
+        self.solvers_dataset_lock.release()
 
     def random_service_extended(self):
         config = True
@@ -246,9 +254,7 @@ class Session(metaclass=Singleton):
             else:
                 LOGGER('ACTUALIZA EL DATASET')
                 refresh = 0
-                self.solvers_dataset_lock.acquire()
                 self._regresion.add_data(new_data_set = self.solvers_dataset)
                 # No formatear los datos cada vez provocaría que el regresion realizara equívocamente la media, pues 
                 # estaría contando los datos anteriores una y otra vez.
-                self.solvers_dataset = solvers_dataset_pb2.DataSet()
-                self.solvers_dataset_lock.release()
+                self.clear_dataset()

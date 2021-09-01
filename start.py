@@ -1,10 +1,9 @@
 import logging, hyweb_pb2
-from threading import Thread
-from maintainer import maintainer
+from threading import Semaphore, Thread
 from iterators import TimeoutIterator
 
 logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s')
-LOGGER = lambda message: print(message + '\n')
+LOGGER = lambda message: print(message + '\n')#logging.getLogger().debug(message + '\n')
 DIR = ''
 
 def get_grpc_uri(instance: hyweb_pb2.Instance) -> hyweb_pb2.Instance.Uri:
@@ -20,6 +19,7 @@ ENVS = {
     'GATEWAY_MAIN_DIR': '',
     'SAVE_TRAIN_DATA': 10,
     'MAINTENANCE_SLEEP_TIME': 60,
+    'MAINTENANCE_TIMES_FOR_EVERY_REGRESSION_MAINTAIN': 10,
     'SOLVER_PASS_TIMEOUT_TIMES': 5,
     'SOLVER_FAILED_ATTEMPTS': 5,
     'TRAIN_SOLVERS_TIMEOUT': 30,
@@ -28,6 +28,7 @@ ENVS = {
     'CONNECTION_ERRORS': 5,
     'START_AVR_TIMEOUT': 30,
     'MAX_WORKERS': 20,
+    'MAX_REGRESION_WORKERS': 5,
     'MAX_DISUSE_TIME_FACTOR': 1,
 }
 
@@ -44,6 +45,8 @@ if __name__ == "__main__":
     from threading import get_ident
     import grpc, api_pb2, api_pb2_grpc, solvers_dataset_pb2
     from concurrent import futures
+    from maintainer import maintainer
+
     """
     # Read __config__ file.
     config = api_pb2.hyweb__pb2.ConfigurationFile()
@@ -74,10 +77,12 @@ if __name__ == "__main__":
 
         def Solve(self, request, context):
             try:
+                tensor, semaphore = _regresion.get_tensor()
                 solver_with_config = _get.cnf(
                     cnf = request,
-                    tensors = next(_regresion.get_tensor())
+                    tensors = tensor
                 )
+                semaphore()
             except:
                 LOGGER('Wait more for it, tensor is not ready yet. ')
                 return api_pb2.Empty()
@@ -94,31 +99,39 @@ if __name__ == "__main__":
                         solver_with_config=solver_with_config
                     )[0]
                 except Exception as e:
-                    LOGGER('ERROR SOLVING A CNF ON Solve ' + str(e))
+                    LOGGER(str(i) + ' ERROR SOLVING A CNF ON Solve ' + str(e))
                     sleep(1)
                     continue
             raise Exception
 
         def StreamLogs(self, request, context):
+            if hasattr(self.StreamLogs, 'has_been_called'): 
+                raise Exception('Only can call this method once.')
+            else: 
+                self.StreamLogs.__func__.has_been_called = True
+            
+            stream_regresion_logs = _regresion.stream_logs()
             with open('app.log') as file:
                 while True:
-                    f = api_pb2.File()
-                    f.file = file.read()
-                    yield f
+                    try:
+                        f = api_pb2.File()
+                        f.file = next(file)
+                        yield f
+                    except: pass
                     yield next(TimeoutIterator(
-                            _regresion.stream_logs(),
-                            timeout = 0.2
+                        stream_regresion_logs(),
+                        timeout = 0.2
                         ))
+                    # TODO Could be async. (needs the async grpc lib.)
                     
-
         def UploadSolver(self, request, context):
             trainer.load_solver(request)
             return api_pb2.Empty()
 
         def GetTensor(self, request, context):
-            while True:
-                yield _regresion.get_tensor()
-                sleep(ENVS['TIME_FOR_EACH_REGRESSION_LOOP'])
+            tensor, semaphore = _regresion.get_tensor()
+            semaphore()
+            return tensor
 
         def StartTrain(self, request, context):
             trainer.start()
@@ -155,7 +168,9 @@ if __name__ == "__main__":
             return api_pb2.Empty()
 
         def GetDataSet(self, request, context):
-            return _regresion.get_data_set()
+            data, semaphore = _regresion.get_data_set()
+            semaphore()
+            return data
         
         # Hasta que se implemente AddTensor.
         def AddDataSet(self, request, context):

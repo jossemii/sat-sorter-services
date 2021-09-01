@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+import "onnx.proto";
+import "solvers_dataset.proto";
+
+message Empty {}
+
+message File {
+    string file = 1;
+}
+
+service Regresion {
+    rpc StreamLogs ( Empty) returns (stream File){}
+    rpc GetTensor ( Empty) returns (tensor_onnx.ONNX) {}   
+
+    // Hasta que se implemente AddTensor.
+    rpc GetDataSet( Empty) returns (dataset.DataSet) {}
+    rpc AddDataSet( dataset.DataSet) returns (Empty) {}
+}

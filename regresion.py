@@ -8,10 +8,12 @@ import grpc, solvers_dataset_pb2, api_pb2, gateway_pb2_grpc, regresion_pb2_grpc,
 class Session(metaclass=Singleton):
 
     def __init__(self, ENVS) -> None:
+        """
         with open(DIR + 'regresion.service', 'rb') as file:
             self.definition = gateway_pb2.hyweb__pb2.Service()
             self.definition.ParseFromString(file.read())
-        self.config = gateway_pb2.hyweb__pb2.Configuration()
+        self.config = gateway_pb2.hyweb__pb2.Configuration()        
+        """
 
         self.GATEWAY_MAIN_DIR = ENVS['GATEWAY_MAIN_DIR']
         self.CONNECTION_ERRORS = ENVS['CONNECTION_ERRORS']
@@ -23,6 +25,7 @@ class Session(metaclass=Singleton):
         self.stub = None
         self.token = None
         self.lock = threading.Lock()
+        self.semaphore = threading.Semaphore(ENVS['MAX_REGRESION_WORKERS']-1) # One worker for stream logs.
         self.connection_errors = 0
         self.init_service()
 
@@ -42,6 +45,7 @@ class Session(metaclass=Singleton):
 
     def init_service(self):
         LOGGER('Launching regresion service instance.')
+        """
         while True:
             try:
                 instance = self.gateway_stub.StartService(
@@ -57,7 +61,13 @@ class Session(metaclass=Singleton):
                 uri.ip + ':' + str(uri.port)
             )
         )
-        self.token = instance.token
+        self.token = instance.token        
+        """
+        self.stub = regresion_pb2_grpc.RegresionStub(
+            grpc.insecure_channel(
+                'localhost:9999'
+            )
+        )
 
         try:
             with open('dataset.bin', 'rb') as f:
@@ -68,6 +78,7 @@ class Session(metaclass=Singleton):
 
     def stop(self):
         LOGGER('Stopping regresion service instance.')
+        """
         while True:
             try:
                 self.gateway_stub.StopService(
@@ -78,13 +89,18 @@ class Session(metaclass=Singleton):
                 break
             except grpc.RpcError as e:
                 LOGGER('Grpc Error stopping regresion ' + str(e))
-                sleep(1)
+                sleep(1)        
+        """
+
 
     def error_control(self, e):
+        # Si se acaba de lanzar otra instancia los que quedaron esperando no deberían 
+        # marcar el error, pues si hay mas de CONNECTION_ERRORS originaria un bucle al renovar
+        # Regresion todo el tiempo.
         self.lock.acquire()
         if self.connection_errors < self.CONNECTION_ERRORS:
             self.connection_errors = self.connection_errors + 1
-            sleep(1)  # Evita condiciones de carrera si lo ejecuta tras recibir la instancia. TODO
+            sleep(1)  # Evita condiciones de carrera si lo ejecuta tras recibir la instancia.
         else:
             self.connection_errors = 0
             LOGGER('Errors occurs on regresion method --> ' + str(e))
@@ -96,6 +112,7 @@ class Session(metaclass=Singleton):
 
     def maintenance(self):
         # Guarda el data-set en el Clasificador cada cierto tiempo.
+        LOGGER('Save dataset on memory.')
         with open('dataset.bin', 'wb') as f:
             f.write(
                 self.get_data_set().SerializeToString()
@@ -104,6 +121,7 @@ class Session(metaclass=Singleton):
     # --> Grpc methods <--
     # Add new data
     def add_data(self, new_data_set: solvers_dataset_pb2.DataSet) -> None:
+        self.semaphore.acquire()
         while True:
             try:
                 LOGGER('Send data to regresion.')
@@ -114,17 +132,19 @@ class Session(metaclass=Singleton):
                 break
             except (grpc.RpcError, TimeoutError) as e:
                 self.error_control(e)
+        self.semaphore.release()
 
     # Return the tensor from the grpc stream method.
-    def get_tensor(self) -> Generator[api_pb2.onnx__pb2.ONNX, None, None]:
+    def get_tensor(self) -> tuple: # return ONNX.
+        self.semaphore.acquire()
         itents = 0
         while itents < (self.CONNECTION_ERRORS - self.connection_errors):
             try:
                 LOGGER('Get tensor from regresion.')
-                for t in self.stub.GetTensor(
+                return self.stub.GetTensor(
                     request=api_pb2.Empty(),
                     timeout=self.START_AVR_TIMEOUT
-                ): yield t
+                ), lambda: self.semaphore.release()
             except (TimeoutError) as e:
                 self.error_control(e)
                 itents += 1
@@ -134,27 +154,31 @@ class Session(metaclass=Singleton):
             except:
                 # Si retorna None salta una excepción al serializar.
                 break
+        self.semaphore.release()
         raise Exception
 
 
-    def get_data_set(self) -> solvers_dataset_pb2.DataSet:
+    def get_data_set(self) -> tuple: # return DataSet
+        self.semaphore.acquire()
         while True:
             try:
                 LOGGER('Get dataset from regresion.')
                 return self.stub.GetDataSet(
                     request=api_pb2.Empty(),
                     timeout=self.START_AVR_TIMEOUT
-                )
+                ), lambda: self.semaphore.release()
             except (grpc.RpcError, TimeoutError) as e:
                 self.error_control(e)
 
     def stream_logs(self) -> Generator[api_pb2.File, None, None]:
         while True:
             try:
-                LOGGER('Streaming logs from regresion.')
                 for file in self.stub.StreamLogs(
                     request=api_pb2.Empty(),
                     timeout=self.START_AVR_TIMEOUT
                 ): yield file
+                
             except (grpc.RpcError, TimeoutError) as e:
                 self.error_control(e)
+        
+        

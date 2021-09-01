@@ -22,7 +22,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\tapi.proto\x12\x03\x61pi\x1a\nonnx.proto\x1a\x0bhyweb.proto\x1a\x15solvers_dataset.proto\"L\n\x0eInterpretation\x12\x10\n\x08variable\x18\x01 \x03(\x05\x12\x18\n\x0bsatisfiable\x18\x02 \x01(\x08H\x00\x88\x01\x01\x42\x0e\n\x0c_satisfiable\"\x19\n\x06\x43lause\x12\x0f\n\x07literal\x18\x01 \x03(\x05\"\"\n\x03\x43nf\x12\x1b\n\x06\x63lause\x18\x01 \x03(\x0b\x32\x0b.api.Clause\"\x07\n\x05\x45mpty\"\x14\n\x04\x46ile\x12\x0c\n\x04\x66ile\x18\x01 \x01(\t2-\n\x06Random\x12#\n\tRandomCnf\x12\n.api.Empty\x1a\x08.api.Cnf\"\x00\x32\x92\x03\n\x06Solver\x12&\n\nStartTrain\x12\n.api.Empty\x1a\n.api.Empty\"\x00\x12%\n\tStopTrain\x12\n.api.Empty\x1a\n.api.Empty\"\x00\x12.\n\tGetTensor\x12\n.api.Empty\x1a\x11.tensor_onnx.ONNX\"\x00\x30\x01\x12,\n\x0cUploadSolver\x12\x0e.hyweb.Service\x1a\n.api.Empty\"\x00\x12\'\n\nStreamLogs\x12\n.api.Empty\x1a\t.api.File\"\x00\x30\x01\x12(\n\x05Solve\x12\x08.api.Cnf\x1a\x13.api.Interpretation\"\x00\x12,\n\tAddTensor\x12\x11.tensor_onnx.ONNX\x1a\n.api.Empty\"\x00\x12,\n\nGetDataSet\x12\n.api.Empty\x1a\x10.dataset.DataSet\"\x00\x12,\n\nAddDataSet\x12\x10.dataset.DataSet\x1a\n.api.Empty\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\tapi.proto\x12\x03\x61pi\x1a\nonnx.proto\x1a\x0bhyweb.proto\x1a\x15solvers_dataset.proto\"L\n\x0eInterpretation\x12\x10\n\x08variable\x18\x01 \x03(\x05\x12\x18\n\x0bsatisfiable\x18\x02 \x01(\x08H\x00\x88\x01\x01\x42\x0e\n\x0c_satisfiable\"\x19\n\x06\x43lause\x12\x0f\n\x07literal\x18\x01 \x03(\x05\"\"\n\x03\x43nf\x12\x1b\n\x06\x63lause\x18\x01 \x03(\x0b\x32\x0b.api.Clause\"\x07\n\x05\x45mpty\"\x14\n\x04\x46ile\x12\x0c\n\x04\x66ile\x18\x01 \x01(\t2-\n\x06Random\x12#\n\tRandomCnf\x12\n.api.Empty\x1a\x08.api.Cnf\"\x00\x32\x90\x03\n\x06Solver\x12&\n\nStartTrain\x12\n.api.Empty\x1a\n.api.Empty\"\x00\x12%\n\tStopTrain\x12\n.api.Empty\x1a\n.api.Empty\"\x00\x12,\n\tGetTensor\x12\n.api.Empty\x1a\x11.tensor_onnx.ONNX\"\x00\x12,\n\x0cUploadSolver\x12\x0e.hyweb.Service\x1a\n.api.Empty\"\x00\x12\'\n\nStreamLogs\x12\n.api.Empty\x1a\t.api.File\"\x00\x30\x01\x12(\n\x05Solve\x12\x08.api.Cnf\x1a\x13.api.Interpretation\"\x00\x12,\n\tAddTensor\x12\x11.tensor_onnx.ONNX\x1a\n.api.Empty\"\x00\x12,\n\nGetDataSet\x12\n.api.Empty\x1a\x10.dataset.DataSet\"\x00\x12,\n\nAddDataSet\x12\x10.dataset.DataSet\x1a\n.api.Empty\"\x00\x62\x06proto3'
   ,
   dependencies=[onnx__pb2.DESCRIPTOR,hyweb__pb2.DESCRIPTOR,solvers__dataset__pb2.DESCRIPTOR,])
 
@@ -275,7 +275,7 @@ _SOLVER = _descriptor.ServiceDescriptor(
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
   serialized_start=286,
-  serialized_end=688,
+  serialized_end=686,
   methods=[
   _descriptor.MethodDescriptor(
     name='StartTrain',

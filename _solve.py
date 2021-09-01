@@ -135,7 +135,7 @@ class SolverConfig(object):
 
     def get_instance(self, deep=False) -> SolverInstance:
         LOGGER('Get an instance of. deep ' + str(deep))
-        LOGGER('The solver ' + self.service_def.hashtag.hash[0].value.hex() + ' has ' + str(len(self.instances)) + 'instances.')
+        LOGGER('The solver ' + self.service_def.hashtag.hash[0].value.hex() + ' has ' + str(len(self.instances)) + ' instances.')
         try:
             return self.instances.pop() if not deep else self.instances.pop(0)
         except IndexError:
@@ -301,4 +301,4 @@ class Session(metaclass=Singleton):
             )
         })
         self.lock.release()
-        LOGGER('ADDED NEW SOLVER ' + str(solver_config_id))
+        LOGGER('ADDED NEW SOLVER ' + str(solver_config_id) + ' \ndef_ids -> ' +  str(solver_with_config.definition.hashtag.hash[0].value.hex()))
