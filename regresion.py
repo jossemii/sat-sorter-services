@@ -8,13 +8,11 @@ import grpc, solvers_dataset_pb2, api_pb2, gateway_pb2_grpc, regresion_pb2_grpc,
 class Session(metaclass=Singleton):
 
     def __init__(self, ENVS) -> None:
-        """
         with open(DIR + 'regresion.service', 'rb') as file:
             self.definition = gateway_pb2.hyweb__pb2.Service()
             self.definition.ParseFromString(file.read())
         self.config = gateway_pb2.hyweb__pb2.Configuration()        
-        """
-
+        
         self.GATEWAY_MAIN_DIR = ENVS['GATEWAY_MAIN_DIR']
         self.CONNECTION_ERRORS = ENVS['CONNECTION_ERRORS']
         self.START_AVR_TIMEOUT = ENVS['START_AVR_TIMEOUT']
@@ -45,7 +43,6 @@ class Session(metaclass=Singleton):
 
     def init_service(self):
         LOGGER('Launching regresion service instance.')
-        """
         while True:
             try:
                 instance = self.gateway_stub.StartService(
@@ -62,7 +59,6 @@ class Session(metaclass=Singleton):
             )
         )
         self.token = instance.token        
-        """
         self.stub = regresion_pb2_grpc.RegresionStub(
             grpc.insecure_channel(
                 'localhost:9999'
@@ -78,7 +74,6 @@ class Session(metaclass=Singleton):
 
     def stop(self):
         LOGGER('Stopping regresion service instance.')
-        """
         while True:
             try:
                 self.gateway_stub.StopService(
@@ -90,8 +85,6 @@ class Session(metaclass=Singleton):
             except grpc.RpcError as e:
                 LOGGER('Grpc Error stopping regresion ' + str(e))
                 sleep(1)        
-        """
-
 
     def error_control(self, e):
         # Si se acaba de lanzar otra instancia los que quedaron esperando no deberían 
