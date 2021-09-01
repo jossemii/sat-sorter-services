@@ -114,9 +114,11 @@ class Session(metaclass=Singleton):
         # Guarda el data-set en el Clasificador cada cierto tiempo.
         LOGGER('Save dataset on memory.')
         with open('dataset.bin', 'wb') as f:
+            data, semaphore = self.get_data_set()
             f.write(
-                self.get_data_set().SerializeToString()
+                data.SerializeToString()
             )
+            semaphore()
 
     # --> Grpc methods <--
     # Add new data
@@ -164,8 +166,8 @@ class Session(metaclass=Singleton):
             try:
                 LOGGER('Get dataset from regresion.')
                 return self.stub.GetDataSet(
-                    request=api_pb2.Empty(),
-                    timeout=self.START_AVR_TIMEOUT
+                    request = api_pb2.Empty(),
+                    timeout = self.START_AVR_TIMEOUT
                 ), lambda: self.semaphore.release()
             except (grpc.RpcError, TimeoutError) as e:
                 self.error_control(e)
@@ -174,8 +176,8 @@ class Session(metaclass=Singleton):
         while True:
             try:
                 for file in self.stub.StreamLogs(
-                    request=api_pb2.Empty(),
-                    timeout=self.START_AVR_TIMEOUT
+                    request = api_pb2.Empty(),
+                    timeout = self.START_AVR_TIMEOUT
                 ): yield file
                 
             except (grpc.RpcError, TimeoutError) as e:
