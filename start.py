@@ -1,10 +1,10 @@
 import logging, hyweb_pb2
-from threading import Semaphore, Thread
+from threading import Thread
 from iterators import TimeoutIterator
 
 logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s')
-LOGGER = lambda message: print(message + '\n')#logging.getLogger().debug(message + '\n')
-DIR = ''
+LOGGER = lambda message: logging.getLogger().debug(message + '\n')
+DIR = '/satsorter/'
 
 def get_grpc_uri(instance: hyweb_pb2.Instance) -> hyweb_pb2.Instance.Uri:
     for slot in instance.api.slot:
@@ -47,7 +47,6 @@ if __name__ == "__main__":
     from concurrent import futures
     from maintainer import maintainer
 
-    """
     # Read __config__ file.
     config = api_pb2.hyweb__pb2.ConfigurationFile()
     config.ParseFromString(
@@ -57,14 +56,13 @@ if __name__ == "__main__":
     gateway_uri = get_grpc_uri(config.gateway)
     ENVS['GATEWAY_MAIN_DIR'] = gateway_uri.ip+':'+str(gateway_uri.port)
 
-    
+    """
     for env_var in config.config.enviroment_variables:
         ENVS[env_var] = type(ENVS[env_var])(
             config.config.enviroment_variables[env_var].value
-            )    
+            )     
     """
-    
-    ENVS['GATEWAY_MAIN_DIR'] = '192.168.1.143:8080'
+
     LOGGER('INIT START THREAD ' + str(get_ident()))
       
     _regresion = regresion.Session(ENVS=ENVS)

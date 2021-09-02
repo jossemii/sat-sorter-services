@@ -58,19 +58,14 @@ class Session(metaclass=Singleton):
                 uri.ip + ':' + str(uri.port)
             )
         )
-        self.token = instance.token        
-        self.stub = regresion_pb2_grpc.RegresionStub(
-            grpc.insecure_channel(
-                'localhost:9999'
-            )
-        )
+        self.token = instance.token
 
         try:
             with open('dataset.bin', 'rb') as f:
                 self.add_data(
                     new_data_set = f.read().ParseFromString()
                 )
-        except: pass # Si no tenemos dataset no pasa nada.
+        except: pass
 
     def stop(self):
         LOGGER('Stopping regresion service instance.')
