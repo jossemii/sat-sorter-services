@@ -21,20 +21,10 @@ class RegresionStub(object):
                 request_serializer=regresion__pb2.Empty.SerializeToString,
                 response_deserializer=regresion__pb2.File.FromString,
                 )
-        self.GetTensor = channel.unary_unary(
-                '/Regresion/GetTensor',
-                request_serializer=regresion__pb2.Empty.SerializeToString,
-                response_deserializer=onnx__pb2.ONNX.FromString,
-                )
-        self.GetDataSet = channel.unary_unary(
-                '/Regresion/GetDataSet',
-                request_serializer=regresion__pb2.Empty.SerializeToString,
-                response_deserializer=solvers__dataset__pb2.DataSet.FromString,
-                )
-        self.AddDataSet = channel.unary_unary(
-                '/Regresion/AddDataSet',
+        self.MakeRegresion = channel.unary_unary(
+                '/Regresion/MakeRegresion',
                 request_serializer=solvers__dataset__pb2.DataSet.SerializeToString,
-                response_deserializer=regresion__pb2.Empty.FromString,
+                response_deserializer=onnx__pb2.ONNX.FromString,
                 )
 
 
@@ -47,20 +37,7 @@ class RegresionServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def GetTensor(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def GetDataSet(self, request, context):
-        """Hasta que se implemente AddTensor.
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def AddDataSet(self, request, context):
+    def MakeRegresion(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -74,20 +51,10 @@ def add_RegresionServicer_to_server(servicer, server):
                     request_deserializer=regresion__pb2.Empty.FromString,
                     response_serializer=regresion__pb2.File.SerializeToString,
             ),
-            'GetTensor': grpc.unary_unary_rpc_method_handler(
-                    servicer.GetTensor,
-                    request_deserializer=regresion__pb2.Empty.FromString,
-                    response_serializer=onnx__pb2.ONNX.SerializeToString,
-            ),
-            'GetDataSet': grpc.unary_unary_rpc_method_handler(
-                    servicer.GetDataSet,
-                    request_deserializer=regresion__pb2.Empty.FromString,
-                    response_serializer=solvers__dataset__pb2.DataSet.SerializeToString,
-            ),
-            'AddDataSet': grpc.unary_unary_rpc_method_handler(
-                    servicer.AddDataSet,
+            'MakeRegresion': grpc.unary_unary_rpc_method_handler(
+                    servicer.MakeRegresion,
                     request_deserializer=solvers__dataset__pb2.DataSet.FromString,
-                    response_serializer=regresion__pb2.Empty.SerializeToString,
+                    response_serializer=onnx__pb2.ONNX.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -117,7 +84,7 @@ class Regresion(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def GetTensor(request,
+    def MakeRegresion(request,
             target,
             options=(),
             channel_credentials=None,
@@ -127,42 +94,8 @@ class Regresion(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/Regresion/GetTensor',
-            regresion__pb2.Empty.SerializeToString,
-            onnx__pb2.ONNX.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
-
-    @staticmethod
-    def GetDataSet(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/Regresion/GetDataSet',
-            regresion__pb2.Empty.SerializeToString,
-            solvers__dataset__pb2.DataSet.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
-
-    @staticmethod
-    def AddDataSet(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/Regresion/AddDataSet',
+        return grpc.experimental.unary_unary(request, target, '/Regresion/MakeRegresion',
             solvers__dataset__pb2.DataSet.SerializeToString,
-            regresion__pb2.Empty.FromString,
+            onnx__pb2.ONNX.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

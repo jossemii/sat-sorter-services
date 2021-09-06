@@ -3,16 +3,20 @@ from time import sleep
 from typing import Generator
 from singleton import Singleton
 from start import LOGGER, get_grpc_uri, DIR
-import grpc, solvers_dataset_pb2, api_pb2, gateway_pb2_grpc, regresion_pb2_grpc, gateway_pb2
+import grpc, solvers_dataset_pb2, api_pb2, gateway_pb2_grpc, regresion_pb2_grpc, gateway_pb2, onnx_pb2
 
 class Session(metaclass=Singleton):
 
     def __init__(self, ENVS) -> None:
+        self.tensor = None
+        self.data_set = solvers_dataset_pb2.DataSet()
+
         with open(DIR + 'regresion.service', 'rb') as file:
             self.definition = gateway_pb2.hyweb__pb2.Service()
             self.definition.ParseFromString(file.read())
-        self.config = gateway_pb2.hyweb__pb2.Configuration()        
-        
+        self.config = gateway_pb2.hyweb__pb2.Configuration()  
+
+        # set used envs on variables.       
         self.GATEWAY_MAIN_DIR = ENVS['GATEWAY_MAIN_DIR']
         self.CONNECTION_ERRORS = ENVS['CONNECTION_ERRORS']
         self.START_AVR_TIMEOUT = ENVS['START_AVR_TIMEOUT']
@@ -22,11 +26,13 @@ class Session(metaclass=Singleton):
             )
         self.stub = None
         self.token = None
-        self.lock = threading.Lock()
-        self.semaphore = threading.Semaphore(ENVS['MAX_REGRESION_WORKERS']-1) # One worker for stream logs.
+        self.dataset_lock = threading.Lock()
         self.connection_errors = 0
         self.init_service()
 
+        # for maintain.
+        self.data_set_hash = ""
+    
     def service_extended(self):
         config = True
         transport = gateway_pb2.ServiceTransport()
@@ -60,13 +66,6 @@ class Session(metaclass=Singleton):
         )
         self.token = instance.token
 
-        try:
-            with open('dataset.bin', 'rb') as f:
-                self.add_data(
-                    new_data_set = f.read().ParseFromString()
-                )
-        except: pass
-
     def stop(self):
         LOGGER('Stopping regresion service instance.')
         while True:
@@ -85,7 +84,6 @@ class Session(metaclass=Singleton):
         # Si se acaba de lanzar otra instancia los que quedaron esperando no deberían 
         # marcar el error, pues si hay mas de CONNECTION_ERRORS originaria un bucle al renovar
         # Regresion todo el tiempo.
-        self.lock.acquire()
         if self.connection_errors < self.CONNECTION_ERRORS:
             self.connection_errors = self.connection_errors + 1
             sleep(1)  # Evita condiciones de carrera si lo ejecuta tras recibir la instancia.
@@ -95,71 +93,66 @@ class Session(metaclass=Singleton):
             LOGGER('Vamos a cambiar el servicio de regresion')
             self.stop()
             self.init_service()
-            LOGGER('listo. ahora vamos a probar otra vez.')
-        self.lock.release()  
+            LOGGER('listo. ahora vamos a probar otra vez.')  
 
     def maintenance(self):
-        # Guarda el data-set en el Clasificador cada cierto tiempo.
-        LOGGER('Save dataset on memory.')
-        with open('dataset.bin', 'wb') as f:
-            data, semaphore = self.get_data_set()
-            f.write(
-                data.SerializeToString()
-            )
-            semaphore()
+        # Obtiene una hash del dataset para saber si se han añadido datos.
+        actual_hash = self.SHA3_256(
+            value = self.data_set.SerializeToString()
+            ).hex()
+        self.LOGGER('Check if dataset was modified ' + actual_hash + self.data_set_hash)
+        if actual_hash != self.data_set_hash:
+            self.LOGGER('Perform other regresion.')
+            self.data_set_hash = actual_hash
+            
+            # Se evita crear condiciones de carrera.
+            self.dataset_lock.acquire()
+            data_set = solvers_dataset_pb2.DataSet()
+            data_set.CopyFrom(self.data_set)
+            self.dataset_lock.release()
 
-    # --> Grpc methods <--
+            if not self.onnx: self.onnx = onnx_pb2.ONNX()
+            self.LOGGER('..........')
+            try:
+                self.onnx.CopyFrom(
+                    self.iterate_regression(
+                        data_set = data_set
+                    )
+                )
+            except: raise Exception
+
+    def get_tensor(self) -> onnx_pb2.ONNX:
+        # No hay condiciones de carrera aunque lo reescriba en ese momento.
+        if self.onnx:
+            return self.onnx
+        else:
+            raise Exception
+
     # Add new data
     def add_data(self, new_data_set: solvers_dataset_pb2.DataSet) -> None:
-        self.semaphore.acquire()
-        while True:
-            try:
-                LOGGER('Send data to regresion.')
-                self.stub.AddDataSet(
-                    request=new_data_set,
-                    timeout=self.START_AVR_TIMEOUT
-                )
-                break
-            except (grpc.RpcError, TimeoutError) as e:
-                self.error_control(e)
-        self.semaphore.release()
+        self.dataset_lock.acquire()
+        for hash, solver_data in new_data_set.data.items():
+            if hash in self.data_set.data:
+                for cnf, data in solver_data.data.items():
+                    if cnf in self.data_set.data[hash].data:
+                        self.data_set.data[hash].data[cnf].score = sum([
+                            (self.data_set.data[hash].data[cnf].index * self.data_set.data[hash].data[cnf].score),
+                            data.index * data.score,
+                        ]) / (self.data_set.data[hash].data[cnf].index + data.index)
+                        self.data_set.data[hash].data[cnf].index = self.data_set.data[hash].data[cnf].index + data.index
+                        
+                    else:
+                        self.data_set.data[hash].data[cnf].CopyFrom(data)
+            else:
+                self.data_set.data[hash].CopyFrom(solver_data)
+        self.dataset_lock.release()
+        self.LOGGER('Dataset updated. ')
 
-    # Return the tensor from the grpc stream method.
-    def get_tensor(self) -> tuple: # return ONNX.
-        self.semaphore.acquire()
-        itents = 0
-        while itents < (self.CONNECTION_ERRORS - self.connection_errors):
-            try:
-                LOGGER('Get tensor from regresion.')
-                return self.stub.GetTensor(
-                    request=api_pb2.Empty(),
-                    timeout=self.START_AVR_TIMEOUT
-                ), lambda: self.semaphore.release()
-            except (TimeoutError) as e:
-                self.error_control(e)
-                itents += 1
-                # Si retorna se han  realizado demasiados intentos salta una excepción, 
-                # de lo contrario esperaría a una nueva instancia del Regresion, subirle 
-                # el dataset y que este dijera que no tiene el tensor.
-            except:
-                # Si retorna None salta una excepción al serializar.
-                break
-        self.semaphore.release()
-        raise Exception
+    # Hasta que se implemente AddTensor en el clasificador.
+    def get_data_set(self) -> solvers_dataset_pb2.DataSet:
+        return self.data_set
 
-
-    def get_data_set(self) -> tuple: # return DataSet
-        self.semaphore.acquire()
-        while True:
-            try:
-                LOGGER('Get dataset from regresion.')
-                return self.stub.GetDataSet(
-                    request = api_pb2.Empty(),
-                    timeout = self.START_AVR_TIMEOUT
-                ), lambda: self.semaphore.release()
-            except (grpc.RpcError, TimeoutError) as e:
-                self.error_control(e)
-
+    # Stream logs Grpc method.
     def stream_logs(self) -> Generator[api_pb2.File, None, None]:
         while True:
             try:
@@ -171,4 +164,12 @@ class Session(metaclass=Singleton):
             except (grpc.RpcError, TimeoutError) as e:
                 self.error_control(e)
         
-        
+    # Make regresion Grpc method.
+    def iterate_regression(self, data_set: solvers_dataset_pb2.DataSet) -> onnx_pb2.ONNX:
+        try:
+            return self.stub.MakeRegresion(
+                request = data_set,
+                timeout = self.START_AVR_TIMEOUT
+                )
+        except (grpc.RpcError, TimeoutError) as e:
+            self.error_control(e)

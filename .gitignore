@@ -3,8 +3,8 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,flask
 
 protodot
-dataset.bin
 config.json
+templates/
 
 ### Flask ###
 instance/*

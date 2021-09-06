@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0fregresion.proto\x1a\nonnx.proto\x1a\x15solvers_dataset.proto\"\x07\n\x05\x45mpty\"\x14\n\x04\x46ile\x12\x0c\n\x04\x66ile\x18\x01 \x01(\t2\xaa\x01\n\tRegresion\x12\x1f\n\nStreamLogs\x12\x06.Empty\x1a\x05.File\"\x00\x30\x01\x12(\n\tGetTensor\x12\x06.Empty\x1a\x11.tensor_onnx.ONNX\"\x00\x12(\n\nGetDataSet\x12\x06.Empty\x1a\x10.dataset.DataSet\"\x00\x12(\n\nAddDataSet\x12\x10.dataset.DataSet\x1a\x06.Empty\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\x0fregresion.proto\x1a\nonnx.proto\x1a\x15solvers_dataset.proto\"\x07\n\x05\x45mpty\"\x14\n\x04\x46ile\x12\x0c\n\x04\x66ile\x18\x01 \x01(\t2d\n\tRegresion\x12\x1f\n\nStreamLogs\x12\x06.Empty\x1a\x05.File\"\x00\x30\x01\x12\x36\n\rMakeRegresion\x12\x10.dataset.DataSet\x1a\x11.tensor_onnx.ONNX\"\x00\x62\x06proto3'
   ,
   dependencies=[onnx__pb2.DESCRIPTOR,solvers__dataset__pb2.DESCRIPTOR,])
 
@@ -111,8 +111,8 @@ _REGRESION = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=86,
-  serialized_end=256,
+  serialized_start=85,
+  serialized_end=185,
   methods=[
   _descriptor.MethodDescriptor(
     name='StreamLogs',
@@ -125,32 +125,12 @@ _REGRESION = _descriptor.ServiceDescriptor(
     create_key=_descriptor._internal_create_key,
   ),
   _descriptor.MethodDescriptor(
-    name='GetTensor',
-    full_name='Regresion.GetTensor',
+    name='MakeRegresion',
+    full_name='Regresion.MakeRegresion',
     index=1,
     containing_service=None,
-    input_type=_EMPTY,
-    output_type=onnx__pb2._ONNX,
-    serialized_options=None,
-    create_key=_descriptor._internal_create_key,
-  ),
-  _descriptor.MethodDescriptor(
-    name='GetDataSet',
-    full_name='Regresion.GetDataSet',
-    index=2,
-    containing_service=None,
-    input_type=_EMPTY,
-    output_type=solvers__dataset__pb2._DATASET,
-    serialized_options=None,
-    create_key=_descriptor._internal_create_key,
-  ),
-  _descriptor.MethodDescriptor(
-    name='AddDataSet',
-    full_name='Regresion.AddDataSet',
-    index=3,
-    containing_service=None,
     input_type=solvers__dataset__pb2._DATASET,
-    output_type=_EMPTY,
+    output_type=onnx__pb2._ONNX,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),

@@ -19,7 +19,6 @@ ENVS = {
     'GATEWAY_MAIN_DIR': '',
     'SAVE_TRAIN_DATA': 10,
     'MAINTENANCE_SLEEP_TIME': 60,
-    'MAINTENANCE_TIMES_FOR_EVERY_REGRESSION_MAINTAIN': 10,
     'SOLVER_PASS_TIMEOUT_TIMES': 5,
     'SOLVER_FAILED_ATTEMPTS': 5,
     'TRAIN_SOLVERS_TIMEOUT': 30,
@@ -75,12 +74,10 @@ if __name__ == "__main__":
 
         def Solve(self, request, context):
             try:
-                tensor, semaphore = _regresion.get_tensor()
                 solver_with_config = _get.cnf(
                     cnf = request,
-                    tensors = tensor
+                    tensors = _regresion.get_tensor()
                 )
-                semaphore()
             except:
                 LOGGER('Wait more for it, tensor is not ready yet. ')
                 return api_pb2.Empty()
@@ -92,9 +89,9 @@ if __name__ == "__main__":
             for i in range(5):
                 try:
                     return _solver.cnf(
-                        cnf=request,
-                        solver_config_id=solver_config_id,
-                        solver_with_config=solver_with_config
+                        cnf = request,
+                        solver_config_id = solver_config_id,
+                        solver_with_config = solver_with_config
                     )[0]
                 except Exception as e:
                     LOGGER(str(i) + ' ERROR SOLVING A CNF ON Solve ' + str(e))
@@ -127,9 +124,7 @@ if __name__ == "__main__":
             return api_pb2.Empty()
 
         def GetTensor(self, request, context):
-            tensor, semaphore = _regresion.get_tensor()
-            semaphore()
-            return tensor
+            return _regresion.get_tensor()
 
         def StartTrain(self, request, context):
             trainer.start()
@@ -166,9 +161,7 @@ if __name__ == "__main__":
             return api_pb2.Empty()
 
         def GetDataSet(self, request, context):
-            data, semaphore = _regresion.get_data_set()
-            semaphore()
-            return data
+            return _regresion.get_data_set()
         
         # Hasta que se implemente AddTensor.
         def AddDataSet(self, request, context):
