@@ -146,7 +146,7 @@ class Session(metaclass=Singleton):
             else:
                 self.data_set.data[hash].CopyFrom(solver_data)
         self.dataset_lock.release()
-        self.LOGGER('Dataset updated. ')
+        LOGGER('Dataset updated. ')
 
     # Hasta que se implemente AddTensor en el clasificador.
     def get_data_set(self) -> solvers_dataset_pb2.DataSet:
