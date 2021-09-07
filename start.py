@@ -1,5 +1,4 @@
 import logging, hyweb_pb2
-from threading import Thread
 from iterators import TimeoutIterator
 
 logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s')
@@ -44,7 +43,7 @@ if __name__ == "__main__":
     from threading import get_ident
     import grpc, api_pb2, api_pb2_grpc, solvers_dataset_pb2
     from concurrent import futures
-    from maintainer import maintainer
+
 
     # Read __config__ file.
     config = api_pb2.hyweb__pb2.ConfigurationFile()
@@ -53,7 +52,7 @@ if __name__ == "__main__":
     )    
 
     gateway_uri = get_grpc_uri(config.gateway)
-    ENVS['GATEWAY_MAIN_DIR'] = gateway_uri.ip+':'+str(gateway_uri.port)
+    ENVS['GATEWAY_MAIN_DIR'] = gateway_uri.ip+':'+str(gateway_uri.port)    
 
     """
     for env_var in config.config.enviroment_variables:
@@ -63,11 +62,9 @@ if __name__ == "__main__":
     """
 
     LOGGER('INIT START THREAD ' + str(get_ident()))
-      
     _regresion = regresion.Session(ENVS=ENVS)
     trainer = train.Session(ENVS=ENVS)
     _solver = _solve.Session(ENVS=ENVS)
-    Thread(target=maintainer, name='Maintainer', args=(ENVS, LOGGER, )).start()
 
 
     class SolverServicer(api_pb2_grpc.SolverServicer):

@@ -2,13 +2,13 @@ import threading
 from time import sleep
 from typing import Generator
 from singleton import Singleton
-from start import LOGGER, get_grpc_uri, DIR
+from start import LOGGER, SHA3_256, get_grpc_uri, DIR
 import grpc, solvers_dataset_pb2, api_pb2, gateway_pb2_grpc, regresion_pb2_grpc, gateway_pb2, onnx_pb2
 
 class Session(metaclass=Singleton):
 
     def __init__(self, ENVS) -> None:
-        self.tensor = None
+        self.onnx = None
         self.data_set = solvers_dataset_pb2.DataSet()
 
         with open(DIR + 'regresion.service', 'rb') as file:
@@ -20,6 +20,7 @@ class Session(metaclass=Singleton):
         self.GATEWAY_MAIN_DIR = ENVS['GATEWAY_MAIN_DIR']
         self.CONNECTION_ERRORS = ENVS['CONNECTION_ERRORS']
         self.START_AVR_TIMEOUT = ENVS['START_AVR_TIMEOUT']
+        self.TIME_FOR_EACH_LOOP = ENVS['TIME_FOR_EACH_REGRESSION_LOOP']
         
         self.gateway_stub = gateway_pb2_grpc.GatewayStub(
             grpc.insecure_channel(self.GATEWAY_MAIN_DIR)
@@ -32,6 +33,7 @@ class Session(metaclass=Singleton):
 
         # for maintain.
         self.data_set_hash = ""
+        threading.Thread(target=self.maintenance, name='Regresion').start()
     
     def service_extended(self):
         config = True
@@ -96,30 +98,33 @@ class Session(metaclass=Singleton):
             LOGGER('listo. ahora vamos a probar otra vez.')  
 
     def maintenance(self):
-        # Obtiene una hash del dataset para saber si se han añadido datos.
-        actual_hash = self.SHA3_256(
-            value = self.data_set.SerializeToString()
-            ).hex()
-        self.LOGGER('Check if dataset was modified ' + actual_hash + self.data_set_hash)
-        if actual_hash != self.data_set_hash:
-            self.LOGGER('Perform other regresion.')
-            self.data_set_hash = actual_hash
-            
-            # Se evita crear condiciones de carrera.
-            self.dataset_lock.acquire()
-            data_set = solvers_dataset_pb2.DataSet()
-            data_set.CopyFrom(self.data_set)
-            self.dataset_lock.release()
+        while True:
+            sleep(self.TIME_FOR_EACH_LOOP)
+            # Obtiene una hash del dataset para saber si se han añadido datos.
+            actual_hash = SHA3_256(
+                value = self.data_set.SerializeToString()
+                ).hex()
+            LOGGER('Check if dataset was modified ' + actual_hash + self.data_set_hash)
+            if actual_hash != self.data_set_hash:
+                LOGGER('Perform other regresion.')
+                self.data_set_hash = actual_hash
+                
+                # Se evita crear condiciones de carrera.
+                self.dataset_lock.acquire()
+                data_set = solvers_dataset_pb2.DataSet()
+                data_set.CopyFrom(self.data_set)
+                self.dataset_lock.release()
 
-            if not self.onnx: self.onnx = onnx_pb2.ONNX()
-            self.LOGGER('..........')
-            try:
-                self.onnx.CopyFrom(
-                    self.iterate_regression(
-                        data_set = data_set
+                if not self.onnx: self.onnx = onnx_pb2.ONNX()
+                LOGGER('..........')
+                try:
+                    self.onnx.CopyFrom(
+                        self.iterate_regression(
+                            data_set = data_set
+                        )
                     )
-                )
-            except: raise Exception
+                except Exception as e:
+                    LOGGER('Exception with regresion service, ' + str(e))
 
     def get_tensor(self) -> onnx_pb2.ONNX:
         # No hay condiciones de carrera aunque lo reescriba en ese momento.
@@ -168,8 +173,8 @@ class Session(metaclass=Singleton):
     def iterate_regression(self, data_set: solvers_dataset_pb2.DataSet) -> onnx_pb2.ONNX:
         try:
             return self.stub.MakeRegresion(
-                request = data_set,
-                timeout = self.START_AVR_TIMEOUT
+                request = data_set
                 )
         except (grpc.RpcError, TimeoutError) as e:
             self.error_control(e)
+            raise Exception

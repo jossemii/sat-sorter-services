@@ -159,6 +159,7 @@ class Session(metaclass=Singleton):
         self.solvers = {}
         self.gateway_stub = gateway_pb2_grpc.GatewayStub(grpc.insecure_channel(self.GATEWAY_MAIN_DIR))
         self.lock = Lock()
+        Thread(target=self.maintenance, name='Maintainer').start()
 
     def cnf(self, cnf, solver_config_id: str, timeout=None, solver_with_config=None):
         LOGGER(str(timeout) + 'cnf want solvers lock' + str(self.lock.locked()))
@@ -236,56 +237,58 @@ class Session(metaclass=Singleton):
             raise Exception
 
     def maintenance(self):
-        index = 0
-        while True:  # Si hacemos for solver in solvers habría que bloquear el bucle entero.
-            LOGGER('maintainer want solvers lock' + str(self.lock.locked()))
-            self.lock.acquire()
-            # Toma aqui el máximo tiempo de desuso para aprovechar el uso del lock.
-            max_disuse_time = max(
-                len(self.solvers) * self.TRAIN_SOLVERS_TIMEOUT,
-                self.MAINTENANCE_SLEEP_TIME
-            )
-            try:
-                solver_config = self.solvers[
-                    list(self.solvers)[index]
-                ]
-                index += 1
-                try:
-                    instance = solver_config.get_instance(deep=True)
-
-                    # Toma aqui el máximo tiempo de desuso para aprovechar el lock.
-                    # Si salta una excepción la variable no vuelve a ser usada.
-                    max_disuse_time = len(self.solvers) * self.TRAIN_SOLVERS_TIMEOUT * self.MAX_DISUSE_TIME_FACTOR
-                except IndexError:
-                    # No hay instancias disponibles en esta cola.
-                    self.lock.release()
-                    continue
-            except IndexError:
-                LOGGER('Se han recorrido todos los solvers.')
-                self.lock.release()
-                break
-            except Exception as e:
-                LOGGER('ERROR on maintainer, ' + str(e))
-                self.lock.release()
-                break
-            self.lock.release()
-
-            LOGGER('      maintain solver instance --> ' + str(instance))
-            # En caso de que lleve mas de demasiado tiempo sin usarse.
-            # o se encuentre en estado 'zombie'
-            if datetime.now() - instance.use_datetime > timedelta(
-                    minutes = max_disuse_time) \
-                    or instance.is_zombie(
-                self.SOLVER_PASS_TIMEOUT_TIMES,
-                self.TRAIN_SOLVERS_TIMEOUT,
-                self.SOLVER_FAILED_ATTEMPTS
-            ):
-                instance.stop(self.gateway_stub)
-            # En caso contrario añade de nuevo la instancia a su respectiva cola.
-            else:
+        while True:
+            sleep(self.MAINTENANCE_SLEEP_TIME)
+            index = 0
+            while True:  # Si hacemos for solver in solvers habría que bloquear el bucle entero.
+                LOGGER('maintainer want solvers lock' + str(self.lock.locked()))
                 self.lock.acquire()
-                solver_config.add_instance(instance, deep = True)
+                # Toma aqui el máximo tiempo de desuso para aprovechar el uso del lock.
+                max_disuse_time = max(
+                    len(self.solvers) * self.TRAIN_SOLVERS_TIMEOUT,
+                    self.MAINTENANCE_SLEEP_TIME
+                )
+                try:
+                    solver_config = self.solvers[
+                        list(self.solvers)[index]
+                    ]
+                    index += 1
+                    try:
+                        instance = solver_config.get_instance(deep=True)
+
+                        # Toma aqui el máximo tiempo de desuso para aprovechar el lock.
+                        # Si salta una excepción la variable no vuelve a ser usada.
+                        max_disuse_time = len(self.solvers) * self.TRAIN_SOLVERS_TIMEOUT * self.MAX_DISUSE_TIME_FACTOR
+                    except IndexError:
+                        # No hay instancias disponibles en esta cola.
+                        self.lock.release()
+                        continue
+                except IndexError:
+                    LOGGER('Se han recorrido todos los solvers.')
+                    self.lock.release()
+                    break
+                except Exception as e:
+                    LOGGER('ERROR on maintainer, ' + str(e))
+                    self.lock.release()
+                    break
                 self.lock.release()
+
+                LOGGER('      maintain solver instance --> ' + str(instance))
+                # En caso de que lleve mas de demasiado tiempo sin usarse.
+                # o se encuentre en estado 'zombie'
+                if datetime.now() - instance.use_datetime > timedelta(
+                        minutes = max_disuse_time) \
+                        or instance.is_zombie(
+                    self.SOLVER_PASS_TIMEOUT_TIMES,
+                    self.TRAIN_SOLVERS_TIMEOUT,
+                    self.SOLVER_FAILED_ATTEMPTS
+                ):
+                    instance.stop(self.gateway_stub)
+                # En caso contrario añade de nuevo la instancia a su respectiva cola.
+                else:
+                    self.lock.acquire()
+                    solver_config.add_instance(instance, deep = True)
+                    self.lock.release()
 
     def add_solver(self, solver_with_config: solvers_dataset_pb2.SolverWithConfig, solver_config_id: str):
         if solver_config_id != SHA3_256(
