@@ -12,7 +12,7 @@ _sym_db = _symbol_database.Default()
 
 
 import onnx_pb2 as onnx__pb2
-import hyweb_pb2 as hyweb__pb2
+import celaut_pb2 as celaut__pb2
 import solvers_dataset_pb2 as solvers__dataset__pb2
 
 
@@ -22,9 +22,9 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\tapi.proto\x12\x03\x61pi\x1a\nonnx.proto\x1a\x0bhyweb.proto\x1a\x15solvers_dataset.proto\"L\n\x0eInterpretation\x12\x10\n\x08variable\x18\x01 \x03(\x05\x12\x18\n\x0bsatisfiable\x18\x02 \x01(\x08H\x00\x88\x01\x01\x42\x0e\n\x0c_satisfiable\"\x19\n\x06\x43lause\x12\x0f\n\x07literal\x18\x01 \x03(\x05\"\"\n\x03\x43nf\x12\x1b\n\x06\x63lause\x18\x01 \x03(\x0b\x32\x0b.api.Clause\"\x07\n\x05\x45mpty\"\x14\n\x04\x46ile\x12\x0c\n\x04\x66ile\x18\x01 \x01(\t2-\n\x06Random\x12#\n\tRandomCnf\x12\n.api.Empty\x1a\x08.api.Cnf\"\x00\x32\x90\x03\n\x06Solver\x12&\n\nStartTrain\x12\n.api.Empty\x1a\n.api.Empty\"\x00\x12%\n\tStopTrain\x12\n.api.Empty\x1a\n.api.Empty\"\x00\x12,\n\tGetTensor\x12\n.api.Empty\x1a\x11.tensor_onnx.ONNX\"\x00\x12,\n\x0cUploadSolver\x12\x0e.hyweb.Service\x1a\n.api.Empty\"\x00\x12\'\n\nStreamLogs\x12\n.api.Empty\x1a\t.api.File\"\x00\x30\x01\x12(\n\x05Solve\x12\x08.api.Cnf\x1a\x13.api.Interpretation\"\x00\x12,\n\tAddTensor\x12\x11.tensor_onnx.ONNX\x1a\n.api.Empty\"\x00\x12,\n\nGetDataSet\x12\n.api.Empty\x1a\x10.dataset.DataSet\"\x00\x12,\n\nAddDataSet\x12\x10.dataset.DataSet\x1a\n.api.Empty\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\tapi.proto\x12\x03\x61pi\x1a\nonnx.proto\x1a\x0c\x63\x65laut.proto\x1a\x15solvers_dataset.proto\"L\n\x0eInterpretation\x12\x10\n\x08variable\x18\x01 \x03(\x05\x12\x18\n\x0bsatisfiable\x18\x02 \x01(\x08H\x00\x88\x01\x01\x42\x0e\n\x0c_satisfiable\"\x19\n\x06\x43lause\x12\x0f\n\x07literal\x18\x01 \x03(\x05\"\"\n\x03\x43nf\x12\x1b\n\x06\x63lause\x18\x01 \x03(\x0b\x32\x0b.api.Clause\"\x07\n\x05\x45mpty\"\x14\n\x04\x46ile\x12\x0c\n\x04\x66ile\x18\x01 \x01(\t2-\n\x06Random\x12#\n\tRandomCnf\x12\n.api.Empty\x1a\x08.api.Cnf\"\x00\x32\x91\x03\n\x06Solver\x12&\n\nStartTrain\x12\n.api.Empty\x1a\n.api.Empty\"\x00\x12%\n\tStopTrain\x12\n.api.Empty\x1a\n.api.Empty\"\x00\x12,\n\tGetTensor\x12\n.api.Empty\x1a\x11.tensor_onnx.ONNX\"\x00\x12-\n\x0cUploadSolver\x12\x0f.celaut.Service\x1a\n.api.Empty\"\x00\x12\'\n\nStreamLogs\x12\n.api.Empty\x1a\t.api.File\"\x00\x30\x01\x12(\n\x05Solve\x12\x08.api.Cnf\x1a\x13.api.Interpretation\"\x00\x12,\n\tAddTensor\x12\x11.tensor_onnx.ONNX\x1a\n.api.Empty\"\x00\x12,\n\nGetDataSet\x12\n.api.Empty\x1a\x10.dataset.DataSet\"\x00\x12,\n\nAddDataSet\x12\x10.dataset.DataSet\x1a\n.api.Empty\"\x00\x62\x06proto3'
   ,
-  dependencies=[onnx__pb2.DESCRIPTOR,hyweb__pb2.DESCRIPTOR,solvers__dataset__pb2.DESCRIPTOR,])
+  dependencies=[onnx__pb2.DESCRIPTOR,celaut__pb2.DESCRIPTOR,solvers__dataset__pb2.DESCRIPTOR,])
 
 
 
@@ -68,8 +68,8 @@ _INTERPRETATION = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=66,
-  serialized_end=142,
+  serialized_start=67,
+  serialized_end=143,
 )
 
 
@@ -100,8 +100,8 @@ _CLAUSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=144,
-  serialized_end=169,
+  serialized_start=145,
+  serialized_end=170,
 )
 
 
@@ -132,8 +132,8 @@ _CNF = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=171,
-  serialized_end=205,
+  serialized_start=172,
+  serialized_end=206,
 )
 
 
@@ -157,8 +157,8 @@ _EMPTY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=207,
-  serialized_end=214,
+  serialized_start=208,
+  serialized_end=215,
 )
 
 
@@ -189,8 +189,8 @@ _FILE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=216,
-  serialized_end=236,
+  serialized_start=217,
+  serialized_end=237,
 )
 
 _INTERPRETATION.oneofs_by_name['_satisfiable'].fields.append(
@@ -248,8 +248,8 @@ _RANDOM = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=238,
-  serialized_end=283,
+  serialized_start=239,
+  serialized_end=284,
   methods=[
   _descriptor.MethodDescriptor(
     name='RandomCnf',
@@ -274,8 +274,8 @@ _SOLVER = _descriptor.ServiceDescriptor(
   index=1,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=286,
-  serialized_end=686,
+  serialized_start=287,
+  serialized_end=688,
   methods=[
   _descriptor.MethodDescriptor(
     name='StartTrain',
@@ -312,7 +312,7 @@ _SOLVER = _descriptor.ServiceDescriptor(
     full_name='api.Solver.UploadSolver',
     index=3,
     containing_service=None,
-    input_type=hyweb__pb2._SERVICE,
+    input_type=celaut__pb2._SERVICE,
     output_type=_EMPTY,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,

@@ -11,7 +11,7 @@ from google.protobuf import symbol_database as _symbol_database
 _sym_db = _symbol_database.Default()
 
 
-import hyweb_pb2 as hyweb__pb2
+import celaut_pb2 as celaut__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
@@ -20,9 +20,9 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x15solvers_dataset.proto\x12\x07\x64\x61taset\x1a\x0bhyweb.proto\"$\n\x04\x44\x61ta\x12\r\n\x05score\x18\x01 \x01(\x02\x12\r\n\x05index\x18\x02 \x01(\x05\"\xd0\x01\n\x10SolverWithConfig\x12\"\n\ndefinition\x18\x01 \x01(\x0b\x32\x0e.hyweb.Service\x12P\n\x14\x65nviroment_variables\x18\x02 \x03(\x0b\x32\x32.dataset.SolverWithConfig.EnviromentVariablesEntry\x1a\x46\n\x18\x45nviromentVariablesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x19\n\x05value\x18\x02 \x01(\x0b\x32\n.hyweb.Any:\x02\x38\x01\"\xaa\x01\n\x0f\x44\x61taSetInstance\x12)\n\x06solver\x18\x01 \x01(\x0b\x32\x19.dataset.SolverWithConfig\x12\x30\n\x04\x64\x61ta\x18\x02 \x03(\x0b\x32\".dataset.DataSetInstance.DataEntry\x1a:\n\tDataEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x1c\n\x05value\x18\x02 \x01(\x0b\x32\r.dataset.Data:\x02\x38\x01\"z\n\x07\x44\x61taSet\x12(\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32\x1a.dataset.DataSet.DataEntry\x1a\x45\n\tDataEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\'\n\x05value\x18\x02 \x01(\x0b\x32\x18.dataset.DataSetInstance:\x02\x38\x01\x62\x06proto3'
+  serialized_pb=b'\n\x15solvers_dataset.proto\x12\x07\x64\x61taset\x1a\x0c\x63\x65laut.proto\"$\n\x04\x44\x61ta\x12\r\n\x05score\x18\x01 \x01(\x02\x12\r\n\x05index\x18\x02 \x01(\x05\"\xd2\x01\n\x10SolverWithConfig\x12#\n\ndefinition\x18\x01 \x01(\x0b\x32\x0f.celaut.Service\x12P\n\x14\x65nviroment_variables\x18\x02 \x03(\x0b\x32\x32.dataset.SolverWithConfig.EnviromentVariablesEntry\x1aG\n\x18\x45nviromentVariablesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x1a\n\x05value\x18\x02 \x01(\x0b\x32\x0b.celaut.Any:\x02\x38\x01\"\xaa\x01\n\x0f\x44\x61taSetInstance\x12)\n\x06solver\x18\x01 \x01(\x0b\x32\x19.dataset.SolverWithConfig\x12\x30\n\x04\x64\x61ta\x18\x02 \x03(\x0b\x32\".dataset.DataSetInstance.DataEntry\x1a:\n\tDataEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x1c\n\x05value\x18\x02 \x01(\x0b\x32\r.dataset.Data:\x02\x38\x01\"z\n\x07\x44\x61taSet\x12(\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32\x1a.dataset.DataSet.DataEntry\x1a\x45\n\tDataEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\'\n\x05value\x18\x02 \x01(\x0b\x32\x18.dataset.DataSetInstance:\x02\x38\x01\x62\x06proto3'
   ,
-  dependencies=[hyweb__pb2.DESCRIPTOR,])
+  dependencies=[celaut__pb2.DESCRIPTOR,])
 
 
 
@@ -61,8 +61,8 @@ _DATA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=47,
-  serialized_end=83,
+  serialized_start=48,
+  serialized_end=84,
 )
 
 
@@ -100,8 +100,8 @@ _SOLVERWITHCONFIG_ENVIROMENTVARIABLESENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=224,
-  serialized_end=294,
+  serialized_start=226,
+  serialized_end=297,
 )
 
 _SOLVERWITHCONFIG = _descriptor.Descriptor(
@@ -138,8 +138,8 @@ _SOLVERWITHCONFIG = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=86,
-  serialized_end=294,
+  serialized_start=87,
+  serialized_end=297,
 )
 
 
@@ -177,8 +177,8 @@ _DATASETINSTANCE_DATAENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=409,
-  serialized_end=467,
+  serialized_start=412,
+  serialized_end=470,
 )
 
 _DATASETINSTANCE = _descriptor.Descriptor(
@@ -215,8 +215,8 @@ _DATASETINSTANCE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=297,
-  serialized_end=467,
+  serialized_start=300,
+  serialized_end=470,
 )
 
 
@@ -254,8 +254,8 @@ _DATASET_DATAENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=522,
-  serialized_end=591,
+  serialized_start=525,
+  serialized_end=594,
 )
 
 _DATASET = _descriptor.Descriptor(
@@ -285,13 +285,13 @@ _DATASET = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=469,
-  serialized_end=591,
+  serialized_start=472,
+  serialized_end=594,
 )
 
-_SOLVERWITHCONFIG_ENVIROMENTVARIABLESENTRY.fields_by_name['value'].message_type = hyweb__pb2._ANY
+_SOLVERWITHCONFIG_ENVIROMENTVARIABLESENTRY.fields_by_name['value'].message_type = celaut__pb2._ANY
 _SOLVERWITHCONFIG_ENVIROMENTVARIABLESENTRY.containing_type = _SOLVERWITHCONFIG
-_SOLVERWITHCONFIG.fields_by_name['definition'].message_type = hyweb__pb2._SERVICE
+_SOLVERWITHCONFIG.fields_by_name['definition'].message_type = celaut__pb2._SERVICE
 _SOLVERWITHCONFIG.fields_by_name['enviroment_variables'].message_type = _SOLVERWITHCONFIG_ENVIROMENTVARIABLESENTRY
 _DATASETINSTANCE_DATAENTRY.fields_by_name['value'].message_type = _DATA
 _DATASETINSTANCE_DATAENTRY.containing_type = _DATASETINSTANCE

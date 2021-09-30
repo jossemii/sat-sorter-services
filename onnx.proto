@@ -7,14 +7,14 @@
 // Licensed under the MIT license.
 
 syntax = "proto2";
-import "hyweb.proto";
+import "celaut.proto";
 
 package tensor_onnx;
 
 message ONNX {
-  required hyweb.Tensor specification = 1;
+  required celaut.Tensor specification = 1;
   message ONNXTensor {
-      optional hyweb.Any element = 1;
+      optional celaut.Any element = 1;
       required ModelProto model = 2;
   }
   repeated ONNXTensor tensor = 2;

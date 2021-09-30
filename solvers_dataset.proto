@@ -1,5 +1,5 @@
 syntax = "proto3";
-import "hyweb.proto";
+import "celaut.proto";
 
 package dataset;
 
@@ -9,8 +9,8 @@ message Data {
 }
 
 message SolverWithConfig {
-    hyweb.Service definition = 1;
-    map<string, hyweb.Any> enviroment_variables = 2;
+    celaut.Service definition = 1;
+    map<string, celaut.Any> enviroment_variables = 2;
 }
 
 message DataSetInstance {

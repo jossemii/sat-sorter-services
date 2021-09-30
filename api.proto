@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 import "onnx.proto";
-import "hyweb.proto";
+import "celaut.proto";
 import "solvers_dataset.proto";
 
 package api;
@@ -40,7 +40,7 @@ service Solver {
     rpc StartTrain ( Empty) returns (Empty) {}
     rpc StopTrain ( Empty) returns (Empty) {}
     rpc GetTensor ( Empty) returns (tensor_onnx.ONNX) {}
-    rpc UploadSolver ( hyweb.Service) returns (Empty) {}
+    rpc UploadSolver ( celaut.Service) returns (Empty) {}
     rpc StreamLogs (Empty) returns (stream File){}
     rpc Solve(Cnf) returns (Interpretation) {}
     rpc AddTensor( tensor_onnx.ONNX) returns (Empty) {}
