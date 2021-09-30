@@ -22,7 +22,7 @@ class Session(metaclass=Singleton):
         self.thread = None
         self.gateway_stub = gateway_pb2_grpc.GatewayStub(grpc.insecure_channel(self.GATEWAY_MAIN_DIR))
         with open(DIR + 'random.service', 'rb') as file:
-            self.random_def = gateway_pb2.hyweb__pb2.Service()
+            self.random_def = gateway_pb2.celaut__pb2.Service()
             self.random_def.ParseFromString(file.read())
 
         self.random_stub = None
@@ -36,7 +36,7 @@ class Session(metaclass=Singleton):
         self._regresion = regresion.Session(ENVS=ENVS)  # Using singleton pattern.
 
         # Random CNF Service.
-        self.random_config = gateway_pb2.hyweb__pb2.Configuration()
+        self.random_config = gateway_pb2.celaut__pb2.Configuration()
 
     def stop_random(self):
         LOGGER('Stopping random service.')
@@ -66,12 +66,12 @@ class Session(metaclass=Singleton):
             self.do_stop = False
             self.thread = None
 
-    def load_solver(self, solver: solvers_dataset_pb2.hyweb__pb2.Service) -> None:
+    def load_solver(self, solver: solvers_dataset_pb2.celaut__pb2.Service) -> None:
         # Se puede cargar un solver sin estar completo, 
         #  pero debe de contener si o si la sha3-256
         #  ya que el servicio no la calculará (ni comprobará).
 
-        for h in solver.hashtag.hash:
+        for h in solver.metadata.hash:
             if h.type == SHA3_256_ID:
                 hash = h.value.hex()
 
@@ -101,7 +101,7 @@ class Session(metaclass=Singleton):
     def random_service_extended(self):
         config = True
         transport = gateway_pb2.ServiceTransport()
-        for hash in self.random_def.hashtag.hash:
+        for hash in self.random_def.metadata.hash:
             transport.hash.CopyFrom(hash)
             if config:  # Solo hace falta enviar la configuracion en el primer paquete.
                 transport.config.CopyFrom(self.random_config)

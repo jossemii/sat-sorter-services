@@ -12,9 +12,9 @@ class Session(metaclass=Singleton):
         self.data_set = solvers_dataset_pb2.DataSet()
 
         with open(DIR + 'regresion.service', 'rb') as file:
-            self.definition = gateway_pb2.hyweb__pb2.Service()
+            self.definition = gateway_pb2.celaut__pb2.Service()
             self.definition.ParseFromString(file.read())
-        self.config = gateway_pb2.hyweb__pb2.Configuration()  
+        self.config = gateway_pb2.celaut__pb2.Configuration()  
 
         # set used envs on variables.       
         self.GATEWAY_MAIN_DIR = ENVS['GATEWAY_MAIN_DIR']
@@ -38,7 +38,7 @@ class Session(metaclass=Singleton):
     def service_extended(self):
         config = True
         transport = gateway_pb2.ServiceTransport()
-        for hash in self.definition.hashtag.hash:
+        for hash in self.definition.metadata.hash:
             transport.hash.CopyFrom(hash)
             if config:  # Solo hace falta enviar la configuracion en el primer paquete.
                 transport.config.CopyFrom(self.config)

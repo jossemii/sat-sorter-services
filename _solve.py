@@ -80,11 +80,11 @@ class SolverInstance(object):
 
 class SolverConfig(object):
     def __init__(self, solver_with_config: solvers_dataset_pb2.SolverWithConfig):
-        self.service_def = gateway_pb2.hyweb__pb2.Service()
+        self.service_def = gateway_pb2.celaut__pb2.Service()
         self.service_def.CopyFrom(solver_with_config.definition)
 
         # Configuration.
-        self.config = gateway_pb2.hyweb__pb2.Configuration()
+        self.config = gateway_pb2.celaut__pb2.Configuration()
         self.config.enviroment_variables.update(solver_with_config.enviroment_variables)
 
         self.instances = []  # se da uso de una pila para que el 'maintainer' detecte las instancias que quedan en desuso,
@@ -93,7 +93,7 @@ class SolverConfig(object):
     def service_extended(self):
         config = True
         transport = gateway_pb2.ServiceTransport()
-        for hash in self.service_def.hashtag.hash:
+        for hash in self.service_def.metadata.hash:
             transport.hash.CopyFrom(hash)
             if config:  # Solo hace falta enviar la configuracion en el primer paquete.
                 transport.config.CopyFrom(self.config)
@@ -105,7 +105,7 @@ class SolverConfig(object):
         yield transport
 
     def launch_instance(self, gateway_stub) -> SolverInstance:
-        LOGGER('    launching new instance for solver ' + str(self.service_def.hashtag.hash[0].value.hex()))
+        LOGGER('    launching new instance for solver ' + str(self.service_def.metadata.hash[0].value.hex()))
         while True:
             try:
                 instance = gateway_stub.StartService(self.service_extended()) # Sin timeout, por si tiene que construirlo.
@@ -118,7 +118,7 @@ class SolverConfig(object):
         except Exception as e:
             LOGGER(str(e))
             raise e
-        LOGGER('THE URI FOR THE SOLVER ' + str(self.service_def.hashtag.hash[0].value.hex()) + ' is--> ' + str(uri))
+        LOGGER('THE URI FOR THE SOLVER ' + str(self.service_def.metadata.hash[0].value.hex()) + ' is--> ' + str(uri))
 
         return SolverInstance(
             stub = api_pb2_grpc.SolverStub(
@@ -135,7 +135,7 @@ class SolverConfig(object):
 
     def get_instance(self, deep=False) -> SolverInstance:
         LOGGER('Get an instance of. deep ' + str(deep))
-        LOGGER('The solver ' + self.service_def.hashtag.hash[0].value.hex() + ' has ' + str(len(self.instances)) + ' instances.')
+        LOGGER('The solver ' + self.service_def.metadata.hash[0].value.hex() + ' has ' + str(len(self.instances)) + ' instances.')
         try:
             return self.instances.pop() if not deep else self.instances.pop(0)
         except IndexError:
@@ -304,4 +304,4 @@ class Session(metaclass=Singleton):
             )
         })
         self.lock.release()
-        LOGGER('ADDED NEW SOLVER ' + str(solver_config_id) + ' \ndef_ids -> ' +  str(solver_with_config.definition.hashtag.hash[0].value.hex()))
+        LOGGER('ADDED NEW SOLVER ' + str(solver_config_id) + ' \ndef_ids -> ' +  str(solver_with_config.definition.metadata.hash[0].value.hex()))

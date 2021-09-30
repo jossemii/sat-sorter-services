@@ -1,13 +1,13 @@
-import logging, hyweb_pb2
+import logging, celaut_pb2
 from iterators import TimeoutIterator
 
 logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s')
 LOGGER = lambda message: logging.getLogger().debug(message + '\n')
 DIR = '/satsorter/'
 
-def get_grpc_uri(instance: hyweb_pb2.Instance) -> hyweb_pb2.Instance.Uri:
+def get_grpc_uri(instance: celaut_pb2.Instance) -> celaut_pb2.Instance.Uri:
     for slot in instance.api.slot:
-        if 'grpc' in slot.transport_protocol.hashtag.tag and 'http2' in slot.transport_protocol.hashtag.tag:
+        if 'grpc' in slot.transport_protocol.metadata.tag and 'http2' in slot.transport_protocol.metadata.tag:
             # If the protobuf lib. supported map for this message it could be O(n).
             for uri_slot in instance.uri_slot:
                 if uri_slot.internal_port == slot.port:
@@ -46,19 +46,19 @@ if __name__ == "__main__":
 
 
     # Read __config__ file.
-    config = api_pb2.hyweb__pb2.ConfigurationFile()
+    config = api_pb2.celaut__pb2.ConfigurationFile()
     config.ParseFromString(
         open('/__config__', 'rb').read()
     )    
 
     gateway_uri = get_grpc_uri(config.gateway)
-    ENVS['GATEWAY_MAIN_DIR'] = gateway_uri.ip+':'+str(gateway_uri.port)    
+    ENVS['GATEWAY_MAIN_DIR'] = gateway_uri.ip+':'+str(gateway_uri.port)
 
     """
     for env_var in config.config.enviroment_variables:
         ENVS[env_var] = type(ENVS[env_var])(
             config.config.enviroment_variables[env_var].value
-            )     
+            )
     """
 
     LOGGER('INIT START THREAD ' + str(get_ident()))
