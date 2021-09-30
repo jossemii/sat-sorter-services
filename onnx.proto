@@ -14,7 +14,7 @@ package tensor_onnx;
 message ONNX {
   required celaut.Tensor specification = 1;
   message ONNXTensor {
-      optional celaut.Any element = 1;
+      repeated celaut.Any element = 1; // Combination of non-escalar dimension elements.
       required ModelProto model = 2;
   }
   repeated ONNXTensor tensor = 2;
