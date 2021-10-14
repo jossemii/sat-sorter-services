@@ -9,8 +9,9 @@ message Data {
 }
 
 message SolverWithConfig {
-    celaut.Service definition = 1;
-    map<string, bytes> enviroment_variables = 2;
+    celaut.Any.Metadata meta = 1;
+    celaut.Service definition = 2;
+    map<string, bytes> enviroment_variables = 3;
 }
 
 message DataSetInstance {

@@ -2,7 +2,7 @@ import regresion
 from threading import get_ident, Thread, Lock
 import grpc
 from time import sleep
-import api_pb2, api_pb2_grpc, solvers_dataset_pb2, gateway_pb2, gateway_pb2_grpc
+import api_pb2, api_pb2_grpc, solvers_dataset_pb2, gateway_pb2, gateway_pb2_grpc, celaut_pb2 as celaut
 from singleton import Singleton
 import _solve
 from start import LOGGER, DIR, SHA3_256, SHA3_256_ID, get_grpc_uri
@@ -22,8 +22,12 @@ class Session(metaclass=Singleton):
         self.thread = None
         self.gateway_stub = gateway_pb2_grpc.GatewayStub(grpc.insecure_channel(self.GATEWAY_MAIN_DIR))
         with open(DIR + 'random.service', 'rb') as file:
-            self.random_def = gateway_pb2.celaut__pb2.Service()
-            self.random_def.ParseFromString(file.read())
+            any = celaut.Any()
+            any.ParseFromString(file.read())
+
+        self.random_def = celaut.Service()
+        self.random_def.ParseFromString(any.value)
+        self.random_meta = any.metadata
 
         self.random_stub = None
         self.random_token = None
@@ -36,7 +40,7 @@ class Session(metaclass=Singleton):
         self._regresion = regresion.Session(ENVS=ENVS)  # Using singleton pattern.
 
         # Random CNF Service.
-        self.random_config = gateway_pb2.celaut__pb2.Configuration()
+        self.random_config = celaut.Configuration()
 
     def stop_random(self):
         LOGGER('Stopping random service.')
@@ -71,7 +75,7 @@ class Session(metaclass=Singleton):
         #  pero debe de contener si o si la sha3-256
         #  ya que el servicio no la calculará (ni comprobará).
 
-        for h in solver.metadata.hash:
+        for h in solver.metadata.hashtag.hash:
             if h.type == SHA3_256_ID:
                 hash = h.value.hex()
 
@@ -101,7 +105,7 @@ class Session(metaclass=Singleton):
     def random_service_extended(self):
         config = True
         transport = gateway_pb2.ServiceTransport()
-        for hash in self.random_def.metadata.hash:
+        for hash in self.random_meta.hashtag.hash:
             transport.hash.CopyFrom(hash)
             if config:  # Solo hace falta enviar la configuracion en el primer paquete.
                 transport.config.CopyFrom(self.random_config)
@@ -109,7 +113,8 @@ class Session(metaclass=Singleton):
             yield transport
         transport.ClearField('hash')
         if config: transport.config.CopyFrom(self.random_config)
-        transport.service.CopyFrom(self.random_def)
+        transport.service.service.CopyFrom(self.random_def)
+        transport.service.meta.CopyFrom(self.random_meta)
         yield transport
 
     def init_random_cnf_service(self):

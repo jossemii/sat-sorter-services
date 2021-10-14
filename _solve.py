@@ -1,12 +1,10 @@
 from time import sleep, time as time_now
 from datetime import datetime, timedelta
-from threading import Thread, Lock, get_ident
+from threading import Thread, Lock
 
-from google.protobuf.descriptor import Error
+import grpc
 
-import grpc, hashlib
-
-import api_pb2, api_pb2_grpc, gateway_pb2, gateway_pb2_grpc, solvers_dataset_pb2
+import api_pb2, api_pb2_grpc, gateway_pb2, gateway_pb2_grpc, solvers_dataset_pb2, celaut_pb2 as celaut
 from singleton import Singleton
 from start import LOGGER, SHA3_256, get_grpc_uri
 
@@ -80,20 +78,26 @@ class SolverInstance(object):
 
 class SolverConfig(object):
     def __init__(self, solver_with_config: solvers_dataset_pb2.SolverWithConfig):
-        self.service_def = gateway_pb2.celaut__pb2.Service()
+        # Service definition.
+        self.service_def = celaut.Service()
         self.service_def.CopyFrom(solver_with_config.definition)
 
-        # Configuration.
-        self.config = gateway_pb2.celaut__pb2.Configuration()
+        # Service metadata.
+        self.service_metadata = celaut.Any.Metadata()
+        self.service_metadata.CopyFrom(solver_with_config.meta)
+
+        # Service configuration.
+        self.config = celaut.Configuration()
         self.config.enviroment_variables.update(solver_with_config.enviroment_variables)
 
+        # Service's instances.
         self.instances = []  # se da uso de una pila para que el 'maintainer' detecte las instancias que quedan en desuso,
         #  ya que quedarán estancadas al final de la pila.
 
     def service_extended(self):
         config = True
         transport = gateway_pb2.ServiceTransport()
-        for hash in self.service_def.metadata.hash:
+        for hash in self.service_metadata.hashtag.hash:
             transport.hash.CopyFrom(hash)
             if config:  # Solo hace falta enviar la configuracion en el primer paquete.
                 transport.config.CopyFrom(self.config)
@@ -101,11 +105,12 @@ class SolverConfig(object):
             yield transport
         transport.ClearField('hash')
         if config: transport.config.CopyFrom(self.config)
-        transport.service.CopyFrom(self.service_def)
+        transport.service.service.CopyFrom(self.service_def)
+        transport.service.meta.CopyFrom(self.service_metadata)
         yield transport
 
     def launch_instance(self, gateway_stub) -> SolverInstance:
-        LOGGER('    launching new instance for solver ' + str(self.service_def.metadata.hash[0].value.hex()))
+        LOGGER('    launching new instance for solver ' + str(self.service_metadata.hashtag.hash[0].value.hex()))
         while True:
             try:
                 instance = gateway_stub.StartService(self.service_extended()) # Sin timeout, por si tiene que construirlo.
@@ -118,7 +123,7 @@ class SolverConfig(object):
         except Exception as e:
             LOGGER(str(e))
             raise e
-        LOGGER('THE URI FOR THE SOLVER ' + str(self.service_def.metadata.hash[0].value.hex()) + ' is--> ' + str(uri))
+        LOGGER('THE URI FOR THE SOLVER ' + str(self.service_metadata.hashtag.hash[0].value.hex()) + ' is--> ' + str(uri))
 
         return SolverInstance(
             stub = api_pb2_grpc.SolverStub(
@@ -135,7 +140,7 @@ class SolverConfig(object):
 
     def get_instance(self, deep=False) -> SolverInstance:
         LOGGER('Get an instance of. deep ' + str(deep))
-        LOGGER('The solver ' + self.service_def.metadata.hash[0].value.hex() + ' has ' + str(len(self.instances)) + ' instances.')
+        LOGGER('The solver ' + self.service_metadata.hashtag.hash[0].value.hex() + ' has ' + str(len(self.instances)) + ' instances.')
         try:
             return self.instances.pop() if not deep else self.instances.pop(0)
         except IndexError:
@@ -143,7 +148,7 @@ class SolverConfig(object):
             raise IndexError
 
 
-class Session(metaclass=Singleton):
+class Session(metaclass = Singleton):
 
     def __init__(self, ENVS: dict):
 
@@ -292,7 +297,7 @@ class Session(metaclass=Singleton):
 
     def add_solver(self, solver_with_config: solvers_dataset_pb2.SolverWithConfig, solver_config_id: str):
         if solver_config_id != SHA3_256(
-            value = solver_with_config.SerializeToString()
+            value = solver_with_config.SerializeToString() # The service not touch metadata, so it can use the hash for id.
         ).hex():
             LOGGER('Solver config not valid ', solver_with_config, solver_config_id)
             raise Exception('Solver config not valid ', solver_with_config, solver_config_id)

@@ -44,7 +44,7 @@ class Session(metaclass = Singleton):
     def service_extended(self):
         config = True
         transport = gateway_pb2.ServiceTransport()
-        for hash in self.definition.metadata.hashtag.hash:
+        for hash in self.metadata.hashtag.hash:
             transport.hash.CopyFrom(hash)
             if config:  # Solo hace falta enviar la configuracion en el primer paquete.
                 transport.config.CopyFrom(self.config)

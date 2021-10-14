@@ -4,7 +4,7 @@ import onnxruntime as rt
 import api_pb2
 import onnx_pb2
 import solvers_dataset_pb2
-from start import DIR, LOGGER
+from start import LOGGER
 
 
 def get_score(model: onnx_pb2.ModelProto, _cnf: dict) -> float:
@@ -38,7 +38,7 @@ def cnf(cnf: api_pb2.Cnf, tensors: onnx_pb2.ONNX) -> solvers_dataset_pb2.SolverW
         if not best_score or best_score < score:
             LOGGER('     now is the best score.')
             best_score = score
-            best_solver_bytes = tensor.element.value
+            best_solver_bytes = tensor.element
     LOGGER('GET CNF finished process.')
     best_solver = solvers_dataset_pb2.SolverWithConfig()
     best_solver.ParseFromString(best_solver_bytes)
