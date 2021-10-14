@@ -3,7 +3,6 @@
 //       CEL•AUT•WEB
 //  -----------------------
 //  -----------------------
-
 syntax = "proto3";
 package celaut;
 
@@ -11,18 +10,26 @@ package celaut;
 //  -----------------------
 //  DEFINITIONS.
 //  -----------------------
-message PrimitiveDef {
-    repeated string tag = 1; // INT32, ...
-    optional string regex = 2; // {0-10}, ...
-    // Primitive specification can be applied. <- must be optional
-}
-
-message EnumDef {
-    repeated string tag = 1;
-    map<string, int32> value = 2;
-}
 
 message FieldDef {
+    message PrimitiveDef {
+        optional string regex = 1;  // {0-10}, ...
+        // Primitive specification can be applied. <- must be optional
+    }
+    message EnumDef {
+        map<string, int32> value = 1;
+    }
+    message MessageDef {
+        message ParamDef {
+            FieldDef field = 1;
+            bool repeated = 2;
+        }
+        message OneofDef {
+            repeated int32 index = 1;
+        }
+        map<int32, ParamDef> param = 1;
+        repeated OneofDef oneof = 2; // have a list of oneof's params' index.
+    }
     oneof value{
         MessageDef message = 1;
         PrimitiveDef primitive = 2;
@@ -30,133 +37,90 @@ message FieldDef {
     }
 }
 
-message ParamDef {
-    int32 index = 1;
-    repeated string tag = 2;
-    // In order to avoid loops, 
-    // in the definition of a message only
-    // the sub-messages must be fully 
-    // specified the first time they appear,
-    // if they are repeated again only the tags are added.
-    FieldDef field = 3;
-    bool repeated = 4;
-    bool optional = 5;
-}
-
-message OneofDef {
-    repeated int32 index = 1;
-}
-
-message MessageDef {
-    repeated string tag = 1;
-    repeated ParamDef param = 2;
-    repeated OneofDef oneof = 3; // have a list of oneof's params' index.
-}
-
-message MethodDef {
-    int32 index = 1;
-    repeated string tag = 2;
-    FieldDef input_message = 3;
-    bool is_input_stream = 4;
-    FieldDef output_message = 5;
-    bool is_output_stream = 6;
-}
-
-message ApplicationDef {
-    repeated string tag = 1;
-    repeated MethodDef method = 2; // Exemple of method call: 8080.1()
-}
-
 message Any {
-    bytes value = 1;
-    Metadata metadata = 15;
+    message Metadata {
+        message HashTag {
+            message Hash {
+                bytes type = 1;
+                bytes value = 2;
+            }
+            message AttrHashTag {
+                int32 key = 1;  // the attribute's index. 
+                repeated HashTag value = 2;  // HashTag, if it's a repeated field, the HashTags of every one.
+            }
+            repeated Hash hash = 1;
+            repeated string tag = 2;
+            repeated AttrHashTag attr_hashtag = 3; // List of metadata fields. Ordened by indexes defined on format.
+        }
+        optional HashTag hashtag = 1;
+        optional FieldDef format = 2;
+        optional bool complete = 3;
+    }
+    optional Metadata metadata = 1;
+    bytes value = 2;
 }
 
 
 //  -----------------------
 //  SERVICE SPECIFICATION.
 //  -----------------------
-
-//  It's used for give the option to prune the specification
-//  using hash identifiers or key words (tags).
-//  And it's used for define the field.
-//  Index 15 is the maximum that use only 1 byte.
-//  It is the only attribute that is not taken into account when calculating the hash id.
-message Metadata {
-    message Hash {
-        bytes type = 1;
-        bytes value = 2;
-    }
-    repeated Hash hash = 1;
-    repeated string tag = 2;
-    optional FieldDef format = 3;
-}
-
-// API: Defines how you can interact with the service, the ports where it listens, the communication protocols that it supports, methods and the different errors and responses that it can give.
-message ProtocolMesh {
-    Metadata metadata = 15;
-    // Mesh specification can be applied. <- must be optional
-}
-
-message Slot {
-    int32 port = 1;
-    ProtocolMesh transport_protocol = 2;
-}
-
-message Api{
-    ApplicationDef app_protocol = 1;
-    repeated Slot slot = 2;
-    // Cost function can be applied. <- must be optional (index 3).
-}
-
-// Container: Specifies the container where the service runs, microarchitecture, entry point and filesystem (DAG?), and environment variables.
-message Architecture {
-    Metadata metadata = 15;
-    // Architecture specification can be applied. <- must be optional.
-}
-
-message ItemBranch { 
-    oneof item {
-        Any file = 1;
-        string link = 2;
-        Filesystem filesystem = 3;
-    }
-    string name = 4; // id for path
-}
-
-message Filesystem {
-    repeated ItemBranch branch = 1;
-    Metadata metadata = 15;
-}
-
-message Container {
-    Architecture architecture = 1;
-    Filesystem filesystem = 2;
-    map<string, FieldDef> enviroment_variables = 3;
-    string entrypoint = 4;
-}
-
-// Tensor: Defines the “intelligence” that the service can provide, I think it would be a description of a polynomial (without coefficients and describing the variables).
-message Tensor {
-    Metadata metadata = 15;
-    message Index {
-        string id = 1;
-        FieldDef field = 2;
-        Metadata metadata = 15;
-    }
-    repeated Index index = 1;
-    int32 rank = 2;
-}
-
-// Ledger: Defines the database that the service can provide.
-message Ledger {
-    Metadata metadata = 15;
-    // Ledger specification can be applied. <- must be optional
-    //  it would be a class diagram and a consensus algorithm.
-}
-
 message Service {
-    Metadata metadata = 15;
+    // API: Defines how you can interact with the service, the ports where it listens, the communication protocols that it supports, methods and the different errors and responses that it can give.
+    message Api {
+        message AppDef {
+            message MethodDef {
+                FieldDef input = 1;
+                FieldDef output = 2;
+            }
+            map<string, MethodDef> method = 1; // Exemple of method call: 8080.1()
+        }
+        message Slot {
+            int32 port = 1;
+            bytes transport_protocol = 2;
+        }
+        AppDef app_protocol = 1;
+        repeated Slot slot = 2;
+        // Cost function can be applied. <- must be optional (index 3).
+    }
+
+    // Container:  Specifies the container where the service runs, microarchitecture, entry point and filesystem (DAG?), and environment variables.
+    message Container {
+        message Filesystem {
+            message ItemBranch {
+                string name = 1; // id for path
+                oneof item {
+                    bytes file = 2;
+                    string link = 3;
+                    Filesystem filesystem = 4;
+                }
+            }
+            repeated ItemBranch branch = 1;
+        }
+        bytes architecture = 1;
+        Filesystem filesystem = 2;
+        map<string, FieldDef> enviroment_variables = 3;
+        string entrypoint = 4;
+    }
+
+    // Tensor:  Defines the “intelligence” that the service can provide, I think it would be a description of a polynomial (without coefficients and describing the variables).
+    message Tensor {
+        map<string, FieldDef> index = 1;
+        int32 rank = 2;
+    }
+
+    // Ledger:  Defines the database that the service can provide.
+    message Ledger {
+        message ClassDiagram {
+            message RelationDef {
+                FieldDef field = 1;
+                string relation = 2;  // {0-10}, * ...
+            }
+            map<int32, RelationDef> clases = 1;
+        }
+        ClassDiagram class_diagram = 1;
+        optional bytes consensus_protocol = 2; // Can've no consensus.
+    }
+
     Container container = 1;
     Api api = 2;
     Tensor tensor = 3;
@@ -177,9 +141,8 @@ message Instance {
         int32 internal_port = 1;
         repeated Uri uri = 2;
     }
-    Api api = 1;
-    repeated Uri_Slot uri_slot = 2; // map like [ 8080 -> 192.17.0.4:6899, ]
-    Metadata metadata = 15;
+    Service.Api api = 1;
+    repeated Uri_Slot uri_slot = 2; // map like [ 8080 -> 192.17.0.4:6899, 
 }
 
 
@@ -187,12 +150,13 @@ message Instance {
 //  SERVICE INITIAL CONFIGURATION.
 //  -------------------------------
 // The __config__ file is mounted on each service on the filesystem's root.
+
 message Configuration {
-    map<string, Any> enviroment_variables = 1;
-    map<int32, ProtocolMesh> spec_slot = 2; // Only some of the specified ports and a protocol-submesh subgroup of the protocol-submesh of each slot.    
+    map<string, bytes> enviroment_variables = 1;
+    repeated int32 spec_slot = 2;
 }
 
-message ConfigurationFile{
+message ConfigurationFile {
     Instance gateway = 1;
     Configuration config = 2;
     // Un servicio puede solicitar instancias de servicios con un ledger o un tensor aunque este no los ofrezca, y por tanto no aparezcan estos en su especificacion.
@@ -200,5 +164,4 @@ message ConfigurationFile{
     // por lo tanto, el nodo tiene la opcion de añadir estas instancias de manera opcional en la configuracion de arranque del servicio.
     repeated Instance tensor_instances = 3;
     repeated Instance ledger_instances = 4;
-    Metadata metadata = 15;
 }

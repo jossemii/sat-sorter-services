@@ -9,23 +9,24 @@ message TokenMessage {
 }
 
 message Instance {
-    celaut.Instance instance = 1;
-    string token = 2;
+    optional celaut.Any.Metadata instance_meta = 1;
+    celaut.Instance instance = 2;
+    optional string token = 3;
 }
 
 message ServiceTransport {
-    message Hash {
-        bytes type = 1;
-        bytes value = 2;
-    }
-    oneof oneOf{
-        celaut.Metadata.Hash hash = 1;
+    message ServiceWithMeta {
+        celaut.Any.Metadata meta = 1;
         celaut.Service service = 2;
     }
-    optional celaut.Configuration config = 3;
+    oneof oneOf{
+        celaut.Any.Metadata.HashTag.Hash hash = 1;
+        ServiceWithMeta service = 2;
+    }
+    optional celaut.Configuration config = 3;    
 }
 
 service Gateway {
     rpc StartService( stream ServiceTransport) returns (Instance) {}
-    rpc StopService( TokenMessage ) returns (Empty) {}
+    rpc StopService(TokenMessage) returns (Empty) {}
 }

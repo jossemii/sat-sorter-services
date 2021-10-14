@@ -11,5 +11,5 @@ message File {
 
 service Regresion {
     rpc StreamLogs ( Empty) returns (stream File){}
-    rpc MakeRegresion (  dataset.DataSet) returns (tensor_onnx.ONNX) {}  
+    rpc MakeRegresion (  dataset.DataSet) returns ( tensor_onnx.ONNX) {}  
 }

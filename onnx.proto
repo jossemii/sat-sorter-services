@@ -12,9 +12,9 @@ import "celaut.proto";
 package tensor_onnx;
 
 message ONNX {
-  required celaut.Tensor specification = 1;
+  required celaut.Service.Tensor specification = 1;
   message ONNXTensor {
-      repeated celaut.Any element = 1; // Combination of non-escalar dimension elements.
+      repeated bytes element = 1; // Combination of non-escalar dimension elements.
       required ModelProto model = 2;
   }
   repeated ONNXTensor tensor = 2;

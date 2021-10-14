@@ -5,15 +5,21 @@ from singleton import Singleton
 from start import LOGGER, SHA3_256, get_grpc_uri, DIR
 import grpc, solvers_dataset_pb2, api_pb2, gateway_pb2_grpc, regresion_pb2_grpc, gateway_pb2, onnx_pb2
 
-class Session(metaclass=Singleton):
+class Session(metaclass = Singleton):
 
     def __init__(self, ENVS) -> None:
         self.onnx = None
         self.data_set = solvers_dataset_pb2.DataSet()
 
         with open(DIR + 'regresion.service', 'rb') as file:
-            self.definition = gateway_pb2.celaut__pb2.Service()
-            self.definition.ParseFromString(file.read())
+            service_with_meta = gateway_pb2.celaut__pb2.Any()
+            service_with_meta.ParseFromString(file.read())
+
+        self.definition = gateway_pb2.celaut__pb2.Service()
+        self.definition.ParseFromString(service_with_meta.value)
+
+        self.metadata = service_with_meta.metadata
+
         self.config = gateway_pb2.celaut__pb2.Configuration()  
 
         # set used envs on variables.       
@@ -33,12 +39,12 @@ class Session(metaclass=Singleton):
 
         # for maintain.
         self.data_set_hash = ""
-        threading.Thread(target=self.maintenance, name='Regresion').start()
+        threading.Thread(target = self.maintenance, name = 'Regresion').start()
     
     def service_extended(self):
         config = True
         transport = gateway_pb2.ServiceTransport()
-        for hash in self.definition.metadata.hash:
+        for hash in self.definition.metadata.hashtag.hash:
             transport.hash.CopyFrom(hash)
             if config:  # Solo hace falta enviar la configuracion en el primer paquete.
                 transport.config.CopyFrom(self.config)
@@ -46,7 +52,8 @@ class Session(metaclass=Singleton):
             yield transport
         transport.ClearField('hash')
         if config: transport.config.CopyFrom(self.config)
-        transport.service.CopyFrom(self.definition)
+        transport.service.service.CopyFrom(self.definition)
+        transport.service.meta.CopyFrom(self.metadata)
         yield transport
 
     def init_service(self):
