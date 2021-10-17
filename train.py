@@ -75,26 +75,44 @@ class Session(metaclass=Singleton):
         #  pero debe de contener si o si la sha3-256
         #  ya que el servicio no la calculará (ni comprobará).
 
+        # En caso de no estar completo ni poseer la SHA3_256 identificará el servicio mediante la hash de su version incompleta. 
+        # Si más tarde se vuelve a subir el servicio incompleto, no se podrá detectar que es el mismo y se entrenarán ambos por separado.
+        # Esto podría crear duplicaciones en el tensor, pero no debería suponer ningun tipo de error, solo una ineficiencia.
+
+        solver_hash = None
         for h in metadata.hashtag.hash:
             if h.type == SHA3_256_ID:
-                hash = h.value.hex()
+                solver_hash = h.value.hex()   
+
+        solver_hash = SHA3_256(
+            value = solver.SerializeToString()
+        ) if not solver_hash else solver_hash
 
         self.solvers_lock.acquire()
-        if hash and hash not in self.solvers:
-            self.solvers.append(hash)
+        if solver_hash and solver_hash not in self.solvers:
+            self.solvers.append(solver_hash)
+            with open('__solvers__/'+solver_hash, 'wb') as file:
+                solver_with_meta = api_pb2.ServiceWithMeta(
+                    meta = metadata,
+                    service = solver
+                )
+                file.write(solver_with_meta.SerializeToString())
 
+            # En este punto se pueden crear varias versiones del mismo solver, 
+            # con distintas variables de entorno.
             self.solvers_dataset_lock.acquire()
-            p = solvers_dataset_pb2.DataSetInstance()
-            p.solver.definition.CopyFrom(solver)
-            p.solver.meta.CopyFrom(metadata)
-            # p.solver.enviroment_variables (Usamos las variables de entorno por defecto).
-            hash = SHA3_256(
-                    value = p.solver.SerializeToString()
+            p = solvers_dataset_pb2.SolverWithConfig()
+            p.definition.CopyFrom(solver)
+            p.meta.CopyFrom(metadata)
+            # p.enviroment_variables (Usamos las variables de entorno por defecto).
+            solver_with_config_hash = SHA3_256(
+                    value = p.SerializeToString()
                 ).hex() # This service not touch metadata, so it can use the hash for id.
-            self.solvers_dataset.data[hash].CopyFrom(p)
+            self.solvers_dataset.data[solver_with_config_hash].CopyFrom(solvers_dataset_pb2.DataSetInstance())
             self._solver.add_solver(
-                solver_with_config = p.solver, 
-                solver_config_id = hash
+                solver_with_config = p, 
+                solver_config_id = solver_with_config_hash,
+                solver_hash = solver_hash
             )
             self.solvers_dataset_lock.release()
             

@@ -82,6 +82,15 @@ if __name__ == "__main__":
                 value = solver_with_config.SerializeToString()
             ).hex()
             LOGGER('USING SOLVER --> ' + str(solver_config_id))
+            # Si no se posee ese solver, lo añade y añade, al mismo tiempo, en _solve con una configuración, 
+            #  si durante _solve.cnf detecta que no tiene ese solver_config_id es porque la configuración es distinta
+            #  a la que consideró usar trainer.load_solver, pero la especificación ya estará en memoria.
+            # La configuración que tiene el tensor no será provada por el trainer puesto que este tiene la competencia
+            #  de provar las configuraciones que considere.
+            trainer.load_solver(
+                solver = solver_with_config.definition,
+                metadata = solver_with_config.meta
+            )
             for i in range(5):
                 try:
                     return _solver.cnf(

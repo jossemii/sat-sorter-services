@@ -6,7 +6,7 @@ import grpc
 
 import api_pb2, api_pb2_grpc, gateway_pb2, gateway_pb2_grpc, solvers_dataset_pb2, celaut_pb2 as celaut
 from singleton import Singleton
-from start import LOGGER, SHA3_256, get_grpc_uri
+from start import LOGGER, SHA3_256, SHA3_256_ID, get_grpc_uri
 
 # Si se toma una instancia, se debe de asegurar que, o bien se agrega a su cola
 #  correspondiente, o bien se para. No asegurar esto ocasiona un bug importante
@@ -77,14 +77,9 @@ class SolverInstance(object):
 
 
 class SolverConfig(object):
-    def __init__(self, solver_with_config: solvers_dataset_pb2.SolverWithConfig):
-        # Service definition.
-        self.service_def = celaut.Service()
-        self.service_def.CopyFrom(solver_with_config.definition)
+    def __init__(self, solver_with_config: solvers_dataset_pb2.SolverWithConfig, solver_hash: str):
 
-        # Service metadata.
-        self.service_metadata = celaut.Any.Metadata()
-        self.service_metadata.CopyFrom(solver_with_config.meta)
+        self.solver_hash = solver_hash
 
         # Service configuration.
         self.config = celaut.Configuration()
@@ -105,8 +100,12 @@ class SolverConfig(object):
             yield transport
         transport.ClearField('hash')
         if config: transport.config.CopyFrom(self.config)
-        transport.service.service.CopyFrom(self.service_def)
-        transport.service.meta.CopyFrom(self.service_metadata)
+        service_with_meta = api_pb2.ServiceWithMeta()
+        service_with_meta.ParseFromString(
+            open('__solvers__/'+self.solver_hash, 'rb').read()
+        )
+        transport.service.service.CopyFrom(service_with_meta.definition)
+        transport.service.meta.CopyFrom(service_with_meta.meta)
         yield transport
 
     def launch_instance(self, gateway_stub) -> SolverInstance:
@@ -295,7 +294,7 @@ class Session(metaclass = Singleton):
                     solver_config.add_instance(instance, deep = True)
                     self.lock.release()
 
-    def add_solver(self, solver_with_config: solvers_dataset_pb2.SolverWithConfig, solver_config_id: str):
+    def add_solver(self, solver_with_config: solvers_dataset_pb2.SolverWithConfig, solver_config_id: str, solver_hash: str):
         if solver_config_id != SHA3_256(
             value = solver_with_config.SerializeToString() # This service not touch metadata, so it can use the hash for id.
         ).hex():
@@ -305,7 +304,8 @@ class Session(metaclass = Singleton):
         self.lock.acquire()
         self.solvers.update({
             solver_config_id : SolverConfig(
-                solver_with_config = solver_with_config
+                solver_with_config = solver_with_config,
+                solver_hash = solver_hash
             )
         })
         self.lock.release()

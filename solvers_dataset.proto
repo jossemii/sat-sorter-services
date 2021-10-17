@@ -15,8 +15,7 @@ message SolverWithConfig {
 }
 
 message DataSetInstance {
-    SolverWithConfig solver = 1;
-    map<string, Data> data = 2;
+    map<string, Data> data = 1;
 }
 
 message DataSet {
