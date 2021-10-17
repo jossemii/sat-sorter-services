@@ -297,7 +297,7 @@ class Session(metaclass = Singleton):
 
     def add_solver(self, solver_with_config: solvers_dataset_pb2.SolverWithConfig, solver_config_id: str):
         if solver_config_id != SHA3_256(
-            value = solver_with_config.SerializeToString() # The service not touch metadata, so it can use the hash for id.
+            value = solver_with_config.SerializeToString() # This service not touch metadata, so it can use the hash for id.
         ).hex():
             LOGGER('Solver config not valid ', solver_with_config, solver_config_id)
             raise Exception('Solver config not valid ', solver_with_config, solver_config_id)
@@ -309,4 +309,6 @@ class Session(metaclass = Singleton):
             )
         })
         self.lock.release()
-        LOGGER('ADDED NEW SOLVER ' + str(solver_config_id) + ' \ndef_ids -> ' +  str(solver_with_config.definition.metadata.hash[0].value.hex()))
+        try:
+            LOGGER('ADDED NEW SOLVER ' + str(solver_config_id) + ' \ndef_ids -> ' +  str(solver_with_config.meta.hashtag.hash[0].value.hex()))
+        except: LOGGER('ADDED NEW SOLVER ' + str(solver_config_id))

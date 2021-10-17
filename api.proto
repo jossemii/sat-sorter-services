@@ -36,11 +36,16 @@ message File {
     string file = 1;
 }
 
+message ServiceWithMeta {
+    celaut.Any.Metadata meta = 1;
+    celaut.Service service = 2;
+}
+
 service Solver {
     rpc StartTrain ( Empty) returns (Empty) {}
     rpc StopTrain ( Empty) returns (Empty) {}
     rpc GetTensor ( Empty) returns (tensor_onnx.ONNX) {}
-    rpc UploadSolver ( celaut.Service) returns (Empty) {}
+    rpc UploadSolver ( ServiceWithMeta) returns (Empty) {}
     rpc StreamLogs (Empty) returns (stream File){}
     rpc Solve(Cnf) returns (Interpretation) {}
     rpc AddTensor( tensor_onnx.ONNX) returns (Empty) {}

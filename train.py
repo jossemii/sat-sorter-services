@@ -70,12 +70,12 @@ class Session(metaclass=Singleton):
             self.do_stop = False
             self.thread = None
 
-    def load_solver(self, solver: solvers_dataset_pb2.celaut__pb2.Service) -> None:
+    def load_solver(self, solver: solvers_dataset_pb2.celaut__pb2.Service, metadata: solvers_dataset_pb2.celaut__pb2.Any.Metadata) -> None:
         # Se puede cargar un solver sin estar completo, 
         #  pero debe de contener si o si la sha3-256
         #  ya que el servicio no la calculará (ni comprobará).
 
-        for h in solver.metadata.hashtag.hash:
+        for h in metadata.hashtag.hash:
             if h.type == SHA3_256_ID:
                 hash = h.value.hex()
 
@@ -86,12 +86,16 @@ class Session(metaclass=Singleton):
             self.solvers_dataset_lock.acquire()
             p = solvers_dataset_pb2.DataSetInstance()
             p.solver.definition.CopyFrom(solver)
+            p.solver.meta.CopyFrom(metadata)
             # p.solver.enviroment_variables (Usamos las variables de entorno por defecto).
             hash = SHA3_256(
                     value = p.solver.SerializeToString()
-                ).hex()
+                ).hex() # This service not touch metadata, so it can use the hash for id.
             self.solvers_dataset.data[hash].CopyFrom(p)
-            self._solver.add_solver(solver_with_config=p.solver, solver_config_id=hash)
+            self._solver.add_solver(
+                solver_with_config = p.solver, 
+                solver_config_id = hash
+            )
             self.solvers_dataset_lock.release()
             
         self.solvers_lock.release()

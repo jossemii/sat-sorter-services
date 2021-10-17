@@ -22,7 +22,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\tapi.proto\x12\x03\x61pi\x1a\nonnx.proto\x1a\x0c\x63\x65laut.proto\x1a\x15solvers_dataset.proto\"L\n\x0eInterpretation\x12\x10\n\x08variable\x18\x01 \x03(\x05\x12\x18\n\x0bsatisfiable\x18\x02 \x01(\x08H\x00\x88\x01\x01\x42\x0e\n\x0c_satisfiable\"\x19\n\x06\x43lause\x12\x0f\n\x07literal\x18\x01 \x03(\x05\"\"\n\x03\x43nf\x12\x1b\n\x06\x63lause\x18\x01 \x03(\x0b\x32\x0b.api.Clause\"\x07\n\x05\x45mpty\"\x14\n\x04\x46ile\x12\x0c\n\x04\x66ile\x18\x01 \x01(\t2-\n\x06Random\x12#\n\tRandomCnf\x12\n.api.Empty\x1a\x08.api.Cnf\"\x00\x32\x91\x03\n\x06Solver\x12&\n\nStartTrain\x12\n.api.Empty\x1a\n.api.Empty\"\x00\x12%\n\tStopTrain\x12\n.api.Empty\x1a\n.api.Empty\"\x00\x12,\n\tGetTensor\x12\n.api.Empty\x1a\x11.tensor_onnx.ONNX\"\x00\x12-\n\x0cUploadSolver\x12\x0f.celaut.Service\x1a\n.api.Empty\"\x00\x12\'\n\nStreamLogs\x12\n.api.Empty\x1a\t.api.File\"\x00\x30\x01\x12(\n\x05Solve\x12\x08.api.Cnf\x1a\x13.api.Interpretation\"\x00\x12,\n\tAddTensor\x12\x11.tensor_onnx.ONNX\x1a\n.api.Empty\"\x00\x12,\n\nGetDataSet\x12\n.api.Empty\x1a\x10.dataset.DataSet\"\x00\x12,\n\nAddDataSet\x12\x10.dataset.DataSet\x1a\n.api.Empty\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\tapi.proto\x12\x03\x61pi\x1a\nonnx.proto\x1a\x0c\x63\x65laut.proto\x1a\x15solvers_dataset.proto\"L\n\x0eInterpretation\x12\x10\n\x08variable\x18\x01 \x03(\x05\x12\x18\n\x0bsatisfiable\x18\x02 \x01(\x08H\x00\x88\x01\x01\x42\x0e\n\x0c_satisfiable\"\x19\n\x06\x43lause\x12\x0f\n\x07literal\x18\x01 \x03(\x05\"\"\n\x03\x43nf\x12\x1b\n\x06\x63lause\x18\x01 \x03(\x0b\x32\x0b.api.Clause\"\x07\n\x05\x45mpty\"\x14\n\x04\x46ile\x12\x0c\n\x04\x66ile\x18\x01 \x01(\t\"W\n\x0fServiceWithMeta\x12\"\n\x04meta\x18\x01 \x01(\x0b\x32\x14.celaut.Any.Metadata\x12 \n\x07service\x18\x02 \x01(\x0b\x32\x0f.celaut.Service2-\n\x06Random\x12#\n\tRandomCnf\x12\n.api.Empty\x1a\x08.api.Cnf\"\x00\x32\x96\x03\n\x06Solver\x12&\n\nStartTrain\x12\n.api.Empty\x1a\n.api.Empty\"\x00\x12%\n\tStopTrain\x12\n.api.Empty\x1a\n.api.Empty\"\x00\x12,\n\tGetTensor\x12\n.api.Empty\x1a\x11.tensor_onnx.ONNX\"\x00\x12\x32\n\x0cUploadSolver\x12\x14.api.ServiceWithMeta\x1a\n.api.Empty\"\x00\x12\'\n\nStreamLogs\x12\n.api.Empty\x1a\t.api.File\"\x00\x30\x01\x12(\n\x05Solve\x12\x08.api.Cnf\x1a\x13.api.Interpretation\"\x00\x12,\n\tAddTensor\x12\x11.tensor_onnx.ONNX\x1a\n.api.Empty\"\x00\x12,\n\nGetDataSet\x12\n.api.Empty\x1a\x10.dataset.DataSet\"\x00\x12,\n\nAddDataSet\x12\x10.dataset.DataSet\x1a\n.api.Empty\"\x00\x62\x06proto3'
   ,
   dependencies=[onnx__pb2.DESCRIPTOR,celaut__pb2.DESCRIPTOR,solvers__dataset__pb2.DESCRIPTOR,])
 
@@ -193,15 +193,57 @@ _FILE = _descriptor.Descriptor(
   serialized_end=237,
 )
 
+
+_SERVICEWITHMETA = _descriptor.Descriptor(
+  name='ServiceWithMeta',
+  full_name='api.ServiceWithMeta',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='meta', full_name='api.ServiceWithMeta.meta', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='service', full_name='api.ServiceWithMeta.service', index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=239,
+  serialized_end=326,
+)
+
 _INTERPRETATION.oneofs_by_name['_satisfiable'].fields.append(
   _INTERPRETATION.fields_by_name['satisfiable'])
 _INTERPRETATION.fields_by_name['satisfiable'].containing_oneof = _INTERPRETATION.oneofs_by_name['_satisfiable']
 _CNF.fields_by_name['clause'].message_type = _CLAUSE
+_SERVICEWITHMETA.fields_by_name['meta'].message_type = celaut__pb2._ANY_METADATA
+_SERVICEWITHMETA.fields_by_name['service'].message_type = celaut__pb2._SERVICE
 DESCRIPTOR.message_types_by_name['Interpretation'] = _INTERPRETATION
 DESCRIPTOR.message_types_by_name['Clause'] = _CLAUSE
 DESCRIPTOR.message_types_by_name['Cnf'] = _CNF
 DESCRIPTOR.message_types_by_name['Empty'] = _EMPTY
 DESCRIPTOR.message_types_by_name['File'] = _FILE
+DESCRIPTOR.message_types_by_name['ServiceWithMeta'] = _SERVICEWITHMETA
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 Interpretation = _reflection.GeneratedProtocolMessageType('Interpretation', (_message.Message,), {
@@ -239,6 +281,13 @@ File = _reflection.GeneratedProtocolMessageType('File', (_message.Message,), {
   })
 _sym_db.RegisterMessage(File)
 
+ServiceWithMeta = _reflection.GeneratedProtocolMessageType('ServiceWithMeta', (_message.Message,), {
+  'DESCRIPTOR' : _SERVICEWITHMETA,
+  '__module__' : 'api_pb2'
+  # @@protoc_insertion_point(class_scope:api.ServiceWithMeta)
+  })
+_sym_db.RegisterMessage(ServiceWithMeta)
+
 
 
 _RANDOM = _descriptor.ServiceDescriptor(
@@ -248,8 +297,8 @@ _RANDOM = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=239,
-  serialized_end=284,
+  serialized_start=328,
+  serialized_end=373,
   methods=[
   _descriptor.MethodDescriptor(
     name='RandomCnf',
@@ -274,8 +323,8 @@ _SOLVER = _descriptor.ServiceDescriptor(
   index=1,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=287,
-  serialized_end=688,
+  serialized_start=376,
+  serialized_end=782,
   methods=[
   _descriptor.MethodDescriptor(
     name='StartTrain',
@@ -312,7 +361,7 @@ _SOLVER = _descriptor.ServiceDescriptor(
     full_name='api.Solver.UploadSolver',
     index=3,
     containing_service=None,
-    input_type=celaut__pb2._SERVICE,
+    input_type=_SERVICEWITHMETA,
     output_type=_EMPTY,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,

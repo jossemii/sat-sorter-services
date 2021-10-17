@@ -3,7 +3,6 @@
 import grpc
 
 import api_pb2 as api__pb2
-import celaut_pb2 as celaut__pb2
 import onnx_pb2 as onnx__pb2
 import solvers_dataset_pb2 as solvers__dataset__pb2
 
@@ -95,7 +94,7 @@ class SolverStub(object):
                 )
         self.UploadSolver = channel.unary_unary(
                 '/api.Solver/UploadSolver',
-                request_serializer=celaut__pb2.Service.SerializeToString,
+                request_serializer=api__pb2.ServiceWithMeta.SerializeToString,
                 response_deserializer=api__pb2.Empty.FromString,
                 )
         self.StreamLogs = channel.unary_stream(
@@ -203,7 +202,7 @@ def add_SolverServicer_to_server(servicer, server):
             ),
             'UploadSolver': grpc.unary_unary_rpc_method_handler(
                     servicer.UploadSolver,
-                    request_deserializer=celaut__pb2.Service.FromString,
+                    request_deserializer=api__pb2.ServiceWithMeta.FromString,
                     response_serializer=api__pb2.Empty.SerializeToString,
             ),
             'StreamLogs': grpc.unary_stream_rpc_method_handler(
@@ -304,7 +303,7 @@ class Solver(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/api.Solver/UploadSolver',
-            celaut__pb2.Service.SerializeToString,
+            api__pb2.ServiceWithMeta.SerializeToString,
             api__pb2.Empty.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
