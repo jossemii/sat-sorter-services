@@ -41,14 +41,32 @@ message ServiceWithMeta {
     celaut.Service service = 2;
 }
 
+message Tensor { // Like Onxx but with only SolverWithConfig'field elements.
+    message NonEscalarDimension {    
+        message NonEscalar {
+            dataset.SolverWithConfig element = 1;
+            oneof model {
+                tensor_onnx.ModelProto escalar = 2;
+                NonEscalarDimension non_escalar = 3;
+            } 
+        }
+        repeated NonEscalar non_escalar = 1;
+    }
+    celaut.Service.Tensor specification = 1;
+    oneof model {
+        tensor_onnx.ModelProto escalar = 2;
+        NonEscalarDimension non_escalar = 3;
+    }
+}
+
 service Solver {
     rpc StartTrain ( Empty) returns (Empty) {}
     rpc StopTrain ( Empty) returns (Empty) {}
-    rpc GetTensor ( Empty) returns (tensor_onnx.ONNX) {}
+    rpc GetTensor ( Empty) returns (Tensor) {}
     rpc UploadSolver ( ServiceWithMeta) returns (Empty) {}
     rpc StreamLogs (Empty) returns (stream File){}
     rpc Solve(Cnf) returns (Interpretation) {}
-    rpc AddTensor( tensor_onnx.ONNX) returns (Empty) {}
+    rpc AddTensor(Tensor) returns (Empty) {}
 
     // Hasta que se implemente AddTensor.
     rpc GetDataSet( Empty) returns (dataset.DataSet) {}

@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x15solvers_dataset.proto\x12\x07\x64\x61taset\x1a\x0c\x63\x65laut.proto\"$\n\x04\x44\x61ta\x12\r\n\x05score\x18\x01 \x01(\x02\x12\r\n\x05index\x18\x02 \x01(\x05\"\xe9\x01\n\x10SolverWithConfig\x12\"\n\x04meta\x18\x01 \x01(\x0b\x32\x14.celaut.Any.Metadata\x12#\n\ndefinition\x18\x02 \x01(\x0b\x32\x0f.celaut.Service\x12P\n\x14\x65nviroment_variables\x18\x03 \x03(\x0b\x32\x32.dataset.SolverWithConfig.EnviromentVariablesEntry\x1a:\n\x18\x45nviromentVariablesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x0c:\x02\x38\x01\"\xaa\x01\n\x0f\x44\x61taSetInstance\x12)\n\x06solver\x18\x01 \x01(\x0b\x32\x19.dataset.SolverWithConfig\x12\x30\n\x04\x64\x61ta\x18\x02 \x03(\x0b\x32\".dataset.DataSetInstance.DataEntry\x1a:\n\tDataEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x1c\n\x05value\x18\x02 \x01(\x0b\x32\r.dataset.Data:\x02\x38\x01\"z\n\x07\x44\x61taSet\x12(\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32\x1a.dataset.DataSet.DataEntry\x1a\x45\n\tDataEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\'\n\x05value\x18\x02 \x01(\x0b\x32\x18.dataset.DataSetInstance:\x02\x38\x01\x62\x06proto3'
+  serialized_pb=b'\n\x15solvers_dataset.proto\x12\x07\x64\x61taset\x1a\x0c\x63\x65laut.proto\"$\n\x04\x44\x61ta\x12\r\n\x05score\x18\x01 \x01(\x02\x12\r\n\x05index\x18\x02 \x01(\x05\"\xe9\x01\n\x10SolverWithConfig\x12\"\n\x04meta\x18\x01 \x01(\x0b\x32\x14.celaut.Any.Metadata\x12#\n\ndefinition\x18\x02 \x01(\x0b\x32\x0f.celaut.Service\x12P\n\x14\x65nviroment_variables\x18\x03 \x03(\x0b\x32\x32.dataset.SolverWithConfig.EnviromentVariablesEntry\x1a:\n\x18\x45nviromentVariablesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x0c:\x02\x38\x01\"\x7f\n\x0f\x44\x61taSetInstance\x12\x30\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32\".dataset.DataSetInstance.DataEntry\x1a:\n\tDataEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x1c\n\x05value\x18\x02 \x01(\x0b\x32\r.dataset.Data:\x02\x38\x01\"z\n\x07\x44\x61taSet\x12(\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32\x1a.dataset.DataSet.DataEntry\x1a\x45\n\tDataEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\'\n\x05value\x18\x02 \x01(\x0b\x32\x18.dataset.DataSetInstance:\x02\x38\x01\x62\x06proto3'
   ,
   dependencies=[celaut__pb2.DESCRIPTOR,])
 
@@ -184,8 +184,8 @@ _DATASETINSTANCE_DATAENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=435,
-  serialized_end=493,
+  serialized_start=391,
+  serialized_end=449,
 )
 
 _DATASETINSTANCE = _descriptor.Descriptor(
@@ -197,15 +197,8 @@ _DATASETINSTANCE = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='solver', full_name='dataset.DataSetInstance.solver', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='data', full_name='dataset.DataSetInstance.data', index=1,
-      number=2, type=11, cpp_type=10, label=3,
+      name='data', full_name='dataset.DataSetInstance.data', index=0,
+      number=1, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -222,8 +215,8 @@ _DATASETINSTANCE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=323,
-  serialized_end=493,
+  serialized_start=322,
+  serialized_end=449,
 )
 
 
@@ -261,8 +254,8 @@ _DATASET_DATAENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=548,
-  serialized_end=617,
+  serialized_start=504,
+  serialized_end=573,
 )
 
 _DATASET = _descriptor.Descriptor(
@@ -292,8 +285,8 @@ _DATASET = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=495,
-  serialized_end=617,
+  serialized_start=451,
+  serialized_end=573,
 )
 
 _SOLVERWITHCONFIG_ENVIROMENTVARIABLESENTRY.containing_type = _SOLVERWITHCONFIG
@@ -302,7 +295,6 @@ _SOLVERWITHCONFIG.fields_by_name['definition'].message_type = celaut__pb2._SERVI
 _SOLVERWITHCONFIG.fields_by_name['enviroment_variables'].message_type = _SOLVERWITHCONFIG_ENVIROMENTVARIABLESENTRY
 _DATASETINSTANCE_DATAENTRY.fields_by_name['value'].message_type = _DATA
 _DATASETINSTANCE_DATAENTRY.containing_type = _DATASETINSTANCE
-_DATASETINSTANCE.fields_by_name['solver'].message_type = _SOLVERWITHCONFIG
 _DATASETINSTANCE.fields_by_name['data'].message_type = _DATASETINSTANCE_DATAENTRY
 _DATASET_DATAENTRY.fields_by_name['value'].message_type = _DATASETINSTANCE
 _DATASET_DATAENTRY.containing_type = _DATASET

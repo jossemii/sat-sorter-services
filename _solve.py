@@ -145,6 +145,17 @@ class SolverConfig(object):
         except IndexError:
             LOGGER('    list empty --> ' + str(self.instances))
             raise IndexError
+    
+    def get_solver_with_config(self) -> solvers_dataset_pb2.SolverWithConfig:
+        solver_with_meta = api_pb2.ServiceWithMeta()
+        solver_with_meta.ParseFromString(
+            open('__solvers__/' + self.solver_hash, 'rb').read()
+        )
+        return api_pb2.solvers__dataset__pb2.SolverWithConfig(
+                    meta = solver_with_meta.meta,
+                    definition = solver_with_meta.service,
+                    config = self.config
+                )
 
 
 class Session(metaclass = Singleton):
@@ -165,20 +176,9 @@ class Session(metaclass = Singleton):
         self.lock = Lock()
         Thread(target=self.maintenance, name='Maintainer').start()
 
-    def cnf(self, cnf, solver_config_id: str, timeout=None, solver_with_config=None):
+    def cnf(self, cnf, solver_config_id: str, timeout=None):
         LOGGER(str(timeout) + 'cnf want solvers lock' + str(self.lock.locked()))
         self.lock.acquire()
-
-        if solver_with_config and solver_config_id not in self.solvers:
-            self.lock.release()
-            LOGGER('ERROR SOLVING CNF, SOLVER_CONFIG_ID NOT IN _Solve.solvers list.' \
-                   + str(self.solvers.keys()) + ' ' + str(solver_config_id))
-
-            self.add_solver(
-                solver_config_id = solver_config_id,
-                solver_with_config = solver_with_config
-            )
-            raise Exception('Was not possible to solve it, solver added now.')
 
         solver_config = self.solvers[solver_config_id]
         try:
@@ -312,3 +312,6 @@ class Session(metaclass = Singleton):
         try:
             LOGGER('ADDED NEW SOLVER ' + str(solver_config_id) + ' \ndef_ids -> ' +  str(solver_with_config.meta.hashtag.hash[0].value.hex()))
         except: LOGGER('ADDED NEW SOLVER ' + str(solver_config_id))
+
+    def get_solver_with_config(self, solver_config_id: str) -> solvers_dataset_pb2.SolverWithConfig:
+        return self.solvers[solver_config_id].get_solver_with_config()

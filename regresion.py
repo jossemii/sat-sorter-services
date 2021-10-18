@@ -3,12 +3,11 @@ from time import sleep
 from typing import Generator
 from singleton import Singleton
 from start import LOGGER, SHA3_256, get_grpc_uri, DIR
-import grpc, solvers_dataset_pb2, api_pb2, gateway_pb2_grpc, regresion_pb2_grpc, gateway_pb2, onnx_pb2
+import grpc, solvers_dataset_pb2, api_pb2, gateway_pb2_grpc, regresion_pb2_grpc, gateway_pb2, onnx_pb2, regresion_pb2, os
 
 class Session(metaclass = Singleton):
 
     def __init__(self, ENVS) -> None:
-        self.onnx = None
         self.data_set = solvers_dataset_pb2.DataSet()
 
         with open(DIR + 'regresion.service', 'rb') as file:
@@ -122,23 +121,26 @@ class Session(metaclass = Singleton):
                 data_set.CopyFrom(self.data_set)
                 self.dataset_lock.release()
 
-                if not self.onnx: self.onnx = onnx_pb2.ONNX()
                 LOGGER('..........')
                 try:
-                    self.onnx.CopyFrom(
+                    open('__tensor__', 'wb').write(
                         self.iterate_regression(
                             data_set = data_set
-                        )
+                        ).SerializeToString()
                     )
                 except Exception as e:
                     LOGGER('Exception with regresion service, ' + str(e))
 
-    def get_tensor(self) -> onnx_pb2.ONNX:
+    def get_tensor(self) -> regresion_pb2.Tensor:
         # No hay condiciones de carrera aunque lo reescriba en ese momento.
-        if self.onnx:
-            return self.onnx
+        if os.path.isfile('__tensor__'):
+            tensor = regresion_pb2.Tensor()
+            tensor.ParseFromString(
+                open('__tensor__', 'rb').read()
+            )
+            return tensor
         else:
-            raise Exception
+            raise Exception('__tensor__ does not exist.')
 
     # Add new data
     def add_data(self, new_data_set: solvers_dataset_pb2.DataSet) -> None:
@@ -177,7 +179,7 @@ class Session(metaclass = Singleton):
                 self.error_control(e)
         
     # Make regresion Grpc method.
-    def iterate_regression(self, data_set: solvers_dataset_pb2.DataSet) -> onnx_pb2.ONNX:
+    def iterate_regression(self, data_set: solvers_dataset_pb2.DataSet) -> regresion_pb2.Tensor:
         try:
             return self.stub.MakeRegresion(
                 request = data_set

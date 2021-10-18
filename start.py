@@ -70,7 +70,7 @@ if __name__ == "__main__":
 
         def Solve(self, request, context):
             try:
-                solver_with_config = _get.cnf(
+                solver_config_id = _get.cnf(
                     cnf = request,
                     tensors = _regresion.get_tensor()
                 )
@@ -78,25 +78,13 @@ if __name__ == "__main__":
                 LOGGER('Wait more for it, tensor is not ready yet. ')
                 return api_pb2.Empty()
 
-            solver_config_id = SHA3_256(
-                value = solver_with_config.SerializeToString()
-            ).hex()
             LOGGER('USING SOLVER --> ' + str(solver_config_id))
-            # Si no se posee ese solver, lo añade y añade, al mismo tiempo, en _solve con una configuración, 
-            #  si durante _solve.cnf detecta que no tiene ese solver_config_id es porque la configuración es distinta
-            #  a la que consideró usar trainer.load_solver, pero la especificación ya estará en memoria.
-            # La configuración que tiene el tensor no será provada por el trainer puesto que este tiene la competencia
-            #  de provar las configuraciones que considere.
-            trainer.load_solver(
-                solver = solver_with_config.definition,
-                metadata = solver_with_config.meta
-            )
+
             for i in range(5):
                 try:
                     return _solver.cnf(
                         cnf = request,
-                        solver_config_id = solver_config_id,
-                        solver_with_config = solver_with_config
+                        solver_config_id = solver_config_id
                     )[0]
                 except Exception as e:
                     LOGGER(str(i) + ' ERROR SOLVING A CNF ON Solve ' + str(e))
@@ -132,7 +120,18 @@ if __name__ == "__main__":
             return api_pb2.Empty()
 
         def GetTensor(self, request, context):
-            return _regresion.get_tensor()
+            tensor_with_ids =  _regresion.get_tensor()
+            tensor_with_defitions = api_pb2.Tensor()
+            for solver_config_id_tensor in tensor_with_ids.non_escalar.non_escalar:
+                tensor_with_defitions.non_escalar.non_escalar.append(
+                    api_pb2.Tensor.NonEscalarDimension.NonEscalar(
+                        element = _solve.get_solver_with_config(
+                            solver_config_id = solver_config_id_tensor.element
+                        ),
+                        escalar = solver_config_id_tensor.escalar
+                    )
+                )
+            return tensor_with_defitions
 
         def StartTrain(self, request, context):
             trainer.start()
@@ -145,25 +144,35 @@ if __name__ == "__main__":
         # Integrate other tensor
         def AddTensor(self, request, context):
             new_data_set = solvers_dataset_pb2.DataSet()
-            for t in request.tensor:
-                hash = hashlib.sha3_256(t.element.SerializeToString()).hexdigest()
-                data =  solvers_dataset_pb2.DataSetInstance()
-                try:
-                    data.solver.CopyFrom( t.element )
-                except:
-                    LOGGER('El elemento del tensor parede no ser un SolverWithConfig.')
+            for solver_with_config_tensor in request.non_escalar.non_escalar:
+                # Si no se posee ese solver, lo añade y añade, al mismo tiempo, en _solve con una configuración que el trainer considere, 
+                #  añade despues la configuración del tensor en la sesion de solve manager (_solve).
+                # La configuración que tiene el tensor no será provada por el trainer puesto que este tiene la competencia
+                #  de provar las configuraciones que considere.
+
+                solver_config_id = hashlib.sha3_256(
+                    solver_with_config_tensor.element.SerializeToString()
+                    ).hexdigest()
+
+                _solver.add_solver(
+                    solver_with_config = solver_with_config_tensor.element,
+                    solver_config_id = solver_config_id,
+                    solver_hash = trainer.load_solver(
+                                    solver = solver_with_config_tensor.element.definition,
+                                    metadata = solver_with_config_tensor.element.meta
+                                )
+                )
 
                 # Se extraen datos del tensor.
                 # Debe de probar el nivel de ajuste que tiene en un punto determinado
                 #  para obtener un indice.
                 # data.data.update({})
                 #TODO
-
                 new_data_set.data.update({
-                    hash : data
+                    solver_config_id : solvers_dataset_pb2.DataSetInstance() # generate_data(solver_with_config_tensor.escalar)
                 })
 
-            _regresion.add_data( #TODO
+            _regresion.add_data(
                 new_data_set = new_data_set
             )
             return api_pb2.Empty()

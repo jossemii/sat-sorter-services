@@ -2,7 +2,6 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-import onnx_pb2 as onnx__pb2
 import regresion_pb2 as regresion__pb2
 import solvers_dataset_pb2 as solvers__dataset__pb2
 
@@ -24,7 +23,7 @@ class RegresionStub(object):
         self.MakeRegresion = channel.unary_unary(
                 '/Regresion/MakeRegresion',
                 request_serializer=solvers__dataset__pb2.DataSet.SerializeToString,
-                response_deserializer=onnx__pb2.ONNX.FromString,
+                response_deserializer=regresion__pb2.Tensor.FromString,
                 )
 
 
@@ -54,7 +53,7 @@ def add_RegresionServicer_to_server(servicer, server):
             'MakeRegresion': grpc.unary_unary_rpc_method_handler(
                     servicer.MakeRegresion,
                     request_deserializer=solvers__dataset__pb2.DataSet.FromString,
-                    response_serializer=onnx__pb2.ONNX.SerializeToString,
+                    response_serializer=regresion__pb2.Tensor.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -96,6 +95,6 @@ class Regresion(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/Regresion/MakeRegresion',
             solvers__dataset__pb2.DataSet.SerializeToString,
-            onnx__pb2.ONNX.FromString,
+            regresion__pb2.Tensor.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

@@ -70,7 +70,7 @@ class Session(metaclass=Singleton):
             self.do_stop = False
             self.thread = None
 
-    def load_solver(self, solver: solvers_dataset_pb2.celaut__pb2.Service, metadata: solvers_dataset_pb2.celaut__pb2.Any.Metadata) -> None:
+    def load_solver(self, solver: solvers_dataset_pb2.celaut__pb2.Service, metadata: solvers_dataset_pb2.celaut__pb2.Any.Metadata) -> str:
         # Se puede cargar un solver sin estar completo, 
         #  pero debe de contener si o si la sha3-256
         #  ya que el servicio no la calculará (ni comprobará).
@@ -117,6 +117,7 @@ class Session(metaclass=Singleton):
             self.solvers_dataset_lock.release()
             
         self.solvers_lock.release()
+        return solver_hash
 
     def clear_dataset(self) -> None:
         self.solvers_dataset_lock.acquire()

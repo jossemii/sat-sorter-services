@@ -3,8 +3,8 @@ import onnxruntime as rt
 
 import api_pb2
 import onnx_pb2
-import solvers_dataset_pb2
 from start import LOGGER
+import regresion_pb2
 
 
 def get_score(model: onnx_pb2.ModelProto, _cnf: dict) -> float:
@@ -28,18 +28,16 @@ def data(cnf: api_pb2.Cnf) -> dict:
     ]
 
 
-def cnf(cnf: api_pb2.Cnf, tensors: onnx_pb2.ONNX) -> solvers_dataset_pb2.SolverWithConfig:
+def cnf(cnf: api_pb2.Cnf, tensors: regresion_pb2.Tensor) -> str:
     LOGGER('GET CNF: selecting a solver ...')
     best_score = None
-    for tensor in tensors.tensor:
+    for solver_tensor in tensors.non_escalar.non_escalar:
         LOGGER('GET CNF: getting the score for a specific tensor.')
-        score = get_score(model = tensor.model, _cnf = data(cnf = cnf))
+        score = get_score(model = solver_tensor.escalar, _cnf = data(cnf = cnf))
         LOGGER('GET CNF: the score is '+str(score))
         if not best_score or best_score < score:
             LOGGER('     now is the best score.')
             best_score = score
-            best_solver_bytes = tensor.element
+            best_solver_id = solver_tensor.element
     LOGGER('GET CNF finished process.')
-    best_solver = solvers_dataset_pb2.SolverWithConfig()
-    best_solver.ParseFromString(best_solver_bytes)
-    return best_solver
+    return best_solver_id

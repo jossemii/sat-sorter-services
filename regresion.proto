@@ -9,7 +9,24 @@ message File {
     string file = 1;
 }
 
+message Tensor { // Like Onxx but with only str'field elements (with the solver with config id).
+    message NonEscalarDimension {    
+        message NonEscalar {
+            string element = 1;
+            oneof model {
+                tensor_onnx.ModelProto escalar = 2;
+                NonEscalarDimension non_escalar = 3;
+            } 
+        }
+        repeated NonEscalar non_escalar = 1;
+    }
+    oneof model {
+        tensor_onnx.ModelProto escalar = 1;
+        NonEscalarDimension non_escalar = 2;
+    }
+}
+
 service Regresion {
     rpc StreamLogs ( Empty) returns (stream File){}
-    rpc MakeRegresion (  dataset.DataSet) returns ( tensor_onnx.ONNX) {}  
+    rpc MakeRegresion (  dataset.DataSet) returns ( Tensor) {}  
 }

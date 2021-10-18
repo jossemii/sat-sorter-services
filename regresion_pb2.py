@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0fregresion.proto\x1a\nonnx.proto\x1a\x15solvers_dataset.proto\"\x07\n\x05\x45mpty\"\x14\n\x04\x46ile\x12\x0c\n\x04\x66ile\x18\x01 \x01(\t2d\n\tRegresion\x12\x1f\n\nStreamLogs\x12\x06.Empty\x1a\x05.File\"\x00\x30\x01\x12\x36\n\rMakeRegresion\x12\x10.dataset.DataSet\x1a\x11.tensor_onnx.ONNX\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\x0fregresion.proto\x1a\nonnx.proto\x1a\x15solvers_dataset.proto\"\x07\n\x05\x45mpty\"\x14\n\x04\x46ile\x12\x0c\n\x04\x66ile\x18\x01 \x01(\t\"\xcf\x02\n\x06Tensor\x12*\n\x07\x65scalar\x18\x01 \x01(\x0b\x32\x17.tensor_onnx.ModelProtoH\x00\x12\x32\n\x0bnon_escalar\x18\x02 \x01(\x0b\x32\x1b.Tensor.NonEscalarDimensionH\x00\x1a\xdb\x01\n\x13NonEscalarDimension\x12;\n\x0bnon_escalar\x18\x01 \x03(\x0b\x32&.Tensor.NonEscalarDimension.NonEscalar\x1a\x86\x01\n\nNonEscalar\x12\x0f\n\x07\x65lement\x18\x01 \x01(\t\x12*\n\x07\x65scalar\x18\x02 \x01(\x0b\x32\x17.tensor_onnx.ModelProtoH\x00\x12\x32\n\x0bnon_escalar\x18\x03 \x01(\x0b\x32\x1b.Tensor.NonEscalarDimensionH\x00\x42\x07\n\x05modelB\x07\n\x05model2Z\n\tRegresion\x12\x1f\n\nStreamLogs\x12\x06.Empty\x1a\x05.File\"\x00\x30\x01\x12,\n\rMakeRegresion\x12\x10.dataset.DataSet\x1a\x07.Tensor\"\x00\x62\x06proto3'
   ,
   dependencies=[onnx__pb2.DESCRIPTOR,solvers__dataset__pb2.DESCRIPTOR,])
 
@@ -84,8 +84,153 @@ _FILE = _descriptor.Descriptor(
   serialized_end=83,
 )
 
+
+_TENSOR_NONESCALARDIMENSION_NONESCALAR = _descriptor.Descriptor(
+  name='NonEscalar',
+  full_name='Tensor.NonEscalarDimension.NonEscalar',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='element', full_name='Tensor.NonEscalarDimension.NonEscalar.element', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='escalar', full_name='Tensor.NonEscalarDimension.NonEscalar.escalar', index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='non_escalar', full_name='Tensor.NonEscalarDimension.NonEscalar.non_escalar', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+    _descriptor.OneofDescriptor(
+      name='model', full_name='Tensor.NonEscalarDimension.NonEscalar.model',
+      index=0, containing_type=None,
+      create_key=_descriptor._internal_create_key,
+    fields=[]),
+  ],
+  serialized_start=278,
+  serialized_end=412,
+)
+
+_TENSOR_NONESCALARDIMENSION = _descriptor.Descriptor(
+  name='NonEscalarDimension',
+  full_name='Tensor.NonEscalarDimension',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='non_escalar', full_name='Tensor.NonEscalarDimension.non_escalar', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[_TENSOR_NONESCALARDIMENSION_NONESCALAR, ],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=193,
+  serialized_end=412,
+)
+
+_TENSOR = _descriptor.Descriptor(
+  name='Tensor',
+  full_name='Tensor',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='escalar', full_name='Tensor.escalar', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='non_escalar', full_name='Tensor.non_escalar', index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[_TENSOR_NONESCALARDIMENSION, ],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+    _descriptor.OneofDescriptor(
+      name='model', full_name='Tensor.model',
+      index=0, containing_type=None,
+      create_key=_descriptor._internal_create_key,
+    fields=[]),
+  ],
+  serialized_start=86,
+  serialized_end=421,
+)
+
+_TENSOR_NONESCALARDIMENSION_NONESCALAR.fields_by_name['escalar'].message_type = onnx__pb2._MODELPROTO
+_TENSOR_NONESCALARDIMENSION_NONESCALAR.fields_by_name['non_escalar'].message_type = _TENSOR_NONESCALARDIMENSION
+_TENSOR_NONESCALARDIMENSION_NONESCALAR.containing_type = _TENSOR_NONESCALARDIMENSION
+_TENSOR_NONESCALARDIMENSION_NONESCALAR.oneofs_by_name['model'].fields.append(
+  _TENSOR_NONESCALARDIMENSION_NONESCALAR.fields_by_name['escalar'])
+_TENSOR_NONESCALARDIMENSION_NONESCALAR.fields_by_name['escalar'].containing_oneof = _TENSOR_NONESCALARDIMENSION_NONESCALAR.oneofs_by_name['model']
+_TENSOR_NONESCALARDIMENSION_NONESCALAR.oneofs_by_name['model'].fields.append(
+  _TENSOR_NONESCALARDIMENSION_NONESCALAR.fields_by_name['non_escalar'])
+_TENSOR_NONESCALARDIMENSION_NONESCALAR.fields_by_name['non_escalar'].containing_oneof = _TENSOR_NONESCALARDIMENSION_NONESCALAR.oneofs_by_name['model']
+_TENSOR_NONESCALARDIMENSION.fields_by_name['non_escalar'].message_type = _TENSOR_NONESCALARDIMENSION_NONESCALAR
+_TENSOR_NONESCALARDIMENSION.containing_type = _TENSOR
+_TENSOR.fields_by_name['escalar'].message_type = onnx__pb2._MODELPROTO
+_TENSOR.fields_by_name['non_escalar'].message_type = _TENSOR_NONESCALARDIMENSION
+_TENSOR.oneofs_by_name['model'].fields.append(
+  _TENSOR.fields_by_name['escalar'])
+_TENSOR.fields_by_name['escalar'].containing_oneof = _TENSOR.oneofs_by_name['model']
+_TENSOR.oneofs_by_name['model'].fields.append(
+  _TENSOR.fields_by_name['non_escalar'])
+_TENSOR.fields_by_name['non_escalar'].containing_oneof = _TENSOR.oneofs_by_name['model']
 DESCRIPTOR.message_types_by_name['Empty'] = _EMPTY
 DESCRIPTOR.message_types_by_name['File'] = _FILE
+DESCRIPTOR.message_types_by_name['Tensor'] = _TENSOR
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 Empty = _reflection.GeneratedProtocolMessageType('Empty', (_message.Message,), {
@@ -102,6 +247,29 @@ File = _reflection.GeneratedProtocolMessageType('File', (_message.Message,), {
   })
 _sym_db.RegisterMessage(File)
 
+Tensor = _reflection.GeneratedProtocolMessageType('Tensor', (_message.Message,), {
+
+  'NonEscalarDimension' : _reflection.GeneratedProtocolMessageType('NonEscalarDimension', (_message.Message,), {
+
+    'NonEscalar' : _reflection.GeneratedProtocolMessageType('NonEscalar', (_message.Message,), {
+      'DESCRIPTOR' : _TENSOR_NONESCALARDIMENSION_NONESCALAR,
+      '__module__' : 'regresion_pb2'
+      # @@protoc_insertion_point(class_scope:Tensor.NonEscalarDimension.NonEscalar)
+      })
+    ,
+    'DESCRIPTOR' : _TENSOR_NONESCALARDIMENSION,
+    '__module__' : 'regresion_pb2'
+    # @@protoc_insertion_point(class_scope:Tensor.NonEscalarDimension)
+    })
+  ,
+  'DESCRIPTOR' : _TENSOR,
+  '__module__' : 'regresion_pb2'
+  # @@protoc_insertion_point(class_scope:Tensor)
+  })
+_sym_db.RegisterMessage(Tensor)
+_sym_db.RegisterMessage(Tensor.NonEscalarDimension)
+_sym_db.RegisterMessage(Tensor.NonEscalarDimension.NonEscalar)
+
 
 
 _REGRESION = _descriptor.ServiceDescriptor(
@@ -111,8 +279,8 @@ _REGRESION = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=85,
-  serialized_end=185,
+  serialized_start=423,
+  serialized_end=513,
   methods=[
   _descriptor.MethodDescriptor(
     name='StreamLogs',
@@ -130,7 +298,7 @@ _REGRESION = _descriptor.ServiceDescriptor(
     index=1,
     containing_service=None,
     input_type=solvers__dataset__pb2._DATASET,
-    output_type=onnx__pb2._ONNX,
+    output_type=_TENSOR,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),
