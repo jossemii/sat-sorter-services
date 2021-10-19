@@ -26,7 +26,16 @@ message ServiceTransport {
     optional celaut.Configuration config = 3;    
 }
 
+
+// GRPC.
+
+message Buffer  {
+    oneof oneof{    
+        bytes chunk = 1;
+        bytes separator = 2;
+    }
+}
 service Gateway {
-    rpc StartService( stream ServiceTransport) returns (Instance) {}
-    rpc StopService(TokenMessage) returns (Empty) {}
+    rpc StartService( stream Buffer) returns ( stream Buffer) {} // ServiceTransport -> Instance
+    rpc StopService(stream Buffer) returns (stream Buffer) {} // TokenMessage -> Empty
 }

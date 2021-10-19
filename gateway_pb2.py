@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\rgateway.proto\x12\x07gateway\x1a\x0c\x63\x65laut.proto\"\x07\n\x05\x45mpty\"\x1d\n\x0cTokenMessage\x12\r\n\x05token\x18\x01 \x01(\t\"\x90\x01\n\x08Instance\x12\x30\n\rinstance_meta\x18\x01 \x01(\x0b\x32\x14.celaut.Any.MetadataH\x00\x88\x01\x01\x12\"\n\x08instance\x18\x02 \x01(\x0b\x32\x10.celaut.Instance\x12\x12\n\x05token\x18\x03 \x01(\tH\x01\x88\x01\x01\x42\x10\n\x0e_instance_metaB\x08\n\x06_token\"\x9c\x02\n\x10ServiceTransport\x12\x31\n\x04hash\x18\x01 \x01(\x0b\x32!.celaut.Any.Metadata.HashTag.HashH\x00\x12<\n\x07service\x18\x02 \x01(\x0b\x32).gateway.ServiceTransport.ServiceWithMetaH\x00\x12*\n\x06\x63onfig\x18\x03 \x01(\x0b\x32\x15.celaut.ConfigurationH\x01\x88\x01\x01\x1aW\n\x0fServiceWithMeta\x12\"\n\x04meta\x18\x01 \x01(\x0b\x32\x14.celaut.Any.Metadata\x12 \n\x07service\x18\x02 \x01(\x0b\x32\x0f.celaut.ServiceB\x07\n\x05oneOfB\t\n\x07_config2\x83\x01\n\x07Gateway\x12@\n\x0cStartService\x12\x19.gateway.ServiceTransport\x1a\x11.gateway.Instance\"\x00(\x01\x12\x36\n\x0bStopService\x12\x15.gateway.TokenMessage\x1a\x0e.gateway.Empty\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\rgateway.proto\x12\x07gateway\x1a\x0c\x63\x65laut.proto\"\x07\n\x05\x45mpty\"\x1d\n\x0cTokenMessage\x12\r\n\x05token\x18\x01 \x01(\t\"\x90\x01\n\x08Instance\x12\x30\n\rinstance_meta\x18\x01 \x01(\x0b\x32\x14.celaut.Any.MetadataH\x00\x88\x01\x01\x12\"\n\x08instance\x18\x02 \x01(\x0b\x32\x10.celaut.Instance\x12\x12\n\x05token\x18\x03 \x01(\tH\x01\x88\x01\x01\x42\x10\n\x0e_instance_metaB\x08\n\x06_token\"\x9c\x02\n\x10ServiceTransport\x12\x31\n\x04hash\x18\x01 \x01(\x0b\x32!.celaut.Any.Metadata.HashTag.HashH\x00\x12<\n\x07service\x18\x02 \x01(\x0b\x32).gateway.ServiceTransport.ServiceWithMetaH\x00\x12*\n\x06\x63onfig\x18\x03 \x01(\x0b\x32\x15.celaut.ConfigurationH\x01\x88\x01\x01\x1aW\n\x0fServiceWithMeta\x12\"\n\x04meta\x18\x01 \x01(\x0b\x32\x14.celaut.Any.Metadata\x12 \n\x07service\x18\x02 \x01(\x0b\x32\x0f.celaut.ServiceB\x07\n\x05oneOfB\t\n\x07_config\"7\n\x06\x42uffer\x12\x0f\n\x05\x63hunk\x18\x01 \x01(\x0cH\x00\x12\x13\n\tseparator\x18\x02 \x01(\x0cH\x00\x42\x07\n\x05oneof2x\n\x07Gateway\x12\x36\n\x0cStartService\x12\x0f.gateway.Buffer\x1a\x0f.gateway.Buffer\"\x00(\x01\x30\x01\x12\x35\n\x0bStopService\x12\x0f.gateway.Buffer\x1a\x0f.gateway.Buffer\"\x00(\x01\x30\x01\x62\x06proto3'
   ,
   dependencies=[celaut__pb2.DESCRIPTOR,])
 
@@ -233,6 +233,50 @@ _SERVICETRANSPORT = _descriptor.Descriptor(
   serialized_end=512,
 )
 
+
+_BUFFER = _descriptor.Descriptor(
+  name='Buffer',
+  full_name='gateway.Buffer',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='chunk', full_name='gateway.Buffer.chunk', index=0,
+      number=1, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='separator', full_name='gateway.Buffer.separator', index=1,
+      number=2, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+    _descriptor.OneofDescriptor(
+      name='oneof', full_name='gateway.Buffer.oneof',
+      index=0, containing_type=None,
+      create_key=_descriptor._internal_create_key,
+    fields=[]),
+  ],
+  serialized_start=514,
+  serialized_end=569,
+)
+
 _INSTANCE.fields_by_name['instance_meta'].message_type = celaut__pb2._ANY_METADATA
 _INSTANCE.fields_by_name['instance'].message_type = celaut__pb2._INSTANCE
 _INSTANCE.oneofs_by_name['_instance_meta'].fields.append(
@@ -256,10 +300,17 @@ _SERVICETRANSPORT.fields_by_name['service'].containing_oneof = _SERVICETRANSPORT
 _SERVICETRANSPORT.oneofs_by_name['_config'].fields.append(
   _SERVICETRANSPORT.fields_by_name['config'])
 _SERVICETRANSPORT.fields_by_name['config'].containing_oneof = _SERVICETRANSPORT.oneofs_by_name['_config']
+_BUFFER.oneofs_by_name['oneof'].fields.append(
+  _BUFFER.fields_by_name['chunk'])
+_BUFFER.fields_by_name['chunk'].containing_oneof = _BUFFER.oneofs_by_name['oneof']
+_BUFFER.oneofs_by_name['oneof'].fields.append(
+  _BUFFER.fields_by_name['separator'])
+_BUFFER.fields_by_name['separator'].containing_oneof = _BUFFER.oneofs_by_name['oneof']
 DESCRIPTOR.message_types_by_name['Empty'] = _EMPTY
 DESCRIPTOR.message_types_by_name['TokenMessage'] = _TOKENMESSAGE
 DESCRIPTOR.message_types_by_name['Instance'] = _INSTANCE
 DESCRIPTOR.message_types_by_name['ServiceTransport'] = _SERVICETRANSPORT
+DESCRIPTOR.message_types_by_name['Buffer'] = _BUFFER
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 Empty = _reflection.GeneratedProtocolMessageType('Empty', (_message.Message,), {
@@ -298,6 +349,13 @@ ServiceTransport = _reflection.GeneratedProtocolMessageType('ServiceTransport', 
 _sym_db.RegisterMessage(ServiceTransport)
 _sym_db.RegisterMessage(ServiceTransport.ServiceWithMeta)
 
+Buffer = _reflection.GeneratedProtocolMessageType('Buffer', (_message.Message,), {
+  'DESCRIPTOR' : _BUFFER,
+  '__module__' : 'gateway_pb2'
+  # @@protoc_insertion_point(class_scope:gateway.Buffer)
+  })
+_sym_db.RegisterMessage(Buffer)
+
 
 
 _GATEWAY = _descriptor.ServiceDescriptor(
@@ -307,16 +365,16 @@ _GATEWAY = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=515,
-  serialized_end=646,
+  serialized_start=571,
+  serialized_end=691,
   methods=[
   _descriptor.MethodDescriptor(
     name='StartService',
     full_name='gateway.Gateway.StartService',
     index=0,
     containing_service=None,
-    input_type=_SERVICETRANSPORT,
-    output_type=_INSTANCE,
+    input_type=_BUFFER,
+    output_type=_BUFFER,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),
@@ -325,8 +383,8 @@ _GATEWAY = _descriptor.ServiceDescriptor(
     full_name='gateway.Gateway.StopService',
     index=1,
     containing_service=None,
-    input_type=_TOKENMESSAGE,
-    output_type=_EMPTY,
+    input_type=_BUFFER,
+    output_type=_BUFFER,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),

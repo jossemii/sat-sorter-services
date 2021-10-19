@@ -22,7 +22,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\tapi.proto\x12\x03\x61pi\x1a\nonnx.proto\x1a\x0c\x63\x65laut.proto\x1a\x15solvers_dataset.proto\"L\n\x0eInterpretation\x12\x10\n\x08variable\x18\x01 \x03(\x05\x12\x18\n\x0bsatisfiable\x18\x02 \x01(\x08H\x00\x88\x01\x01\x42\x0e\n\x0c_satisfiable\"\x19\n\x06\x43lause\x12\x0f\n\x07literal\x18\x01 \x03(\x05\"\"\n\x03\x43nf\x12\x1b\n\x06\x63lause\x18\x01 \x03(\x0b\x32\x0b.api.Clause\"\x07\n\x05\x45mpty\"\x14\n\x04\x46ile\x12\x0c\n\x04\x66ile\x18\x01 \x01(\t\"W\n\x0fServiceWithMeta\x12\"\n\x04meta\x18\x01 \x01(\x0b\x32\x14.celaut.Any.Metadata\x12 \n\x07service\x18\x02 \x01(\x0b\x32\x0f.celaut.Service\"\xa5\x03\n\x06Tensor\x12-\n\rspecification\x18\x01 \x01(\x0b\x32\x16.celaut.Service.Tensor\x12*\n\x07\x65scalar\x18\x02 \x01(\x0b\x32\x17.tensor_onnx.ModelProtoH\x00\x12\x36\n\x0bnon_escalar\x18\x03 \x01(\x0b\x32\x1f.api.Tensor.NonEscalarDimensionH\x00\x1a\xfe\x01\n\x13NonEscalarDimension\x12?\n\x0bnon_escalar\x18\x01 \x03(\x0b\x32*.api.Tensor.NonEscalarDimension.NonEscalar\x1a\xa5\x01\n\nNonEscalar\x12*\n\x07\x65lement\x18\x01 \x01(\x0b\x32\x19.dataset.SolverWithConfig\x12*\n\x07\x65scalar\x18\x02 \x01(\x0b\x32\x17.tensor_onnx.ModelProtoH\x00\x12\x36\n\x0bnon_escalar\x18\x03 \x01(\x0b\x32\x1f.api.Tensor.NonEscalarDimensionH\x00\x42\x07\n\x05modelB\x07\n\x05model2-\n\x06Random\x12#\n\tRandomCnf\x12\n.api.Empty\x1a\x08.api.Cnf\"\x00\x32\x8a\x03\n\x06Solver\x12&\n\nStartTrain\x12\n.api.Empty\x1a\n.api.Empty\"\x00\x12%\n\tStopTrain\x12\n.api.Empty\x1a\n.api.Empty\"\x00\x12&\n\tGetTensor\x12\n.api.Empty\x1a\x0b.api.Tensor\"\x00\x12\x32\n\x0cUploadSolver\x12\x14.api.ServiceWithMeta\x1a\n.api.Empty\"\x00\x12\'\n\nStreamLogs\x12\n.api.Empty\x1a\t.api.File\"\x00\x30\x01\x12(\n\x05Solve\x12\x08.api.Cnf\x1a\x13.api.Interpretation\"\x00\x12&\n\tAddTensor\x12\x0b.api.Tensor\x1a\n.api.Empty\"\x00\x12,\n\nGetDataSet\x12\n.api.Empty\x1a\x10.dataset.DataSet\"\x00\x12,\n\nAddDataSet\x12\x10.dataset.DataSet\x1a\n.api.Empty\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\tapi.proto\x12\x03\x61pi\x1a\nonnx.proto\x1a\x0c\x63\x65laut.proto\x1a\x15solvers_dataset.proto\"L\n\x0eInterpretation\x12\x10\n\x08variable\x18\x01 \x03(\x05\x12\x18\n\x0bsatisfiable\x18\x02 \x01(\x08H\x00\x88\x01\x01\x42\x0e\n\x0c_satisfiable\"\x19\n\x06\x43lause\x12\x0f\n\x07literal\x18\x01 \x03(\x05\"\"\n\x03\x43nf\x12\x1b\n\x06\x63lause\x18\x01 \x03(\x0b\x32\x0b.api.Clause\"\x07\n\x05\x45mpty\"\x14\n\x04\x46ile\x12\x0c\n\x04\x66ile\x18\x01 \x01(\t\"W\n\x0fServiceWithMeta\x12\"\n\x04meta\x18\x01 \x01(\x0b\x32\x14.celaut.Any.Metadata\x12 \n\x07service\x18\x02 \x01(\x0b\x32\x0f.celaut.Service\"\xa5\x03\n\x06Tensor\x12-\n\rspecification\x18\x01 \x01(\x0b\x32\x16.celaut.Service.Tensor\x12*\n\x07\x65scalar\x18\x02 \x01(\x0b\x32\x17.tensor_onnx.ModelProtoH\x00\x12\x36\n\x0bnon_escalar\x18\x03 \x01(\x0b\x32\x1f.api.Tensor.NonEscalarDimensionH\x00\x1a\xfe\x01\n\x13NonEscalarDimension\x12?\n\x0bnon_escalar\x18\x01 \x03(\x0b\x32*.api.Tensor.NonEscalarDimension.NonEscalar\x1a\xa5\x01\n\nNonEscalar\x12*\n\x07\x65lement\x18\x01 \x01(\x0b\x32\x19.dataset.SolverWithConfig\x12*\n\x07\x65scalar\x18\x02 \x01(\x0b\x32\x17.tensor_onnx.ModelProtoH\x00\x12\x36\n\x0bnon_escalar\x18\x03 \x01(\x0b\x32\x1f.api.Tensor.NonEscalarDimensionH\x00\x42\x07\n\x05modelB\x07\n\x05model\"7\n\x06\x42uffer\x12\x0f\n\x05\x63hunk\x18\x01 \x01(\x0cH\x00\x12\x13\n\tseparator\x18\x02 \x01(\x0cH\x00\x42\x07\n\x05oneof2-\n\x06Random\x12#\n\tRandomCnf\x12\n.api.Empty\x1a\x08.api.Cnf\"\x00\x32\xa0\x03\n\x06Solver\x12,\n\nStartTrain\x12\x0b.api.Buffer\x1a\x0b.api.Buffer\"\x00(\x01\x30\x01\x12+\n\tStopTrain\x12\x0b.api.Buffer\x1a\x0b.api.Buffer\"\x00(\x01\x30\x01\x12+\n\tGetTensor\x12\x0b.api.Buffer\x1a\x0b.api.Buffer\"\x00(\x01\x30\x01\x12.\n\x0cUploadSolver\x12\x0b.api.Buffer\x1a\x0b.api.Buffer\"\x00(\x01\x30\x01\x12,\n\nStreamLogs\x12\x0b.api.Buffer\x1a\x0b.api.Buffer\"\x00(\x01\x30\x01\x12\'\n\x05Solve\x12\x0b.api.Buffer\x1a\x0b.api.Buffer\"\x00(\x01\x30\x01\x12+\n\tAddTensor\x12\x0b.api.Buffer\x1a\x0b.api.Buffer\"\x00(\x01\x30\x01\x12,\n\nGetDataSet\x12\x0b.api.Buffer\x1a\x0b.api.Buffer\"\x00(\x01\x30\x01\x12,\n\nAddDataSet\x12\x0b.api.Buffer\x1a\x0b.api.Buffer\"\x00(\x01\x30\x01\x62\x06proto3'
   ,
   dependencies=[onnx__pb2.DESCRIPTOR,celaut__pb2.DESCRIPTOR,solvers__dataset__pb2.DESCRIPTOR,])
 
@@ -364,6 +364,50 @@ _TENSOR = _descriptor.Descriptor(
   serialized_end=750,
 )
 
+
+_BUFFER = _descriptor.Descriptor(
+  name='Buffer',
+  full_name='api.Buffer',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='chunk', full_name='api.Buffer.chunk', index=0,
+      number=1, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='separator', full_name='api.Buffer.separator', index=1,
+      number=2, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+    _descriptor.OneofDescriptor(
+      name='oneof', full_name='api.Buffer.oneof',
+      index=0, containing_type=None,
+      create_key=_descriptor._internal_create_key,
+    fields=[]),
+  ],
+  serialized_start=752,
+  serialized_end=807,
+)
+
 _INTERPRETATION.oneofs_by_name['_satisfiable'].fields.append(
   _INTERPRETATION.fields_by_name['satisfiable'])
 _INTERPRETATION.fields_by_name['satisfiable'].containing_oneof = _INTERPRETATION.oneofs_by_name['_satisfiable']
@@ -391,6 +435,12 @@ _TENSOR.fields_by_name['escalar'].containing_oneof = _TENSOR.oneofs_by_name['mod
 _TENSOR.oneofs_by_name['model'].fields.append(
   _TENSOR.fields_by_name['non_escalar'])
 _TENSOR.fields_by_name['non_escalar'].containing_oneof = _TENSOR.oneofs_by_name['model']
+_BUFFER.oneofs_by_name['oneof'].fields.append(
+  _BUFFER.fields_by_name['chunk'])
+_BUFFER.fields_by_name['chunk'].containing_oneof = _BUFFER.oneofs_by_name['oneof']
+_BUFFER.oneofs_by_name['oneof'].fields.append(
+  _BUFFER.fields_by_name['separator'])
+_BUFFER.fields_by_name['separator'].containing_oneof = _BUFFER.oneofs_by_name['oneof']
 DESCRIPTOR.message_types_by_name['Interpretation'] = _INTERPRETATION
 DESCRIPTOR.message_types_by_name['Clause'] = _CLAUSE
 DESCRIPTOR.message_types_by_name['Cnf'] = _CNF
@@ -398,6 +448,7 @@ DESCRIPTOR.message_types_by_name['Empty'] = _EMPTY
 DESCRIPTOR.message_types_by_name['File'] = _FILE
 DESCRIPTOR.message_types_by_name['ServiceWithMeta'] = _SERVICEWITHMETA
 DESCRIPTOR.message_types_by_name['Tensor'] = _TENSOR
+DESCRIPTOR.message_types_by_name['Buffer'] = _BUFFER
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 Interpretation = _reflection.GeneratedProtocolMessageType('Interpretation', (_message.Message,), {
@@ -465,6 +516,13 @@ _sym_db.RegisterMessage(Tensor)
 _sym_db.RegisterMessage(Tensor.NonEscalarDimension)
 _sym_db.RegisterMessage(Tensor.NonEscalarDimension.NonEscalar)
 
+Buffer = _reflection.GeneratedProtocolMessageType('Buffer', (_message.Message,), {
+  'DESCRIPTOR' : _BUFFER,
+  '__module__' : 'api_pb2'
+  # @@protoc_insertion_point(class_scope:api.Buffer)
+  })
+_sym_db.RegisterMessage(Buffer)
+
 
 
 _RANDOM = _descriptor.ServiceDescriptor(
@@ -474,8 +532,8 @@ _RANDOM = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=752,
-  serialized_end=797,
+  serialized_start=809,
+  serialized_end=854,
   methods=[
   _descriptor.MethodDescriptor(
     name='RandomCnf',
@@ -500,16 +558,16 @@ _SOLVER = _descriptor.ServiceDescriptor(
   index=1,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=800,
-  serialized_end=1194,
+  serialized_start=857,
+  serialized_end=1273,
   methods=[
   _descriptor.MethodDescriptor(
     name='StartTrain',
     full_name='api.Solver.StartTrain',
     index=0,
     containing_service=None,
-    input_type=_EMPTY,
-    output_type=_EMPTY,
+    input_type=_BUFFER,
+    output_type=_BUFFER,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),
@@ -518,8 +576,8 @@ _SOLVER = _descriptor.ServiceDescriptor(
     full_name='api.Solver.StopTrain',
     index=1,
     containing_service=None,
-    input_type=_EMPTY,
-    output_type=_EMPTY,
+    input_type=_BUFFER,
+    output_type=_BUFFER,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),
@@ -528,8 +586,8 @@ _SOLVER = _descriptor.ServiceDescriptor(
     full_name='api.Solver.GetTensor',
     index=2,
     containing_service=None,
-    input_type=_EMPTY,
-    output_type=_TENSOR,
+    input_type=_BUFFER,
+    output_type=_BUFFER,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),
@@ -538,8 +596,8 @@ _SOLVER = _descriptor.ServiceDescriptor(
     full_name='api.Solver.UploadSolver',
     index=3,
     containing_service=None,
-    input_type=_SERVICEWITHMETA,
-    output_type=_EMPTY,
+    input_type=_BUFFER,
+    output_type=_BUFFER,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),
@@ -548,8 +606,8 @@ _SOLVER = _descriptor.ServiceDescriptor(
     full_name='api.Solver.StreamLogs',
     index=4,
     containing_service=None,
-    input_type=_EMPTY,
-    output_type=_FILE,
+    input_type=_BUFFER,
+    output_type=_BUFFER,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),
@@ -558,8 +616,8 @@ _SOLVER = _descriptor.ServiceDescriptor(
     full_name='api.Solver.Solve',
     index=5,
     containing_service=None,
-    input_type=_CNF,
-    output_type=_INTERPRETATION,
+    input_type=_BUFFER,
+    output_type=_BUFFER,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),
@@ -568,8 +626,8 @@ _SOLVER = _descriptor.ServiceDescriptor(
     full_name='api.Solver.AddTensor',
     index=6,
     containing_service=None,
-    input_type=_TENSOR,
-    output_type=_EMPTY,
+    input_type=_BUFFER,
+    output_type=_BUFFER,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),
@@ -578,8 +636,8 @@ _SOLVER = _descriptor.ServiceDescriptor(
     full_name='api.Solver.GetDataSet',
     index=7,
     containing_service=None,
-    input_type=_EMPTY,
-    output_type=solvers__dataset__pb2._DATASET,
+    input_type=_BUFFER,
+    output_type=_BUFFER,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),
@@ -588,8 +646,8 @@ _SOLVER = _descriptor.ServiceDescriptor(
     full_name='api.Solver.AddDataSet',
     index=8,
     containing_service=None,
-    input_type=solvers__dataset__pb2._DATASET,
-    output_type=_EMPTY,
+    input_type=_BUFFER,
+    output_type=_BUFFER,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),

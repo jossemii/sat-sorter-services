@@ -6,6 +6,7 @@ import api_pb2, api_pb2_grpc, solvers_dataset_pb2, gateway_pb2, gateway_pb2_grpc
 from singleton import Singleton
 import _solve
 from start import LOGGER, DIR, SHA3_256, SHA3_256_ID, get_grpc_uri
+from utils import client_grpc
 
 
 class Session(metaclass=Singleton):
@@ -46,10 +47,11 @@ class Session(metaclass=Singleton):
         LOGGER('Stopping random service.')
         while True:
             try:
-                self.gateway_stub.StopService(
-                    gateway_pb2.TokenMessage(
-                        token = self.random_token
-                    )
+                client_grpc(
+                    method = self.gateway_stub.StopService,
+                    input = gateway_pb2.TokenMessage(
+                            token = self.random_token
+                        )
                 )
                 break
             except grpc.RpcError as e:
@@ -144,7 +146,11 @@ class Session(metaclass=Singleton):
         LOGGER('Launching random service instance.')
         while True:
             try:
-                instance = self.gateway_stub.StartService(self.random_service_extended())
+                instance = client_grpc(
+                    method = self.gateway_stub.StartService,
+                    input = self.random_service_extended(),
+                    output_field = gateway_pb2.Instance
+                )[0]
                 break
             except grpc.RpcError as e:
                 LOGGER('GRPC ERROR.' + str(e))
@@ -157,15 +163,17 @@ class Session(metaclass=Singleton):
         )
         self.random_token = instance.token
 
-    def random_cnf(self):
+    def random_cnf(self) -> api_pb2.Cnf:
         connection_errors = 0
         while True:
             try:
                 LOGGER('OBTENIENDO RANDON CNF')
-                return self.random_stub.RandomCnf(
-                    request=api_pb2.Empty(),
-                    timeout=self.START_AVR_TIMEOUT
-                )
+                return client_grpc(
+                    method = self.random_stub.RandomCnf,
+                    input = api_pb2.Empty(),
+                    output_field = api_pb2.Cnf,
+                    timeout = self.START_AVR_TIMEOUT
+                )[0]
             except (grpc.RpcError, TimeoutError) as e:
                 if connection_errors < self.CONNECTION_ERRORS:
                     connection_errors = connection_errors + 1

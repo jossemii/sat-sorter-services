@@ -3,7 +3,8 @@ from time import sleep
 from typing import Generator
 from singleton import Singleton
 from start import LOGGER, SHA3_256, get_grpc_uri, DIR
-import grpc, solvers_dataset_pb2, api_pb2, gateway_pb2_grpc, regresion_pb2_grpc, gateway_pb2, onnx_pb2, regresion_pb2, os
+import grpc, solvers_dataset_pb2, api_pb2, gateway_pb2_grpc, regresion_pb2_grpc, gateway_pb2, regresion_pb2, os
+from utils import client_grpc
 
 class Session(metaclass = Singleton):
 
@@ -59,9 +60,11 @@ class Session(metaclass = Singleton):
         LOGGER('Launching regresion service instance.')
         while True:
             try:
-                instance = self.gateway_stub.StartService(
-                    self.service_extended()
-                    )
+                instance = client_grpc(
+                    method = self.gateway_stub.StartService,
+                    input = self.service_extended(),
+                    output_field = gateway_pb2.Instance
+                )[0]
                 break
             except grpc.RpcError as e:
                 LOGGER('GRPC ERROR.' + str(e))
@@ -78,10 +81,11 @@ class Session(metaclass = Singleton):
         LOGGER('Stopping regresion service instance.')
         while True:
             try:
-                self.gateway_stub.StopService(
-                    gateway_pb2.TokenMessage(
-                        token = self.token
-                    )
+                client_grpc(
+                    method = self.gateway_stub.StopService,
+                    input = gateway_pb2.TokenMessage(
+                            token = self.token
+                        )
                 )
                 break
             except grpc.RpcError as e:
@@ -170,8 +174,10 @@ class Session(metaclass = Singleton):
     def stream_logs(self) -> Generator[api_pb2.File, None, None]:
         while True:
             try:
-                for file in self.stub.StreamLogs(
-                    request = api_pb2.Empty(),
+                for file in client_grpc(
+                    method = self.stub.StreamLogs,
+                    input = api_pb2.Empty(),
+                    output_field = regresion_pb2.File,
                     timeout = self.START_AVR_TIMEOUT
                 ): yield file
                 
@@ -181,9 +187,11 @@ class Session(metaclass = Singleton):
     # Make regresion Grpc method.
     def iterate_regression(self, data_set: solvers_dataset_pb2.DataSet) -> regresion_pb2.Tensor:
         try:
-            return self.stub.MakeRegresion(
-                request = data_set
-                )
+            return client_grpc(
+                method= self.stub.MakeRegresion,
+                input = data_set,
+                output_field = regresion_pb2.Tensor
+            )[0]
         except (grpc.RpcError, TimeoutError) as e:
             self.error_control(e)
             raise Exception

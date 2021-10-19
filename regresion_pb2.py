@@ -12,7 +12,6 @@ _sym_db = _symbol_database.Default()
 
 
 import onnx_pb2 as onnx__pb2
-import solvers_dataset_pb2 as solvers__dataset__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
@@ -21,9 +20,9 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0fregresion.proto\x1a\nonnx.proto\x1a\x15solvers_dataset.proto\"\x07\n\x05\x45mpty\"\x14\n\x04\x46ile\x12\x0c\n\x04\x66ile\x18\x01 \x01(\t\"\xcf\x02\n\x06Tensor\x12*\n\x07\x65scalar\x18\x01 \x01(\x0b\x32\x17.tensor_onnx.ModelProtoH\x00\x12\x32\n\x0bnon_escalar\x18\x02 \x01(\x0b\x32\x1b.Tensor.NonEscalarDimensionH\x00\x1a\xdb\x01\n\x13NonEscalarDimension\x12;\n\x0bnon_escalar\x18\x01 \x03(\x0b\x32&.Tensor.NonEscalarDimension.NonEscalar\x1a\x86\x01\n\nNonEscalar\x12\x0f\n\x07\x65lement\x18\x01 \x01(\t\x12*\n\x07\x65scalar\x18\x02 \x01(\x0b\x32\x17.tensor_onnx.ModelProtoH\x00\x12\x32\n\x0bnon_escalar\x18\x03 \x01(\x0b\x32\x1b.Tensor.NonEscalarDimensionH\x00\x42\x07\n\x05modelB\x07\n\x05model2Z\n\tRegresion\x12\x1f\n\nStreamLogs\x12\x06.Empty\x1a\x05.File\"\x00\x30\x01\x12,\n\rMakeRegresion\x12\x10.dataset.DataSet\x1a\x07.Tensor\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\x0fregresion.proto\x1a\nonnx.proto\"\x07\n\x05\x45mpty\"\x14\n\x04\x46ile\x12\x0c\n\x04\x66ile\x18\x01 \x01(\t\"\xcf\x02\n\x06Tensor\x12*\n\x07\x65scalar\x18\x01 \x01(\x0b\x32\x17.tensor_onnx.ModelProtoH\x00\x12\x32\n\x0bnon_escalar\x18\x02 \x01(\x0b\x32\x1b.Tensor.NonEscalarDimensionH\x00\x1a\xdb\x01\n\x13NonEscalarDimension\x12;\n\x0bnon_escalar\x18\x01 \x03(\x0b\x32&.Tensor.NonEscalarDimension.NonEscalar\x1a\x86\x01\n\nNonEscalar\x12\x0f\n\x07\x65lement\x18\x01 \x01(\t\x12*\n\x07\x65scalar\x18\x02 \x01(\x0b\x32\x17.tensor_onnx.ModelProtoH\x00\x12\x32\n\x0bnon_escalar\x18\x03 \x01(\x0b\x32\x1b.Tensor.NonEscalarDimensionH\x00\x42\x07\n\x05modelB\x07\n\x05model\"7\n\x06\x42uffer\x12\x0f\n\x05\x63hunk\x18\x01 \x01(\x0cH\x00\x12\x13\n\tseparator\x18\x02 \x01(\x0cH\x00\x42\x07\n\x05oneof2Z\n\tRegresion\x12$\n\nStreamLogs\x12\x07.Buffer\x1a\x07.Buffer\"\x00(\x01\x30\x01\x12\'\n\rMakeRegresion\x12\x07.Buffer\x1a\x07.Buffer\"\x00(\x01\x30\x01\x62\x06proto3'
   ,
-  dependencies=[onnx__pb2.DESCRIPTOR,solvers__dataset__pb2.DESCRIPTOR,])
+  dependencies=[onnx__pb2.DESCRIPTOR,])
 
 
 
@@ -48,8 +47,8 @@ _EMPTY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=54,
-  serialized_end=61,
+  serialized_start=31,
+  serialized_end=38,
 )
 
 
@@ -80,8 +79,8 @@ _FILE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=63,
-  serialized_end=83,
+  serialized_start=40,
+  serialized_end=60,
 )
 
 
@@ -131,8 +130,8 @@ _TENSOR_NONESCALARDIMENSION_NONESCALAR = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=278,
-  serialized_end=412,
+  serialized_start=255,
+  serialized_end=389,
 )
 
 _TENSOR_NONESCALARDIMENSION = _descriptor.Descriptor(
@@ -162,8 +161,8 @@ _TENSOR_NONESCALARDIMENSION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=193,
-  serialized_end=412,
+  serialized_start=170,
+  serialized_end=389,
 )
 
 _TENSOR = _descriptor.Descriptor(
@@ -205,8 +204,52 @@ _TENSOR = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=86,
-  serialized_end=421,
+  serialized_start=63,
+  serialized_end=398,
+)
+
+
+_BUFFER = _descriptor.Descriptor(
+  name='Buffer',
+  full_name='Buffer',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='chunk', full_name='Buffer.chunk', index=0,
+      number=1, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='separator', full_name='Buffer.separator', index=1,
+      number=2, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+    _descriptor.OneofDescriptor(
+      name='oneof', full_name='Buffer.oneof',
+      index=0, containing_type=None,
+      create_key=_descriptor._internal_create_key,
+    fields=[]),
+  ],
+  serialized_start=400,
+  serialized_end=455,
 )
 
 _TENSOR_NONESCALARDIMENSION_NONESCALAR.fields_by_name['escalar'].message_type = onnx__pb2._MODELPROTO
@@ -228,9 +271,16 @@ _TENSOR.fields_by_name['escalar'].containing_oneof = _TENSOR.oneofs_by_name['mod
 _TENSOR.oneofs_by_name['model'].fields.append(
   _TENSOR.fields_by_name['non_escalar'])
 _TENSOR.fields_by_name['non_escalar'].containing_oneof = _TENSOR.oneofs_by_name['model']
+_BUFFER.oneofs_by_name['oneof'].fields.append(
+  _BUFFER.fields_by_name['chunk'])
+_BUFFER.fields_by_name['chunk'].containing_oneof = _BUFFER.oneofs_by_name['oneof']
+_BUFFER.oneofs_by_name['oneof'].fields.append(
+  _BUFFER.fields_by_name['separator'])
+_BUFFER.fields_by_name['separator'].containing_oneof = _BUFFER.oneofs_by_name['oneof']
 DESCRIPTOR.message_types_by_name['Empty'] = _EMPTY
 DESCRIPTOR.message_types_by_name['File'] = _FILE
 DESCRIPTOR.message_types_by_name['Tensor'] = _TENSOR
+DESCRIPTOR.message_types_by_name['Buffer'] = _BUFFER
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 Empty = _reflection.GeneratedProtocolMessageType('Empty', (_message.Message,), {
@@ -270,6 +320,13 @@ _sym_db.RegisterMessage(Tensor)
 _sym_db.RegisterMessage(Tensor.NonEscalarDimension)
 _sym_db.RegisterMessage(Tensor.NonEscalarDimension.NonEscalar)
 
+Buffer = _reflection.GeneratedProtocolMessageType('Buffer', (_message.Message,), {
+  'DESCRIPTOR' : _BUFFER,
+  '__module__' : 'regresion_pb2'
+  # @@protoc_insertion_point(class_scope:Buffer)
+  })
+_sym_db.RegisterMessage(Buffer)
+
 
 
 _REGRESION = _descriptor.ServiceDescriptor(
@@ -279,16 +336,16 @@ _REGRESION = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=423,
-  serialized_end=513,
+  serialized_start=457,
+  serialized_end=547,
   methods=[
   _descriptor.MethodDescriptor(
     name='StreamLogs',
     full_name='Regresion.StreamLogs',
     index=0,
     containing_service=None,
-    input_type=_EMPTY,
-    output_type=_FILE,
+    input_type=_BUFFER,
+    output_type=_BUFFER,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),
@@ -297,8 +354,8 @@ _REGRESION = _descriptor.ServiceDescriptor(
     full_name='Regresion.MakeRegresion',
     index=1,
     containing_service=None,
-    input_type=solvers__dataset__pb2._DATASET,
-    output_type=_TENSOR,
+    input_type=_BUFFER,
+    output_type=_BUFFER,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),

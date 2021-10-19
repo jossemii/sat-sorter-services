@@ -1,7 +1,7 @@
 from time import sleep, time as time_now
 from datetime import datetime, timedelta
 from threading import Thread, Lock
-
+from utils import client_grpc
 import grpc
 
 import api_pb2, api_pb2_grpc, gateway_pb2, gateway_pb2_grpc, solvers_dataset_pb2, celaut_pb2 as celaut
@@ -53,9 +53,10 @@ class SolverInstance(object):
         clause.literal.append(1)
         cnf.clause.append(clause)
         try:
-            self.stub.Solve(
-                request=cnf,
-                timeout=timeout
+            client_grpc(
+                method = self.stub.Solve,
+                input = cnf,
+                timeout = timeout
             )
             return True
         except (TimeoutError, grpc.RpcError):
@@ -65,10 +66,11 @@ class SolverInstance(object):
         LOGGER('Stops this instance with token ' + str(self.token))
         while True:
             try:
-                gateway_stub.StopService(
-                    gateway_pb2.TokenMessage(
-                        token = self.token
-                    )
+                client_grpc(
+                    method = gateway_stub.StopService,
+                    input = gateway_pb2.TokenMessage(
+                            token = self.token
+                        )
                 )
                 break
             except grpc.RpcError as e:
@@ -112,7 +114,11 @@ class SolverConfig(object):
         LOGGER('    launching new instance for solver ' + str(self.service_metadata.hashtag.hash[0].value.hex()))
         while True:
             try:
-                instance = gateway_stub.StartService(self.service_extended()) # Sin timeout, por si tiene que construirlo.
+                instance = client_grpc(
+                    method = gateway_stub.StartService,
+                    input = self.service_extended(),
+                    output_field = gateway_pb2.Instance                
+                )[0]  # Sin timeout, por si tiene que construirlo.
                 break
             except grpc.RpcError as e:
                 LOGGER('GRPC ERROR.' + str(e))
@@ -176,7 +182,7 @@ class Session(metaclass = Singleton):
         self.lock = Lock()
         Thread(target=self.maintenance, name='Maintainer').start()
 
-    def cnf(self, cnf, solver_config_id: str, timeout=None):
+    def cnf(self, cnf: api_pb2.Cnf, solver_config_id: str, timeout=None):
         LOGGER(str(timeout) + 'cnf want solvers lock' + str(self.lock.locked()))
         self.lock.acquire()
 
@@ -194,10 +200,12 @@ class Session(metaclass = Singleton):
             # Tiene en cuenta el tiempo de respuesta y deserializacion del buffer.
             start_time = time_now()
             LOGGER('    resolving cnf on ' + str(solver_config_id))
-            interpretation = instance.stub.Solve(
-                request=cnf,
-                timeout=timeout
-            )
+            interpretation = client_grpc(
+                method = instance.stub.Solve,
+                input = cnf,
+                output_field = api_pb2.Interpretation,
+                timeout = timeout
+            )[0]
             time = time_now() - start_time
             LOGGER(str(time) + '    resolved cnf on ' + str(solver_config_id))
             # Si hemos obtenido una respuesta, en caso de que nos comunique que hay una interpretacion,

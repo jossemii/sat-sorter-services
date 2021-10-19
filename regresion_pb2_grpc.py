@@ -3,7 +3,6 @@
 import grpc
 
 import regresion_pb2 as regresion__pb2
-import solvers_dataset_pb2 as solvers__dataset__pb2
 
 
 class RegresionStub(object):
@@ -15,28 +14,28 @@ class RegresionStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.StreamLogs = channel.unary_stream(
+        self.StreamLogs = channel.stream_stream(
                 '/Regresion/StreamLogs',
-                request_serializer=regresion__pb2.Empty.SerializeToString,
-                response_deserializer=regresion__pb2.File.FromString,
+                request_serializer=regresion__pb2.Buffer.SerializeToString,
+                response_deserializer=regresion__pb2.Buffer.FromString,
                 )
-        self.MakeRegresion = channel.unary_unary(
+        self.MakeRegresion = channel.stream_stream(
                 '/Regresion/MakeRegresion',
-                request_serializer=solvers__dataset__pb2.DataSet.SerializeToString,
-                response_deserializer=regresion__pb2.Tensor.FromString,
+                request_serializer=regresion__pb2.Buffer.SerializeToString,
+                response_deserializer=regresion__pb2.Buffer.FromString,
                 )
 
 
 class RegresionServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def StreamLogs(self, request, context):
+    def StreamLogs(self, request_iterator, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def MakeRegresion(self, request, context):
+    def MakeRegresion(self, request_iterator, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -45,15 +44,15 @@ class RegresionServicer(object):
 
 def add_RegresionServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'StreamLogs': grpc.unary_stream_rpc_method_handler(
+            'StreamLogs': grpc.stream_stream_rpc_method_handler(
                     servicer.StreamLogs,
-                    request_deserializer=regresion__pb2.Empty.FromString,
-                    response_serializer=regresion__pb2.File.SerializeToString,
+                    request_deserializer=regresion__pb2.Buffer.FromString,
+                    response_serializer=regresion__pb2.Buffer.SerializeToString,
             ),
-            'MakeRegresion': grpc.unary_unary_rpc_method_handler(
+            'MakeRegresion': grpc.stream_stream_rpc_method_handler(
                     servicer.MakeRegresion,
-                    request_deserializer=solvers__dataset__pb2.DataSet.FromString,
-                    response_serializer=regresion__pb2.Tensor.SerializeToString,
+                    request_deserializer=regresion__pb2.Buffer.FromString,
+                    response_serializer=regresion__pb2.Buffer.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -66,7 +65,7 @@ class Regresion(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def StreamLogs(request,
+    def StreamLogs(request_iterator,
             target,
             options=(),
             channel_credentials=None,
@@ -76,14 +75,14 @@ class Regresion(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_stream(request, target, '/Regresion/StreamLogs',
-            regresion__pb2.Empty.SerializeToString,
-            regresion__pb2.File.FromString,
+        return grpc.experimental.stream_stream(request_iterator, target, '/Regresion/StreamLogs',
+            regresion__pb2.Buffer.SerializeToString,
+            regresion__pb2.Buffer.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def MakeRegresion(request,
+    def MakeRegresion(request_iterator,
             target,
             options=(),
             channel_credentials=None,
@@ -93,8 +92,8 @@ class Regresion(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/Regresion/MakeRegresion',
-            solvers__dataset__pb2.DataSet.SerializeToString,
-            regresion__pb2.Tensor.FromString,
+        return grpc.experimental.stream_stream(request_iterator, target, '/Regresion/MakeRegresion',
+            regresion__pb2.Buffer.SerializeToString,
+            regresion__pb2.Buffer.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
