@@ -63,8 +63,9 @@ class Session(metaclass = Singleton):
                 instance = client_grpc(
                     method = self.gateway_stub.StartService,
                     input = self.service_extended(),
-                    output_field = gateway_pb2.Instance
-                )[0]
+                    output_field = gateway_pb2.Instance,
+                    first_only=True
+                )
                 break
             except grpc.RpcError as e:
                 LOGGER('GRPC ERROR.' + str(e))
@@ -190,8 +191,9 @@ class Session(metaclass = Singleton):
             return client_grpc(
                 method= self.stub.MakeRegresion,
                 input = data_set,
-                output_field = regresion_pb2.Tensor
-            )[0]
+                output_field = regresion_pb2.Tensor,
+                first_only=True
+            )
         except (grpc.RpcError, TimeoutError) as e:
             self.error_control(e)
             raise Exception

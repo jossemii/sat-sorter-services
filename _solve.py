@@ -117,8 +117,9 @@ class SolverConfig(object):
                 instance = client_grpc(
                     method = gateway_stub.StartService,
                     input = self.service_extended(),
-                    output_field = gateway_pb2.Instance                
-                )[0]  # Sin timeout, por si tiene que construirlo.
+                    output_field = gateway_pb2.Instance,
+                    first_only=True             
+                )  # Sin timeout, por si tiene que construirlo.
                 break
             except grpc.RpcError as e:
                 LOGGER('GRPC ERROR.' + str(e))
@@ -204,8 +205,9 @@ class Session(metaclass = Singleton):
                 method = instance.stub.Solve,
                 input = cnf,
                 output_field = api_pb2.Interpretation,
-                timeout = timeout
-            )[0]
+                timeout = timeout,
+                first_only=True
+            )
             time = time_now() - start_time
             LOGGER(str(time) + '    resolved cnf on ' + str(solver_config_id))
             # Si hemos obtenido una respuesta, en caso de que nos comunique que hay una interpretacion,

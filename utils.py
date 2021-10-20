@@ -1,4 +1,3 @@
-from datetime import time
 import gateway_pb2
 from typing import Generator
 
@@ -18,7 +17,7 @@ def save_chunks_to_file(chunks: gateway_pb2.Buffer, filename):
         for buffer in chunks:
             f.write(buffer.chunk)
 
-def parse_from_buffer(request_iterator, message_field = None) -> Generator:
+def parse_from_buffer(request_iterator, message_field = None):
     while True:
         all_buffer = ''
         for buffer in request_iterator:
@@ -38,7 +37,8 @@ def parse_from_buffer(request_iterator, message_field = None) -> Generator:
 def serialize_to_buffer(message_iterator):
     if not hasattr(message_iterator, '__iter__'): message_iterator=[message_iterator]
     for message in message_iterator:
-        for chunk in message.SerializeToString().read(CHUNK_SIZE):
+        byte_list = list(message.SerializeToString())
+        for chunk in [byte_list[i:i + CHUNK_SIZE] for i in range(0, len(byte_list), CHUNK_SIZE)]:
             yield gateway_pb2.Buffer(
                 chunk = chunk
             )
@@ -46,8 +46,8 @@ def serialize_to_buffer(message_iterator):
             separator = ''
         )
 
-def client_grpc(method, output_field = None, input=None, timeout=None) -> Generator:
-    return parse_from_buffer(
+def client_grpc(method, output_field = None, input=None, timeout=None, first_only: bool=False):
+    result_iterator = parse_from_buffer(
         request_iterator = method(
                             serialize_to_buffer(
                                 input if input else ''
@@ -56,3 +56,4 @@ def client_grpc(method, output_field = None, input=None, timeout=None) -> Genera
                         ),
         message_field = output_field
     )
+    return result_iterator if not first_only else list(result_iterator)[0]

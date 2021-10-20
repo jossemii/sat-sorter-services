@@ -149,8 +149,9 @@ class Session(metaclass=Singleton):
                 instance = client_grpc(
                     method = self.gateway_stub.StartService,
                     input = self.random_service_extended(),
-                    output_field = gateway_pb2.Instance
-                )[0]
+                    output_field = gateway_pb2.Instance,
+                    first_only = True
+                )
                 break
             except grpc.RpcError as e:
                 LOGGER('GRPC ERROR.' + str(e))
@@ -172,8 +173,9 @@ class Session(metaclass=Singleton):
                     method = self.random_stub.RandomCnf,
                     input = api_pb2.Empty(),
                     output_field = api_pb2.Cnf,
-                    timeout = self.START_AVR_TIMEOUT
-                )[0]
+                    timeout = self.START_AVR_TIMEOUT,
+                    first_only = True
+                )
             except (grpc.RpcError, TimeoutError) as e:
                 if connection_errors < self.CONNECTION_ERRORS:
                     connection_errors = connection_errors + 1
