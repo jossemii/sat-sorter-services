@@ -146,12 +146,11 @@ class Session(metaclass=Singleton):
         LOGGER('Launching random service instance.')
         while True:
             try:
-                instance = client_grpc(
+                instance = next(client_grpc(
                     method = self.gateway_stub.StartService,
                     input = self.random_service_extended(),
-                    output_field = gateway_pb2.Instance,
-                    first_only = True
-                )
+                    output_field = gateway_pb2.Instance
+                ))
                 break
             except grpc.RpcError as e:
                 LOGGER('GRPC ERROR.' + str(e))
@@ -169,13 +168,12 @@ class Session(metaclass=Singleton):
         while True:
             try:
                 LOGGER('OBTENIENDO RANDON CNF')
-                return client_grpc(
+                return next(client_grpc(
                     method = self.random_stub.RandomCnf,
                     input = api_pb2.Empty(),
                     output_field = api_pb2.Cnf,
-                    timeout = self.START_AVR_TIMEOUT,
-                    first_only = True
-                )
+                    timeout = self.START_AVR_TIMEOUT
+                ))
             except (grpc.RpcError, TimeoutError) as e:
                 if connection_errors < self.CONNECTION_ERRORS:
                     connection_errors = connection_errors + 1

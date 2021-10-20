@@ -60,13 +60,12 @@ class Session(metaclass = Singleton):
         LOGGER('Launching regresion service instance.')
         while True:
             try:
-                instance = client_grpc(
+                instance = next(client_grpc(
                     method = self.gateway_stub.StartService,
                     input = self.service_extended(),
                     output_field = gateway_pb2.Instance,
-                    timeout=100,
-                    first_only=True
-                )
+                    timeout=100
+                ))
                 break
             except grpc.RpcError as e:
                 LOGGER('GRPC ERROR.' + str(e))
@@ -189,12 +188,11 @@ class Session(metaclass = Singleton):
     # Make regresion Grpc method.
     def iterate_regression(self, data_set: solvers_dataset_pb2.DataSet) -> regresion_pb2.Tensor:
         try:
-            return client_grpc(
+            return next(client_grpc(
                 method= self.stub.MakeRegresion,
                 input = data_set,
-                output_field = regresion_pb2.Tensor,
-                first_only=True
-            )
+                output_field = regresion_pb2.Tensor
+            ))
         except (grpc.RpcError, TimeoutError) as e:
             self.error_control(e)
             raise Exception

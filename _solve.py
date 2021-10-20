@@ -114,12 +114,11 @@ class SolverConfig(object):
         LOGGER('    launching new instance for solver ' + str(self.service_metadata.hashtag.hash[0].value.hex()))
         while True:
             try:
-                instance = client_grpc(
+                instance = next(client_grpc(
                     method = gateway_stub.StartService,
                     input = self.service_extended(),
-                    output_field = gateway_pb2.Instance,
-                    first_only=True             
-                )  # Sin timeout, por si tiene que construirlo.
+                    output_field = gateway_pb2.Instance          
+                ))  # Sin timeout, por si tiene que construirlo.
                 break
             except grpc.RpcError as e:
                 LOGGER('GRPC ERROR.' + str(e))
@@ -201,13 +200,12 @@ class Session(metaclass = Singleton):
             # Tiene en cuenta el tiempo de respuesta y deserializacion del buffer.
             start_time = time_now()
             LOGGER('    resolving cnf on ' + str(solver_config_id))
-            interpretation = client_grpc(
+            interpretation = next(client_grpc(
                 method = instance.stub.Solve,
                 input = cnf,
                 output_field = api_pb2.Interpretation,
-                timeout = timeout,
-                first_only=True
-            )
+                timeout = timeout
+            ))
             time = time_now() - start_time
             LOGGER(str(time) + '    resolved cnf on ' + str(solver_config_id))
             # Si hemos obtenido una respuesta, en caso de que nos comunique que hay una interpretacion,

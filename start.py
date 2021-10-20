@@ -69,7 +69,7 @@ if __name__ == "__main__":
     class SolverServicer(api_pb2_grpc.SolverServicer):
 
         def Solve(self, request_iterator, context):
-            cnf = utils.parse_from_buffer(request_iterator=request_iterator, message_field=api_pb2.Cnf)[0]
+            cnf = next(utils.parse_from_buffer(request_iterator=request_iterator, message_field=api_pb2.Cnf))
             try:
                 solver_config_id = _get.cnf(
                     cnf = cnf,
@@ -77,18 +77,18 @@ if __name__ == "__main__":
                 )
             except:
                 LOGGER('Wait more for it, tensor is not ready yet. ')
-                yield utils.serialize_to_buffer(api_pb2.Empty()) 
+                for b in utils.serialize_to_buffer(api_pb2.Empty()): yield b
 
             LOGGER('USING SOLVER --> ' + str(solver_config_id))
 
             for i in range(5):
                 try:
-                    yield utils.serialize_to_buffer(
+                    for b in utils.serialize_to_buffer(
                         _solver.cnf(
                             cnf = cnf,
                             solver_config_id = solver_config_id
                         )[0]
-                    )
+                    ): yield b
                 except Exception as e:
                     LOGGER(str(i) + ' ERROR SOLVING A CNF ON Solve ' + str(e))
                     sleep(1)
@@ -107,23 +107,23 @@ if __name__ == "__main__":
                     try:
                         f = api_pb2.File()
                         f.file = next(file)
-                        yield utils.serialize_to_buffer(f)
+                        for b in utils.serialize_to_buffer(f): yield b
                     except: pass
-                    yield utils.serialize_to_buffer(
+                    for b in utils.serialize_to_buffer(
                             next(TimeoutIterator(
                                 stream_regresion_logs(),
                                 timeout = 0.2
                             ))
-                        )
+                        ): yield b
                     # TODO Could be async. (needs the async grpc lib.)
                     
         def UploadSolver(self, request_iterator, context):
-            service_with_meta = utils.parse_from_buffer(request_iterator=request_iterator, message_field=api_pb2.ServiceWithMeta)[0]
+            service_with_meta = next(utils.parse_from_buffer(request_iterator=request_iterator, message_field=api_pb2.ServiceWithMeta))
             trainer.load_solver(
                 metadata = service_with_meta.meta,
                 solver = service_with_meta.service
             )
-            yield utils.serialize_to_buffer(api_pb2.Empty())
+            for b in utils.serialize_to_buffer(api_pb2.Empty()): yield b
 
         def GetTensor(self, request, context):
             tensor_with_ids =  _regresion.get_tensor()
@@ -137,19 +137,19 @@ if __name__ == "__main__":
                         escalar = solver_config_id_tensor.escalar
                     )
                 )
-            yield utils.serialize_to_buffer(tensor_with_defitions) 
+            for b in utils.serialize_to_buffer(tensor_with_defitions): yield b
 
         def StartTrain(self, request, context):
             trainer.start()
-            yield utils.serialize_to_buffer( api_pb2.Empty())
+            for b in utils.serialize_to_buffer( api_pb2.Empty()): yield b
 
         def StopTrain(self, request, context):
             trainer.stop()
-            yield utils.serialize_to_buffer( api_pb2.Empty())
+            for b in utils.serialize_to_buffer( api_pb2.Empty()): yield b
 
         # Integrate other tensor
         def AddTensor(self, request_iterator, context):
-            tensor = utils.parse_from_buffer(request_iterator=request_iterator, message_field=api_pb2.Tensor)[0]
+            tensor = next(utils.parse_from_buffer(request_iterator=request_iterator, message_field=api_pb2.Tensor))
             new_data_set = solvers_dataset_pb2.DataSet()
             for solver_with_config_tensor in tensor.non_escalar.non_escalar:
                 # Si no se posee ese solver, lo añade y añade, al mismo tiempo, en _solve con una configuración que el trainer considere, 
@@ -182,20 +182,20 @@ if __name__ == "__main__":
             _regresion.add_data(
                 new_data_set = new_data_set
             )
-            yield utils.serialize_to_buffer(api_pb2.Empty())
+            for b in utils.serialize_to_buffer(api_pb2.Empty()): yield b
 
         def GetDataSet(self, request, context):
-            yield utils.serialize_to_buffer(_regresion.get_data_set())
+            for b in utils.serialize_to_buffer(_regresion.get_data_set()): yield b
         
         # Hasta que se implemente AddTensor.
         def AddDataSet(self, request_iterator, context):
             _regresion.add_data(
-                new_data_set = utils.parse_from_buffer(
+                new_data_set = next(utils.parse_from_buffer(
                     request_iterator=request_iterator,
                     message_field=api_pb2.solvers__dataset__pb2.DataSet
-                )[0]
+                ))
             )
-            yield utils.serialize_to_buffer(api_pb2.Empty())
+            for b in utils.serialize_to_buffer(api_pb2.Empty()): yield b
 
 
     # create a gRPC server
