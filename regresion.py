@@ -64,12 +64,13 @@ class Session(metaclass = Singleton):
                     method = self.gateway_stub.StartService,
                     input = self.service_extended(),
                     output_field = gateway_pb2.Instance,
+                    timeout=100,
                     first_only=True
                 )
                 break
             except grpc.RpcError as e:
                 LOGGER('GRPC ERROR.' + str(e))
-                sleep(1)
+                sleep(10)
         uri = get_grpc_uri(instance.instance)
         self.stub = regresion_pb2_grpc.RegresionStub(
             grpc.insecure_channel(
