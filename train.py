@@ -47,12 +47,12 @@ class Session(metaclass=Singleton):
         LOGGER('Stopping random service.')
         while True:
             try:
-                client_grpc(
+                next(client_grpc(
                     method = self.gateway_stub.StopService,
                     input = gateway_pb2.TokenMessage(
                             token = self.random_token
                         )
-                )
+                ))
                 break
             except grpc.RpcError as e:
                 LOGGER('GRPC ERROR STOPPING RANDOM ' + str(e))
@@ -93,7 +93,7 @@ class Session(metaclass=Singleton):
         self.solvers_lock.acquire()
         if solver_hash and solver_hash not in self.solvers:
             self.solvers.append(solver_hash)
-            with open('__solvers__/'+solver_hash, 'wb') as file:
+            with open(DIR + '__solvers__/' + solver_hash, 'wb') as file:
                 solver_with_meta = api_pb2.ServiceWithMeta(
                     meta = metadata,
                     service = solver

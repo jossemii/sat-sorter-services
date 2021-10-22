@@ -82,12 +82,12 @@ class Session(metaclass = Singleton):
         LOGGER('Stopping regresion service instance.')
         while True:
             try:
-                client_grpc(
+                next(client_grpc(
                     method = self.gateway_stub.StopService,
                     input = gateway_pb2.TokenMessage(
                             token = self.token
                         )
-                )
+                ))
                 break
             except grpc.RpcError as e:
                 LOGGER('Grpc Error stopping regresion ' + str(e))

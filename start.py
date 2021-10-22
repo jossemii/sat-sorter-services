@@ -1,9 +1,9 @@
-import logging, celaut_pb2, utils
+import logging, celaut_pb2, utils, os
 from iterators import TimeoutIterator
 
 logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s')
 LOGGER = lambda message: print(message + '\n')#logging.getLogger().debug(message + '\n')
-DIR = ''#'/satsorter/'
+DIR = os.path.abspath(os.curdir) + '/'  #'/satsorter/'
 
 def get_grpc_uri(instance: celaut_pb2.Instance) -> celaut_pb2.Instance.Uri:
     for slot in instance.api.slot:
@@ -118,6 +118,7 @@ if __name__ == "__main__":
                     # TODO Could be async. (needs the async grpc lib.)
                     
         def UploadSolver(self, request_iterator, context):
+            LOGGER('New solver ...')
             service_with_meta = next(utils.parse_from_buffer(request_iterator=request_iterator, message_field=api_pb2.ServiceWithMeta))
             trainer.load_solver(
                 metadata = service_with_meta.meta,

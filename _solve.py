@@ -6,7 +6,7 @@ import grpc
 
 import api_pb2, api_pb2_grpc, gateway_pb2, gateway_pb2_grpc, solvers_dataset_pb2, celaut_pb2 as celaut
 from singleton import Singleton
-from start import LOGGER, SHA3_256, SHA3_256_ID, get_grpc_uri
+from start import DIR, LOGGER, SHA3_256, SHA3_256_ID, get_grpc_uri
 
 # Si se toma una instancia, se debe de asegurar que, o bien se agrega a su cola
 #  correspondiente, o bien se para. No asegurar esto ocasiona un bug importante
@@ -53,11 +53,11 @@ class SolverInstance(object):
         clause.literal.append(1)
         cnf.clause.append(clause)
         try:
-            client_grpc(
+            next(client_grpc(
                 method = self.stub.Solve,
                 input = cnf,
                 timeout = timeout
-            )
+            ))
             return True
         except (TimeoutError, grpc.RpcError):
             return False
@@ -66,12 +66,12 @@ class SolverInstance(object):
         LOGGER('Stops this instance with token ' + str(self.token))
         while True:
             try:
-                client_grpc(
+                next(client_grpc(
                     method = gateway_stub.StopService,
                     input = gateway_pb2.TokenMessage(
                             token = self.token
                         )
-                )
+                ))
                 break
             except grpc.RpcError as e:
                 LOGGER('GRPC ERROR STOPPING SOLVER ' + str(e))
@@ -104,7 +104,7 @@ class SolverConfig(object):
         if config: transport.config.CopyFrom(self.config)
         service_with_meta = api_pb2.ServiceWithMeta()
         service_with_meta.ParseFromString(
-            open('__solvers__/'+self.solver_hash, 'rb').read()
+            open(DIR + '__solvers__/' + self.solver_hash, 'rb').read()
         )
         transport.service.service.CopyFrom(service_with_meta.definition)
         transport.service.meta.CopyFrom(service_with_meta.meta)
@@ -155,7 +155,7 @@ class SolverConfig(object):
     def get_solver_with_config(self) -> solvers_dataset_pb2.SolverWithConfig:
         solver_with_meta = api_pb2.ServiceWithMeta()
         solver_with_meta.ParseFromString(
-            open('__solvers__/' + self.solver_hash, 'rb').read()
+            open(DIR + '__solvers__/' + self.solver_hash, 'rb').read()
         )
         return api_pb2.solvers__dataset__pb2.SolverWithConfig(
                     meta = solver_with_meta.meta,
