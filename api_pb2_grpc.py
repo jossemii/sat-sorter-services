@@ -5,67 +5,6 @@ import grpc
 import api_pb2 as api__pb2
 
 
-class RandomStub(object):
-    """Missing associated documentation comment in .proto file."""
-
-    def __init__(self, channel):
-        """Constructor.
-
-        Args:
-            channel: A grpc.Channel.
-        """
-        self.RandomCnf = channel.unary_unary(
-                '/api.Random/RandomCnf',
-                request_serializer=api__pb2.Empty.SerializeToString,
-                response_deserializer=api__pb2.Cnf.FromString,
-                )
-
-
-class RandomServicer(object):
-    """Missing associated documentation comment in .proto file."""
-
-    def RandomCnf(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-
-def add_RandomServicer_to_server(servicer, server):
-    rpc_method_handlers = {
-            'RandomCnf': grpc.unary_unary_rpc_method_handler(
-                    servicer.RandomCnf,
-                    request_deserializer=api__pb2.Empty.FromString,
-                    response_serializer=api__pb2.Cnf.SerializeToString,
-            ),
-    }
-    generic_handler = grpc.method_handlers_generic_handler(
-            'api.Random', rpc_method_handlers)
-    server.add_generic_rpc_handlers((generic_handler,))
-
-
- # This class is part of an EXPERIMENTAL API.
-class Random(object):
-    """Missing associated documentation comment in .proto file."""
-
-    @staticmethod
-    def RandomCnf(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/api.Random/RandomCnf',
-            api__pb2.Empty.SerializeToString,
-            api__pb2.Cnf.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
-
-
 class SolverStub(object):
     """Missing associated documentation comment in .proto file."""
 
@@ -386,6 +325,67 @@ class Solver(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.stream_stream(request_iterator, target, '/api.Solver/AddDataSet',
+            api__pb2.Buffer.SerializeToString,
+            api__pb2.Buffer.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+
+class RandomStub(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.RandomCnf = channel.stream_stream(
+                '/api.Random/RandomCnf',
+                request_serializer=api__pb2.Buffer.SerializeToString,
+                response_deserializer=api__pb2.Buffer.FromString,
+                )
+
+
+class RandomServicer(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def RandomCnf(self, request_iterator, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_RandomServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+            'RandomCnf': grpc.stream_stream_rpc_method_handler(
+                    servicer.RandomCnf,
+                    request_deserializer=api__pb2.Buffer.FromString,
+                    response_serializer=api__pb2.Buffer.SerializeToString,
+            ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+            'api.Random', rpc_method_handlers)
+    server.add_generic_rpc_handlers((generic_handler,))
+
+
+ # This class is part of an EXPERIMENTAL API.
+class Random(object):
+    """Missing associated documentation comment in .proto file."""
+
+    @staticmethod
+    def RandomCnf(request_iterator,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.stream_stream(request_iterator, target, '/api.Random/RandomCnf',
             api__pb2.Buffer.SerializeToString,
             api__pb2.Buffer.FromString,
             options, channel_credentials,

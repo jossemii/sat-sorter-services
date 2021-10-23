@@ -28,9 +28,7 @@ message Cnf {
 
 message Empty {}
 
-service Random {
-    rpc RandomCnf(Empty) returns (Cnf) {}
-}
+
 
 message File {
     string file = 1;
@@ -80,4 +78,8 @@ service Solver {
     // Hasta que se implemente AddTensor.
     rpc GetDataSet ( stream Buffer) returns (stream Buffer) {}  // Empty -> dataset.DataSet
     rpc AddDataSet ( stream Buffer) returns (stream Buffer) {}  // dataset.DataSet -> Empty
+}
+
+service Random {
+    rpc RandomCnf(stream Buffer) returns (stream Buffer) {} // Empty -> Cnf 
 }

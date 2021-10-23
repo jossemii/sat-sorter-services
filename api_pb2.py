@@ -22,7 +22,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\tapi.proto\x12\x03\x61pi\x1a\nonnx.proto\x1a\x0c\x63\x65laut.proto\x1a\x15solvers_dataset.proto\"L\n\x0eInterpretation\x12\x10\n\x08variable\x18\x01 \x03(\x05\x12\x18\n\x0bsatisfiable\x18\x02 \x01(\x08H\x00\x88\x01\x01\x42\x0e\n\x0c_satisfiable\"\x19\n\x06\x43lause\x12\x0f\n\x07literal\x18\x01 \x03(\x05\"\"\n\x03\x43nf\x12\x1b\n\x06\x63lause\x18\x01 \x03(\x0b\x32\x0b.api.Clause\"\x07\n\x05\x45mpty\"\x14\n\x04\x46ile\x12\x0c\n\x04\x66ile\x18\x01 \x01(\t\"W\n\x0fServiceWithMeta\x12\"\n\x04meta\x18\x01 \x01(\x0b\x32\x14.celaut.Any.Metadata\x12 \n\x07service\x18\x02 \x01(\x0b\x32\x0f.celaut.Service\"\xa5\x03\n\x06Tensor\x12-\n\rspecification\x18\x01 \x01(\x0b\x32\x16.celaut.Service.Tensor\x12*\n\x07\x65scalar\x18\x02 \x01(\x0b\x32\x17.tensor_onnx.ModelProtoH\x00\x12\x36\n\x0bnon_escalar\x18\x03 \x01(\x0b\x32\x1f.api.Tensor.NonEscalarDimensionH\x00\x1a\xfe\x01\n\x13NonEscalarDimension\x12?\n\x0bnon_escalar\x18\x01 \x03(\x0b\x32*.api.Tensor.NonEscalarDimension.NonEscalar\x1a\xa5\x01\n\nNonEscalar\x12*\n\x07\x65lement\x18\x01 \x01(\x0b\x32\x19.dataset.SolverWithConfig\x12*\n\x07\x65scalar\x18\x02 \x01(\x0b\x32\x17.tensor_onnx.ModelProtoH\x00\x12\x36\n\x0bnon_escalar\x18\x03 \x01(\x0b\x32\x1f.api.Tensor.NonEscalarDimensionH\x00\x42\x07\n\x05modelB\x07\n\x05model\"7\n\x06\x42uffer\x12\x0f\n\x05\x63hunk\x18\x01 \x01(\x0cH\x00\x12\x13\n\tseparator\x18\x02 \x01(\x0cH\x00\x42\x07\n\x05oneof2-\n\x06Random\x12#\n\tRandomCnf\x12\n.api.Empty\x1a\x08.api.Cnf\"\x00\x32\xa0\x03\n\x06Solver\x12,\n\nStartTrain\x12\x0b.api.Buffer\x1a\x0b.api.Buffer\"\x00(\x01\x30\x01\x12+\n\tStopTrain\x12\x0b.api.Buffer\x1a\x0b.api.Buffer\"\x00(\x01\x30\x01\x12+\n\tGetTensor\x12\x0b.api.Buffer\x1a\x0b.api.Buffer\"\x00(\x01\x30\x01\x12.\n\x0cUploadSolver\x12\x0b.api.Buffer\x1a\x0b.api.Buffer\"\x00(\x01\x30\x01\x12,\n\nStreamLogs\x12\x0b.api.Buffer\x1a\x0b.api.Buffer\"\x00(\x01\x30\x01\x12\'\n\x05Solve\x12\x0b.api.Buffer\x1a\x0b.api.Buffer\"\x00(\x01\x30\x01\x12+\n\tAddTensor\x12\x0b.api.Buffer\x1a\x0b.api.Buffer\"\x00(\x01\x30\x01\x12,\n\nGetDataSet\x12\x0b.api.Buffer\x1a\x0b.api.Buffer\"\x00(\x01\x30\x01\x12,\n\nAddDataSet\x12\x0b.api.Buffer\x1a\x0b.api.Buffer\"\x00(\x01\x30\x01\x62\x06proto3'
+  serialized_pb=b'\n\tapi.proto\x12\x03\x61pi\x1a\nonnx.proto\x1a\x0c\x63\x65laut.proto\x1a\x15solvers_dataset.proto\"L\n\x0eInterpretation\x12\x10\n\x08variable\x18\x01 \x03(\x05\x12\x18\n\x0bsatisfiable\x18\x02 \x01(\x08H\x00\x88\x01\x01\x42\x0e\n\x0c_satisfiable\"\x19\n\x06\x43lause\x12\x0f\n\x07literal\x18\x01 \x03(\x05\"\"\n\x03\x43nf\x12\x1b\n\x06\x63lause\x18\x01 \x03(\x0b\x32\x0b.api.Clause\"\x07\n\x05\x45mpty\"\x14\n\x04\x46ile\x12\x0c\n\x04\x66ile\x18\x01 \x01(\t\"W\n\x0fServiceWithMeta\x12\"\n\x04meta\x18\x01 \x01(\x0b\x32\x14.celaut.Any.Metadata\x12 \n\x07service\x18\x02 \x01(\x0b\x32\x0f.celaut.Service\"\xa5\x03\n\x06Tensor\x12-\n\rspecification\x18\x01 \x01(\x0b\x32\x16.celaut.Service.Tensor\x12*\n\x07\x65scalar\x18\x02 \x01(\x0b\x32\x17.tensor_onnx.ModelProtoH\x00\x12\x36\n\x0bnon_escalar\x18\x03 \x01(\x0b\x32\x1f.api.Tensor.NonEscalarDimensionH\x00\x1a\xfe\x01\n\x13NonEscalarDimension\x12?\n\x0bnon_escalar\x18\x01 \x03(\x0b\x32*.api.Tensor.NonEscalarDimension.NonEscalar\x1a\xa5\x01\n\nNonEscalar\x12*\n\x07\x65lement\x18\x01 \x01(\x0b\x32\x19.dataset.SolverWithConfig\x12*\n\x07\x65scalar\x18\x02 \x01(\x0b\x32\x17.tensor_onnx.ModelProtoH\x00\x12\x36\n\x0bnon_escalar\x18\x03 \x01(\x0b\x32\x1f.api.Tensor.NonEscalarDimensionH\x00\x42\x07\n\x05modelB\x07\n\x05model\"7\n\x06\x42uffer\x12\x0f\n\x05\x63hunk\x18\x01 \x01(\x0cH\x00\x12\x13\n\tseparator\x18\x02 \x01(\x0cH\x00\x42\x07\n\x05oneof2\xa0\x03\n\x06Solver\x12,\n\nStartTrain\x12\x0b.api.Buffer\x1a\x0b.api.Buffer\"\x00(\x01\x30\x01\x12+\n\tStopTrain\x12\x0b.api.Buffer\x1a\x0b.api.Buffer\"\x00(\x01\x30\x01\x12+\n\tGetTensor\x12\x0b.api.Buffer\x1a\x0b.api.Buffer\"\x00(\x01\x30\x01\x12.\n\x0cUploadSolver\x12\x0b.api.Buffer\x1a\x0b.api.Buffer\"\x00(\x01\x30\x01\x12,\n\nStreamLogs\x12\x0b.api.Buffer\x1a\x0b.api.Buffer\"\x00(\x01\x30\x01\x12\'\n\x05Solve\x12\x0b.api.Buffer\x1a\x0b.api.Buffer\"\x00(\x01\x30\x01\x12+\n\tAddTensor\x12\x0b.api.Buffer\x1a\x0b.api.Buffer\"\x00(\x01\x30\x01\x12,\n\nGetDataSet\x12\x0b.api.Buffer\x1a\x0b.api.Buffer\"\x00(\x01\x30\x01\x12,\n\nAddDataSet\x12\x0b.api.Buffer\x1a\x0b.api.Buffer\"\x00(\x01\x30\x01\x32\x35\n\x06Random\x12+\n\tRandomCnf\x12\x0b.api.Buffer\x1a\x0b.api.Buffer\"\x00(\x01\x30\x01\x62\x06proto3'
   ,
   dependencies=[onnx__pb2.DESCRIPTOR,celaut__pb2.DESCRIPTOR,solvers__dataset__pb2.DESCRIPTOR,])
 
@@ -525,41 +525,15 @@ _sym_db.RegisterMessage(Buffer)
 
 
 
-_RANDOM = _descriptor.ServiceDescriptor(
-  name='Random',
-  full_name='api.Random',
-  file=DESCRIPTOR,
-  index=0,
-  serialized_options=None,
-  create_key=_descriptor._internal_create_key,
-  serialized_start=809,
-  serialized_end=854,
-  methods=[
-  _descriptor.MethodDescriptor(
-    name='RandomCnf',
-    full_name='api.Random.RandomCnf',
-    index=0,
-    containing_service=None,
-    input_type=_EMPTY,
-    output_type=_CNF,
-    serialized_options=None,
-    create_key=_descriptor._internal_create_key,
-  ),
-])
-_sym_db.RegisterServiceDescriptor(_RANDOM)
-
-DESCRIPTOR.services_by_name['Random'] = _RANDOM
-
-
 _SOLVER = _descriptor.ServiceDescriptor(
   name='Solver',
   full_name='api.Solver',
   file=DESCRIPTOR,
-  index=1,
+  index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=857,
-  serialized_end=1273,
+  serialized_start=810,
+  serialized_end=1226,
   methods=[
   _descriptor.MethodDescriptor(
     name='StartTrain',
@@ -655,5 +629,31 @@ _SOLVER = _descriptor.ServiceDescriptor(
 _sym_db.RegisterServiceDescriptor(_SOLVER)
 
 DESCRIPTOR.services_by_name['Solver'] = _SOLVER
+
+
+_RANDOM = _descriptor.ServiceDescriptor(
+  name='Random',
+  full_name='api.Random',
+  file=DESCRIPTOR,
+  index=1,
+  serialized_options=None,
+  create_key=_descriptor._internal_create_key,
+  serialized_start=1228,
+  serialized_end=1281,
+  methods=[
+  _descriptor.MethodDescriptor(
+    name='RandomCnf',
+    full_name='api.Random.RandomCnf',
+    index=0,
+    containing_service=None,
+    input_type=_BUFFER,
+    output_type=_BUFFER,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+])
+_sym_db.RegisterServiceDescriptor(_RANDOM)
+
+DESCRIPTOR.services_by_name['Random'] = _RANDOM
 
 # @@protoc_insertion_point(module_scope)
