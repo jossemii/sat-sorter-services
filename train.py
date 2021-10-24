@@ -26,9 +26,7 @@ class Session(metaclass=Singleton):
             any = celaut.Any()
             any.ParseFromString(file.read())
 
-        self.random_def = celaut.Service()
-        self.random_def.ParseFromString(any.value)
-        self.random_meta = any.metadata
+        self.random_hashes = any.metadata.hashtag.hash
 
         self.random_stub = None
         self.random_token = None
@@ -130,7 +128,7 @@ class Session(metaclass=Singleton):
     def random_service_extended(self):
         config = True
         transport = gateway_pb2.ServiceTransport()
-        for hash in self.random_meta.hashtag.hash:
+        for hash in self.random_hashes:
             transport.hash.CopyFrom(hash)
             if config:  # Solo hace falta enviar la configuracion en el primer paquete.
                 transport.config.CopyFrom(self.random_config)
@@ -138,8 +136,14 @@ class Session(metaclass=Singleton):
             yield transport
         transport.ClearField('hash')
         if config: transport.config.CopyFrom(self.random_config)
-        transport.service.service.CopyFrom(self.random_def)
-        transport.service.meta.CopyFrom(self.random_meta)
+        any = celaut.Any()
+        any.ParseFromString(
+            open(DIR + 'random.service', 'rb').read()
+        )
+        service = celaut.Service()
+        service.ParseFromString(any.value)
+        transport.service.service.CopyFrom(service)
+        transport.service.meta.CopyFrom(any.metadata)
         yield transport
 
     def init_random_cnf_service(self):
@@ -155,6 +159,7 @@ class Session(metaclass=Singleton):
             except grpc.RpcError as e:
                 LOGGER('GRPC ERROR.' + str(e))
                 sleep(1)
+                
         uri = get_grpc_uri(instance.instance)
         self.random_stub = api_pb2_grpc.RandomStub(
             grpc.insecure_channel(

@@ -1,7 +1,7 @@
 from time import sleep, time as time_now
 from datetime import datetime, timedelta
 from threading import Thread, Lock
-from utils import client_grpc
+from utils import client_grpc, parse_from_buffer, serialize_to_buffer
 import grpc
 
 import api_pb2, api_pb2_grpc, gateway_pb2, gateway_pb2_grpc, solvers_dataset_pb2, celaut_pb2 as celaut
@@ -81,7 +81,17 @@ class SolverInstance(object):
 class SolverConfig(object):
     def __init__(self, solver_with_config: solvers_dataset_pb2.SolverWithConfig, solver_hash: str):
 
-        self.solver_hash = solver_hash
+        self.solver_hash = solver_hash  # SHA3-256 hash value that identifies the service definition on memory (if it's not complete is the hash of the incomplete definition).
+        try:
+            self.hashes = solver_with_config.meta.hashtag.hash # list of hashes that the service's metadata has.
+        except:  # if there are no hashes in the metadata
+            if solver_with_config.meta.complete: # if the service definition say that it's complete, the solver hash can be used.
+                self.hashes = [celaut.Any.HashTag.hash(
+                    type = SHA3_256_ID,
+                    value = bytes.fromhex(solver_hash)
+                )]
+            else:
+                self.hashes = []
 
         # Service configuration.
         self.config = celaut.Configuration()
@@ -94,7 +104,7 @@ class SolverConfig(object):
     def service_extended(self):
         config = True
         transport = gateway_pb2.ServiceTransport()
-        for hash in self.service_metadata.hashtag.hash:
+        for hash in self.hashes:
             transport.hash.CopyFrom(hash)
             if config:  # Solo hace falta enviar la configuracion en el primer paquete.
                 transport.config.CopyFrom(self.config)
@@ -111,24 +121,26 @@ class SolverConfig(object):
         yield transport
 
     def launch_instance(self, gateway_stub) -> SolverInstance:
-        LOGGER('    launching new instance for solver ' + str(self.service_metadata.hashtag.hash[0].value.hex()))
+        LOGGER('    launching new instance for solver ' + self.solver_hash)
         while True:
             try:
+                # TODO falla al recorrer el iterador del método grpc.
                 instance = next(client_grpc(
                     method = gateway_stub.StartService,
                     input = self.service_extended(),
-                    output_field = gateway_pb2.Instance          
-                ))  # Sin timeout, por si tiene que construirlo.
+                    output_field = gateway_pb2.Instance
+                ))
                 break
             except grpc.RpcError as e:
-                LOGGER('GRPC ERROR.' + str(e))
+                LOGGER('GRPC ERROR LAUNCHING INSTANCE. ' + str(e))
+                sleep(1000)
 
         try:
             uri = get_grpc_uri(instance.instance)
         except Exception as e:
             LOGGER(str(e))
             raise e
-        LOGGER('THE URI FOR THE SOLVER ' + str(self.service_metadata.hashtag.hash[0].value.hex()) + ' is--> ' + str(uri))
+        LOGGER('THE URI FOR THE SOLVER ' + self.solver_hash + ' is--> ' + str(uri))
 
         return SolverInstance(
             stub = api_pb2_grpc.SolverStub(
@@ -145,7 +157,7 @@ class SolverConfig(object):
 
     def get_instance(self, deep=False) -> SolverInstance:
         LOGGER('Get an instance of. deep ' + str(deep))
-        LOGGER('The solver ' + self.service_metadata.hashtag.hash[0].value.hex() + ' has ' + str(len(self.instances)) + ' instances.')
+        LOGGER('The solver ' + self.hashes[0].value.hex() + ' has ' + str(len(self.instances)) + ' instances.')
         try:
             return self.instances.pop() if not deep else self.instances.pop(0)
         except IndexError:
