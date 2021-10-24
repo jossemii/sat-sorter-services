@@ -48,8 +48,10 @@ def serialize_to_buffer(message_iterator):
         except: # INEFICIENT.
             file =  os.path.abspath(os.curdir) + '/__hycache__/' + str(randint(1,999))
             open(file, 'wb').write(message.SerializeToString())
-            for b in get_file_chunks(file): yield b
-            os.remove(file)
+            try:
+                for b in get_file_chunks(file): yield b
+            finally:
+                os.remove(file)
 
         yield gateway_pb2.Buffer(
             separator = bytes('', encoding='utf-8')
