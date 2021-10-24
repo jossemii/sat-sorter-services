@@ -46,7 +46,7 @@ def serialize_to_buffer(message_iterator):
                             )
                 yield b
         except: # INEFICIENT.
-            file =  os.path.abspath(os.curdir) + '/__hycache__/' + str(randint(1,999))
+            file =  os.path.abspath(os.curdir) + '/__hycache__/' + str(len(message.SerializeToString())) + ':' + str(randint(1,999))
             open(file, 'wb').write(message.SerializeToString())
             try:
                 for b in get_file_chunks(file): yield b
