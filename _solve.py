@@ -116,7 +116,7 @@ class SolverConfig(object):
         service_with_meta.ParseFromString(
             open(DIR + '__solvers__/' + self.solver_hash, 'rb').read()
         )
-        transport.service.service.CopyFrom(service_with_meta.definition)
+        transport.service.service.CopyFrom(service_with_meta.service)
         transport.service.meta.CopyFrom(service_with_meta.meta)
         yield transport
 
