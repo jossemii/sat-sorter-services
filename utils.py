@@ -38,20 +38,26 @@ def parse_from_buffer(request_iterator, message_field = None):
 def serialize_to_buffer(message_iterator):
     if not hasattr(message_iterator, '__iter__'): message_iterator=[message_iterator]
     for message in message_iterator:
-        try:
-            byte_list = list(message.SerializeToString())
-            for chunk in [byte_list[i:i + CHUNK_SIZE] for i in range(0, len(byte_list), CHUNK_SIZE)]:
-                b = gateway_pb2.Buffer(
-                                chunk = bytes(chunk)
-                            )
-                yield b
-        except: # INEFICIENT.
-            file =  os.path.abspath(os.curdir) + '/__hycache__/' + str(len(message.SerializeToString())) + ':' + str(randint(1,999))
-            open(file, 'wb').write(message.SerializeToString())
+        message_bytes = message.SerializeToString()
+        if len(message_bytes) < CHUNK_SIZE:
+            yield gateway_pb2.Buffer(
+                chunk = bytes(message_bytes)
+            )
+        else:
             try:
-                for b in get_file_chunks(file): yield b
-            finally:
-                os.remove(file)
+                byte_list = list(message_bytes)
+                for chunk in [byte_list[i:i + CHUNK_SIZE] for i in range(0, len(byte_list), CHUNK_SIZE)]:
+                    b = gateway_pb2.Buffer(
+                                    chunk = bytes(chunk)
+                                )
+                    yield b
+            except: # INEFICIENT.
+                file =  os.path.abspath(os.curdir) + '/__hycache__/' + str(len(message_bytes)) + ':' + str(randint(1,999))
+                open(file, 'wb').write(message_bytes)
+                try:
+                    for b in get_file_chunks(file): yield b
+                finally:
+                    os.remove(file)
 
         yield gateway_pb2.Buffer(
             separator = bytes('', encoding='utf-8')
