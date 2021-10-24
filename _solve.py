@@ -23,6 +23,7 @@ class SolverInstance(object):
         self.failed_attempts = 0
 
     def error(self):
+        sleep(1) # Wait if the solver is loading.
         self.failed_attempts = self.failed_attempts + 1
 
     def is_zombie(self,
@@ -124,7 +125,6 @@ class SolverConfig(object):
         LOGGER('    launching new instance for solver ' + self.solver_hash)
         while True:
             try:
-                # TODO falla al recorrer el iterador del método grpc.
                 instance = next(client_grpc(
                     method = gateway_stub.StartService,
                     input = self.service_extended(),
@@ -133,7 +133,7 @@ class SolverConfig(object):
                 break
             except grpc.RpcError as e:
                 LOGGER('GRPC ERROR LAUNCHING INSTANCE. ' + str(e))
-                sleep(1000)
+                sleep(1)
 
         try:
             uri = get_grpc_uri(instance.instance)
