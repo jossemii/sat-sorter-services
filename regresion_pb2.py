@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0fregresion.proto\x1a\nonnx.proto\"\x07\n\x05\x45mpty\"\x14\n\x04\x46ile\x12\x0c\n\x04\x66ile\x18\x01 \x01(\t\"\xcf\x02\n\x06Tensor\x12*\n\x07\x65scalar\x18\x01 \x01(\x0b\x32\x17.tensor_onnx.ModelProtoH\x00\x12\x32\n\x0bnon_escalar\x18\x02 \x01(\x0b\x32\x1b.Tensor.NonEscalarDimensionH\x00\x1a\xdb\x01\n\x13NonEscalarDimension\x12;\n\x0bnon_escalar\x18\x01 \x03(\x0b\x32&.Tensor.NonEscalarDimension.NonEscalar\x1a\x86\x01\n\nNonEscalar\x12\x0f\n\x07\x65lement\x18\x01 \x01(\t\x12*\n\x07\x65scalar\x18\x02 \x01(\x0b\x32\x17.tensor_onnx.ModelProtoH\x00\x12\x32\n\x0bnon_escalar\x18\x03 \x01(\x0b\x32\x1b.Tensor.NonEscalarDimensionH\x00\x42\x07\n\x05modelB\x07\n\x05model\"7\n\x06\x42uffer\x12\x0f\n\x05\x63hunk\x18\x01 \x01(\x0cH\x00\x12\x13\n\tseparator\x18\x02 \x01(\x0cH\x00\x42\x07\n\x05oneof2Z\n\tRegresion\x12$\n\nStreamLogs\x12\x07.Buffer\x1a\x07.Buffer\"\x00(\x01\x30\x01\x12\'\n\rMakeRegresion\x12\x07.Buffer\x1a\x07.Buffer\"\x00(\x01\x30\x01\x62\x06proto3'
+  serialized_pb=b'\n\x0fregresion.proto\x1a\nonnx.proto\"\x07\n\x05\x45mpty\"\x14\n\x04\x46ile\x12\x0c\n\x04\x66ile\x18\x01 \x01(\t\"\xcf\x02\n\x06Tensor\x12*\n\x07\x65scalar\x18\x01 \x01(\x0b\x32\x17.tensor_onnx.ModelProtoH\x00\x12\x32\n\x0bnon_escalar\x18\x02 \x01(\x0b\x32\x1b.Tensor.NonEscalarDimensionH\x00\x1a\xdb\x01\n\x13NonEscalarDimension\x12;\n\x0bnon_escalar\x18\x01 \x03(\x0b\x32&.Tensor.NonEscalarDimension.NonEscalar\x1a\x86\x01\n\nNonEscalar\x12\x0f\n\x07\x65lement\x18\x01 \x01(\t\x12*\n\x07\x65scalar\x18\x02 \x01(\x0b\x32\x17.tensor_onnx.ModelProtoH\x00\x12\x32\n\x0bnon_escalar\x18\x03 \x01(\x0b\x32\x1b.Tensor.NonEscalarDimensionH\x00\x42\x07\n\x05modelB\x07\n\x05model\"I\n\x06\x42uffer\x12\x0f\n\x05\x63hunk\x18\x01 \x01(\x0cH\x00\x12\x13\n\tseparator\x18\x02 \x01(\x0cH\x00\x12\x10\n\x06signal\x18\x03 \x01(\x0cH\x00\x42\x07\n\x05oneof2Z\n\tRegresion\x12$\n\nStreamLogs\x12\x07.Buffer\x1a\x07.Buffer\"\x00(\x01\x30\x01\x12\'\n\rMakeRegresion\x12\x07.Buffer\x1a\x07.Buffer\"\x00(\x01\x30\x01\x62\x06proto3'
   ,
   dependencies=[onnx__pb2.DESCRIPTOR,])
 
@@ -231,6 +231,13 @@ _BUFFER = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='signal', full_name='Buffer.signal', index=2,
+      number=3, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -249,7 +256,7 @@ _BUFFER = _descriptor.Descriptor(
     fields=[]),
   ],
   serialized_start=400,
-  serialized_end=455,
+  serialized_end=473,
 )
 
 _TENSOR_NONESCALARDIMENSION_NONESCALAR.fields_by_name['escalar'].message_type = onnx__pb2._MODELPROTO
@@ -277,6 +284,9 @@ _BUFFER.fields_by_name['chunk'].containing_oneof = _BUFFER.oneofs_by_name['oneof
 _BUFFER.oneofs_by_name['oneof'].fields.append(
   _BUFFER.fields_by_name['separator'])
 _BUFFER.fields_by_name['separator'].containing_oneof = _BUFFER.oneofs_by_name['oneof']
+_BUFFER.oneofs_by_name['oneof'].fields.append(
+  _BUFFER.fields_by_name['signal'])
+_BUFFER.fields_by_name['signal'].containing_oneof = _BUFFER.oneofs_by_name['oneof']
 DESCRIPTOR.message_types_by_name['Empty'] = _EMPTY
 DESCRIPTOR.message_types_by_name['File'] = _FILE
 DESCRIPTOR.message_types_by_name['Tensor'] = _TENSOR
@@ -336,8 +346,8 @@ _REGRESION = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=457,
-  serialized_end=547,
+  serialized_start=475,
+  serialized_end=565,
   methods=[
   _descriptor.MethodDescriptor(
     name='StreamLogs',
