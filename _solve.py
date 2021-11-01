@@ -104,22 +104,15 @@ class SolverConfig(object):
 
     def service_extended(self):
         config = True
-        transport = gateway_pb2.ServiceTransport()
         for hash in self.hashes:
-            transport.hash.CopyFrom(hash)
             if config:  # Solo hace falta enviar la configuracion en el primer paquete.
-                transport.config.CopyFrom(self.config)
                 config = False
-            yield transport
-        transport.ClearField('hash')
-        if config: transport.config.CopyFrom(self.config)
-        service_with_meta = api_pb2.ServiceWithMeta()
-        service_with_meta.ParseFromString(
-            open(DIR + '__solvers__/' + self.solver_hash, 'rb').read()
-        )
-        transport.service.service.CopyFrom(service_with_meta.service)
-        transport.service.meta.CopyFrom(service_with_meta.meta)
-        yield transport
+                yield gateway_pb2.HashWithConfig(
+                    hash = hash,
+                    config = self.config
+                )
+            yield hash
+        yield ('__solvers__/' + self.solver_hash, celaut.Any)
 
     def launch_instance(self, gateway_stub) -> SolverInstance:
         LOGGER('    launching new instance for solver ' + self.solver_hash)

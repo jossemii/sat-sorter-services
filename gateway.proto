@@ -14,29 +14,26 @@ message Instance {
     optional string token = 3;
 }
 
-message ServiceTransport {
-    message ServiceWithMeta {
-        celaut.Any.Metadata meta = 1;
-        celaut.Service service = 2;
-    }
-    oneof oneOf{
-        celaut.Any.Metadata.HashTag.Hash hash = 1;
-        ServiceWithMeta service = 2;
-    }
-    optional celaut.Configuration config = 3;    
+// ( celaut.Any.Metadata.HashTag.Hash=H, celaut.Any=S, celaut.Configuration=C; { H v S v H^C v S^C } )
+message HashWithConfig { // H^C 
+    celaut.Any.Metadata.HashTag.Hash hash = 1;
+    celaut.Configuration config = 3;  
+}
+message ServiceWithConfig { // S^C
+    celaut.Any service = 2;
+    celaut.Configuration config = 3;
 }
 
 
 // GRPC.
-
 message Buffer  {
-    oneof oneof{    
-        bytes chunk = 1;
-        bytes separator = 2;
-        bytes signal = 3;
-    }
+    optional bytes chunk = 1;
+    optional bool separator = 2;
+    optional bool signal = 3;
+    optional int32 head = 4;
 }
+
 service Gateway {
-    rpc StartService( stream Buffer) returns ( stream Buffer) {} // ServiceTransport -> Instance
+    rpc StartService( stream Buffer) returns ( stream Buffer) {} // ( celaut.Any.Metadata.HashTag.Hash=H, celaut.Any=S, celaut.Configuration=C; { H v S v H^C v S^C } ) -> Instance
     rpc StopService(stream Buffer) returns (stream Buffer) {} // TokenMessage -> Empty
 }

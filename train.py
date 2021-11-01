@@ -6,7 +6,7 @@ import api_pb2, api_pb2_grpc, solvers_dataset_pb2, gateway_pb2, gateway_pb2_grpc
 from singleton import Singleton
 import _solve
 from start import LOGGER, DIR, SHA3_256, SHA3_256_ID, get_grpc_uri
-from utils import client_grpc
+from utils import client_grpc, serialize_to_buffer
 
 
 class Session(metaclass=Singleton):
@@ -25,8 +25,8 @@ class Session(metaclass=Singleton):
         with open(DIR + 'random.service', 'rb') as file:
             any = celaut.Any()
             any.ParseFromString(file.read())
-
         self.random_hashes = any.metadata.hashtag.hash
+        del any
 
         self.random_stub = None
         self.random_token = None
@@ -127,24 +127,15 @@ class Session(metaclass=Singleton):
 
     def random_service_extended(self):
         config = True
-        transport = gateway_pb2.ServiceTransport()
         for hash in self.random_hashes:
-            transport.hash.CopyFrom(hash)
             if config:  # Solo hace falta enviar la configuracion en el primer paquete.
-                transport.config.CopyFrom(self.random_config)
                 config = False
-            yield transport
-        transport.ClearField('hash')
-        if config: transport.config.CopyFrom(self.random_config)
-        any = celaut.Any()
-        any.ParseFromString(
-            open(DIR + 'random.service', 'rb').read()
-        )
-        service = celaut.Service()
-        service.ParseFromString(any.value)
-        transport.service.service.CopyFrom(service)
-        transport.service.meta.CopyFrom(any.metadata)
-        yield transport
+                yield gateway_pb2.HashWithConfig(
+                    hash = hash,
+                    config = self.random_config
+                )
+            yield hash
+        yield (DIR + 'random.service', celaut.Any)
 
     def init_random_cnf_service(self):
         LOGGER('Launching random service instance.')

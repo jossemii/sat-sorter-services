@@ -12,13 +12,10 @@ class Session(metaclass = Singleton):
         self.data_set = solvers_dataset_pb2.DataSet()
 
         with open(DIR + 'regresion.service', 'rb') as file:
-            service_with_meta = gateway_pb2.celaut__pb2.Any()
-            service_with_meta.ParseFromString(file.read())
-
-        self.definition = gateway_pb2.celaut__pb2.Service()
-        self.definition.ParseFromString(service_with_meta.value)
-
-        self.metadata = service_with_meta.metadata
+            any = gateway_pb2.celaut__pb2.Any()
+            any.ParseFromString(file.read())
+        self.hashes = any.metadata.hashtag.hash
+        del any
 
         self.config = gateway_pb2.celaut__pb2.Configuration()  
 
@@ -43,18 +40,15 @@ class Session(metaclass = Singleton):
     
     def service_extended(self):
         config = True
-        transport = gateway_pb2.ServiceTransport()
-        for hash in self.metadata.hashtag.hash:
-            transport.hash.CopyFrom(hash)
+        for hash in self.hashes:
             if config:  # Solo hace falta enviar la configuracion en el primer paquete.
-                transport.config.CopyFrom(self.config)
                 config = False
-            yield transport
-        transport.ClearField('hash')
-        if config: transport.config.CopyFrom(self.config)
-        transport.service.service.CopyFrom(self.definition)
-        transport.service.meta.CopyFrom(self.metadata)
-        yield transport
+                yield gateway_pb2.HashWithConfig(
+                    hash = hash,
+                    config = self.config
+                )
+            yield hash
+        yield (DIR + 'regresion.service', gateway_pb2.celaut__pb2.Any)
 
     def init_service(self):
         LOGGER('Launching regresion service instance.')
