@@ -125,7 +125,10 @@ if __name__ == "__main__":
                 metadata = service_with_meta.meta,
                 solver = service_with_meta.service
             )
-            for b in utils.serialize_to_buffer(api_pb2.Empty()): yield b
+            yield api_pb2.Buffer(
+                chunk = api_pb2.Empty().SerializeToString(),
+                separator = True
+            )
 
         def GetTensor(self, request, context):
             tensor_with_ids =  _regresion.get_tensor()
@@ -143,11 +146,17 @@ if __name__ == "__main__":
 
         def StartTrain(self, request, context):
             trainer.start()
-            for b in utils.serialize_to_buffer( api_pb2.Empty()): yield b
+            yield api_pb2.Buffer(
+                chunk = api_pb2.Empty().SerializeToString(),
+                separator = True
+            )
 
         def StopTrain(self, request, context):
             trainer.stop()
-            for b in utils.serialize_to_buffer( api_pb2.Empty()): yield b
+            yield api_pb2.Buffer(
+                chunk = api_pb2.Empty().SerializeToString(),
+                separator = True
+            )
 
         # Integrate other tensor
         def AddTensor(self, request_iterator, context):
@@ -184,7 +193,10 @@ if __name__ == "__main__":
             _regresion.add_data(
                 new_data_set = new_data_set
             )
-            for b in utils.serialize_to_buffer(api_pb2.Empty()): yield b
+            yield api_pb2.Buffer(
+                chunk = api_pb2.Empty().SerializeToString(),
+                separator = True
+            )
 
         def GetDataSet(self, request, context):
             for b in utils.serialize_to_buffer(_regresion.get_data_set()): yield b
@@ -197,7 +209,10 @@ if __name__ == "__main__":
                     message_field=api_pb2.solvers__dataset__pb2.DataSet
                 ))
             )
-            for b in utils.serialize_to_buffer(api_pb2.Empty()): yield b
+            yield api_pb2.Buffer(
+                chunk = api_pb2.Empty().SerializeToString(),
+                separator = True
+            )
 
 
     # create a gRPC server
