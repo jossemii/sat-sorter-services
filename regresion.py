@@ -1,19 +1,19 @@
 import threading
 from time import sleep
 from typing import Generator
+from gateway_pb2_grpc_indices import StartService_indices
 from singleton import Singleton
 from start import LOGGER, SHA3_256, get_grpc_uri, DIR
 import grpc, solvers_dataset_pb2, api_pb2, gateway_pb2_grpc, regresion_pb2_grpc, gateway_pb2, regresion_pb2, os
-from utils import client_grpc
+from utils import client_grpc, read_file, save_chunks_to_file
 
 class Session(metaclass = Singleton):
 
     def __init__(self, ENVS) -> None:
         self.data_set = solvers_dataset_pb2.DataSet()
 
-        with open(DIR + 'regresion.service', 'rb') as file:
-            any = gateway_pb2.celaut__pb2.Any()
-            any.ParseFromString(file.read())
+        any = gateway_pb2.celaut__pb2.Any()
+        any.ParseFromString(read_file(DIR + 'regresion.service'))
         self.hashes = any.metadata.hashtag.hash
         del any
 
@@ -58,7 +58,8 @@ class Session(metaclass = Singleton):
                     method = self.gateway_stub.StartService,
                     input = self.service_extended(),
                     output_field = gateway_pb2.Instance,
-                    timeout=100
+                    timeout=100,
+                    indices_serializer = StartService_indices
                 ))
                 break
             except grpc.RpcError as e:
@@ -122,10 +123,11 @@ class Session(metaclass = Singleton):
 
                 LOGGER('..........')
                 try:
-                    open('__tensor__', 'wb').write(
-                        self.iterate_regression(
-                            data_set = data_set
-                        ).SerializeToString()
+                    save_chunks_to_file(
+                        buffer_iterator = self.iterate_regression(
+                                    data_set = data_set
+                                ),
+                        filename = '__tensor__'
                     )
                 except Exception as e:
                     LOGGER('Exception with regresion service, ' + str(e))
@@ -135,7 +137,7 @@ class Session(metaclass = Singleton):
         if os.path.isfile('__tensor__'):
             tensor = regresion_pb2.Tensor()
             tensor.ParseFromString(
-                open('__tensor__', 'rb').read()
+                read_file('__tensor__')
             )
             return tensor
         else:
@@ -179,14 +181,13 @@ class Session(metaclass = Singleton):
             except (grpc.RpcError, TimeoutError) as e:
                 self.error_control(e)
         
-    # Make regresion Grpc method.
-    def iterate_regression(self, data_set: solvers_dataset_pb2.DataSet) -> regresion_pb2.Tensor:
+    # Make regresion Grpc method. Return the Tensor buffer.
+    def iterate_regression(self, data_set: solvers_dataset_pb2.DataSet) -> Generator[api_pb2.Buffer, None, None]:
         try:
-            return next(client_grpc(
+            for b in client_grpc(
                 method= self.stub.MakeRegresion,
-                input = data_set,
-                output_field = regresion_pb2.Tensor
-            ))
+                input = data_set
+            ): yield b
         except (grpc.RpcError, TimeoutError) as e:
             self.error_control(e)
             raise Exception

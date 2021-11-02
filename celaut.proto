@@ -50,7 +50,7 @@ message Any {
             }
             repeated Hash hash = 1;
             repeated string tag = 2;
-            repeated AttrHashTag attr_hashtag = 3; // List of metadata fields. Ordened by indexes defined on format.
+            repeated bytes attr_hashtag = 3; // List of metadata fields. Ordened by indexes defined on format. NOT NEED TO PARSE ANYWHERE.
         }
         optional HashTag hashtag = 1;
         optional FieldDef format = 2;
@@ -102,7 +102,7 @@ message Service {
             repeated ItemBranch branch = 1;
         }
         bytes architecture = 1;
-        Filesystem filesystem = 2;
+        bytes filesystem = 2;  // NOT NEED TO PARSE ANYWHERE.
         map<string, FieldDef> enviroment_variables = 3;
         string entrypoint = 4;
     }

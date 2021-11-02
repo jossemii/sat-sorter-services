@@ -1,7 +1,8 @@
 from time import sleep, time as time_now
 from datetime import datetime, timedelta
 from threading import Thread, Lock
-from utils import client_grpc, parse_from_buffer, serialize_to_buffer
+from gateway_pb2_grpc_indices import StartService_indices
+from utils import client_grpc, read_file
 import grpc
 
 import api_pb2, api_pb2_grpc, gateway_pb2, gateway_pb2_grpc, solvers_dataset_pb2, celaut_pb2 as celaut
@@ -121,7 +122,8 @@ class SolverConfig(object):
                 instance = next(client_grpc(
                     method = gateway_stub.StartService,
                     input = self.service_extended(),
-                    output_field = gateway_pb2.Instance
+                    output_field = gateway_pb2.Instance,
+                    indices_serializer = StartService_indices
                 ))
                 break
             except grpc.RpcError as e:
@@ -160,7 +162,7 @@ class SolverConfig(object):
     def get_solver_with_config(self) -> solvers_dataset_pb2.SolverWithConfig:
         solver_with_meta = api_pb2.ServiceWithMeta()
         solver_with_meta.ParseFromString(
-            open(DIR + '__solvers__/' + self.solver_hash, 'rb').read()
+            read_file(DIR + '__solvers__/' + self.solver_hash)
         )
         return api_pb2.solvers__dataset__pb2.SolverWithConfig(
                     meta = solver_with_meta.meta,

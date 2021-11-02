@@ -1,3 +1,4 @@
+from gateway_pb2_grpc_indices import StartService_indices
 import regresion
 from threading import get_ident, Thread, Lock
 import grpc
@@ -6,7 +7,7 @@ import api_pb2, api_pb2_grpc, solvers_dataset_pb2, gateway_pb2, gateway_pb2_grpc
 from singleton import Singleton
 import _solve
 from start import LOGGER, DIR, SHA3_256, SHA3_256_ID, get_grpc_uri
-from utils import client_grpc, serialize_to_buffer
+from utils import client_grpc, read_file, save_chunks_to_file
 
 
 class Session(metaclass=Singleton):
@@ -22,9 +23,9 @@ class Session(metaclass=Singleton):
 
         self.thread = None
         self.gateway_stub = gateway_pb2_grpc.GatewayStub(grpc.insecure_channel(self.GATEWAY_MAIN_DIR))
-        with open(DIR + 'random.service', 'rb') as file:
-            any = celaut.Any()
-            any.ParseFromString(file.read())
+        
+        any = celaut.Any()
+        any.ParseFromString(read_file(DIR + 'random.service'))
         self.random_hashes = any.metadata.hashtag.hash
         del any
 
@@ -144,7 +145,8 @@ class Session(metaclass=Singleton):
                 instance = next(client_grpc(
                     method = self.gateway_stub.StartService,
                     input = self.random_service_extended(),
-                    output_field = gateway_pb2.Instance
+                    output_field = gateway_pb2.Instance,
+                    indices_serializer = StartService_indices
                 ))
                 break
             except grpc.RpcError as e:

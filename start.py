@@ -15,7 +15,7 @@ def get_grpc_uri(instance: celaut_pb2.Instance) -> celaut_pb2.Instance.Uri:
     raise Exception('Grpc over Http/2 not supported on this service ' + str(instance))
 
 ENVS = {
-    'GATEWAY_MAIN_DIR': '192.168.1.144:8080',
+    'GATEWAY_MAIN_DIR': '192.168.1.143:8080',
     'SAVE_TRAIN_DATA': 10,
     'MAINTENANCE_SLEEP_TIME': 60,
     'SOLVER_PASS_TIMEOUT_TIMES': 5,
@@ -43,12 +43,13 @@ if __name__ == "__main__":
     from threading import get_ident
     import grpc, api_pb2, api_pb2_grpc, solvers_dataset_pb2
     from concurrent import futures
+    from utils import read_file
 
     """
         # Read __config__ file.
         config = api_pb2.celaut__pb2.ConfigurationFile()
         config.ParseFromString(
-            open('/__config__', 'rb').read()
+            read_file('/__config__')
         )    
 
     gateway_uri = get_grpc_uri(config.gateway)
@@ -119,7 +120,7 @@ if __name__ == "__main__":
                     
         def UploadSolver(self, request_iterator, context):
             LOGGER('New solver ...')
-            service_with_meta = next(utils.parse_from_buffer(request_iterator=request_iterator, message_field=api_pb2.ServiceWithMeta))
+            service_with_meta = next(utils.parse_from_buffer(request_iterator=request_iterator, message_field = api_pb2.ServiceWithMeta))
             trainer.load_solver(
                 metadata = service_with_meta.meta,
                 solver = service_with_meta.service
