@@ -2,11 +2,12 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-import api_pb2 as api__pb2
+import buffer_pb2 as buffer__pb2
 
 
 class SolverStub(object):
-    """Missing associated documentation comment in .proto file."""
+    """GRPC.
+    """
 
     def __init__(self, channel):
         """Constructor.
@@ -16,53 +17,54 @@ class SolverStub(object):
         """
         self.StartTrain = channel.stream_stream(
                 '/api.Solver/StartTrain',
-                request_serializer=api__pb2.Buffer.SerializeToString,
-                response_deserializer=api__pb2.Buffer.FromString,
+                request_serializer=buffer__pb2.Buffer.SerializeToString,
+                response_deserializer=buffer__pb2.Buffer.FromString,
                 )
         self.StopTrain = channel.stream_stream(
                 '/api.Solver/StopTrain',
-                request_serializer=api__pb2.Buffer.SerializeToString,
-                response_deserializer=api__pb2.Buffer.FromString,
+                request_serializer=buffer__pb2.Buffer.SerializeToString,
+                response_deserializer=buffer__pb2.Buffer.FromString,
                 )
         self.GetTensor = channel.stream_stream(
                 '/api.Solver/GetTensor',
-                request_serializer=api__pb2.Buffer.SerializeToString,
-                response_deserializer=api__pb2.Buffer.FromString,
+                request_serializer=buffer__pb2.Buffer.SerializeToString,
+                response_deserializer=buffer__pb2.Buffer.FromString,
                 )
         self.UploadSolver = channel.stream_stream(
                 '/api.Solver/UploadSolver',
-                request_serializer=api__pb2.Buffer.SerializeToString,
-                response_deserializer=api__pb2.Buffer.FromString,
+                request_serializer=buffer__pb2.Buffer.SerializeToString,
+                response_deserializer=buffer__pb2.Buffer.FromString,
                 )
         self.StreamLogs = channel.stream_stream(
                 '/api.Solver/StreamLogs',
-                request_serializer=api__pb2.Buffer.SerializeToString,
-                response_deserializer=api__pb2.Buffer.FromString,
+                request_serializer=buffer__pb2.Buffer.SerializeToString,
+                response_deserializer=buffer__pb2.Buffer.FromString,
                 )
         self.Solve = channel.stream_stream(
                 '/api.Solver/Solve',
-                request_serializer=api__pb2.Buffer.SerializeToString,
-                response_deserializer=api__pb2.Buffer.FromString,
+                request_serializer=buffer__pb2.Buffer.SerializeToString,
+                response_deserializer=buffer__pb2.Buffer.FromString,
                 )
         self.AddTensor = channel.stream_stream(
                 '/api.Solver/AddTensor',
-                request_serializer=api__pb2.Buffer.SerializeToString,
-                response_deserializer=api__pb2.Buffer.FromString,
+                request_serializer=buffer__pb2.Buffer.SerializeToString,
+                response_deserializer=buffer__pb2.Buffer.FromString,
                 )
         self.GetDataSet = channel.stream_stream(
                 '/api.Solver/GetDataSet',
-                request_serializer=api__pb2.Buffer.SerializeToString,
-                response_deserializer=api__pb2.Buffer.FromString,
+                request_serializer=buffer__pb2.Buffer.SerializeToString,
+                response_deserializer=buffer__pb2.Buffer.FromString,
                 )
         self.AddDataSet = channel.stream_stream(
                 '/api.Solver/AddDataSet',
-                request_serializer=api__pb2.Buffer.SerializeToString,
-                response_deserializer=api__pb2.Buffer.FromString,
+                request_serializer=buffer__pb2.Buffer.SerializeToString,
+                response_deserializer=buffer__pb2.Buffer.FromString,
                 )
 
 
 class SolverServicer(object):
-    """Missing associated documentation comment in .proto file."""
+    """GRPC.
+    """
 
     def StartTrain(self, request_iterator, context):
         """Missing associated documentation comment in .proto file."""
@@ -124,48 +126,48 @@ def add_SolverServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'StartTrain': grpc.stream_stream_rpc_method_handler(
                     servicer.StartTrain,
-                    request_deserializer=api__pb2.Buffer.FromString,
-                    response_serializer=api__pb2.Buffer.SerializeToString,
+                    request_deserializer=buffer__pb2.Buffer.FromString,
+                    response_serializer=buffer__pb2.Buffer.SerializeToString,
             ),
             'StopTrain': grpc.stream_stream_rpc_method_handler(
                     servicer.StopTrain,
-                    request_deserializer=api__pb2.Buffer.FromString,
-                    response_serializer=api__pb2.Buffer.SerializeToString,
+                    request_deserializer=buffer__pb2.Buffer.FromString,
+                    response_serializer=buffer__pb2.Buffer.SerializeToString,
             ),
             'GetTensor': grpc.stream_stream_rpc_method_handler(
                     servicer.GetTensor,
-                    request_deserializer=api__pb2.Buffer.FromString,
-                    response_serializer=api__pb2.Buffer.SerializeToString,
+                    request_deserializer=buffer__pb2.Buffer.FromString,
+                    response_serializer=buffer__pb2.Buffer.SerializeToString,
             ),
             'UploadSolver': grpc.stream_stream_rpc_method_handler(
                     servicer.UploadSolver,
-                    request_deserializer=api__pb2.Buffer.FromString,
-                    response_serializer=api__pb2.Buffer.SerializeToString,
+                    request_deserializer=buffer__pb2.Buffer.FromString,
+                    response_serializer=buffer__pb2.Buffer.SerializeToString,
             ),
             'StreamLogs': grpc.stream_stream_rpc_method_handler(
                     servicer.StreamLogs,
-                    request_deserializer=api__pb2.Buffer.FromString,
-                    response_serializer=api__pb2.Buffer.SerializeToString,
+                    request_deserializer=buffer__pb2.Buffer.FromString,
+                    response_serializer=buffer__pb2.Buffer.SerializeToString,
             ),
             'Solve': grpc.stream_stream_rpc_method_handler(
                     servicer.Solve,
-                    request_deserializer=api__pb2.Buffer.FromString,
-                    response_serializer=api__pb2.Buffer.SerializeToString,
+                    request_deserializer=buffer__pb2.Buffer.FromString,
+                    response_serializer=buffer__pb2.Buffer.SerializeToString,
             ),
             'AddTensor': grpc.stream_stream_rpc_method_handler(
                     servicer.AddTensor,
-                    request_deserializer=api__pb2.Buffer.FromString,
-                    response_serializer=api__pb2.Buffer.SerializeToString,
+                    request_deserializer=buffer__pb2.Buffer.FromString,
+                    response_serializer=buffer__pb2.Buffer.SerializeToString,
             ),
             'GetDataSet': grpc.stream_stream_rpc_method_handler(
                     servicer.GetDataSet,
-                    request_deserializer=api__pb2.Buffer.FromString,
-                    response_serializer=api__pb2.Buffer.SerializeToString,
+                    request_deserializer=buffer__pb2.Buffer.FromString,
+                    response_serializer=buffer__pb2.Buffer.SerializeToString,
             ),
             'AddDataSet': grpc.stream_stream_rpc_method_handler(
                     servicer.AddDataSet,
-                    request_deserializer=api__pb2.Buffer.FromString,
-                    response_serializer=api__pb2.Buffer.SerializeToString,
+                    request_deserializer=buffer__pb2.Buffer.FromString,
+                    response_serializer=buffer__pb2.Buffer.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -175,7 +177,8 @@ def add_SolverServicer_to_server(servicer, server):
 
  # This class is part of an EXPERIMENTAL API.
 class Solver(object):
-    """Missing associated documentation comment in .proto file."""
+    """GRPC.
+    """
 
     @staticmethod
     def StartTrain(request_iterator,
@@ -189,8 +192,8 @@ class Solver(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.stream_stream(request_iterator, target, '/api.Solver/StartTrain',
-            api__pb2.Buffer.SerializeToString,
-            api__pb2.Buffer.FromString,
+            buffer__pb2.Buffer.SerializeToString,
+            buffer__pb2.Buffer.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -206,8 +209,8 @@ class Solver(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.stream_stream(request_iterator, target, '/api.Solver/StopTrain',
-            api__pb2.Buffer.SerializeToString,
-            api__pb2.Buffer.FromString,
+            buffer__pb2.Buffer.SerializeToString,
+            buffer__pb2.Buffer.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -223,8 +226,8 @@ class Solver(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.stream_stream(request_iterator, target, '/api.Solver/GetTensor',
-            api__pb2.Buffer.SerializeToString,
-            api__pb2.Buffer.FromString,
+            buffer__pb2.Buffer.SerializeToString,
+            buffer__pb2.Buffer.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -240,8 +243,8 @@ class Solver(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.stream_stream(request_iterator, target, '/api.Solver/UploadSolver',
-            api__pb2.Buffer.SerializeToString,
-            api__pb2.Buffer.FromString,
+            buffer__pb2.Buffer.SerializeToString,
+            buffer__pb2.Buffer.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -257,8 +260,8 @@ class Solver(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.stream_stream(request_iterator, target, '/api.Solver/StreamLogs',
-            api__pb2.Buffer.SerializeToString,
-            api__pb2.Buffer.FromString,
+            buffer__pb2.Buffer.SerializeToString,
+            buffer__pb2.Buffer.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -274,8 +277,8 @@ class Solver(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.stream_stream(request_iterator, target, '/api.Solver/Solve',
-            api__pb2.Buffer.SerializeToString,
-            api__pb2.Buffer.FromString,
+            buffer__pb2.Buffer.SerializeToString,
+            buffer__pb2.Buffer.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -291,8 +294,8 @@ class Solver(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.stream_stream(request_iterator, target, '/api.Solver/AddTensor',
-            api__pb2.Buffer.SerializeToString,
-            api__pb2.Buffer.FromString,
+            buffer__pb2.Buffer.SerializeToString,
+            buffer__pb2.Buffer.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -308,8 +311,8 @@ class Solver(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.stream_stream(request_iterator, target, '/api.Solver/GetDataSet',
-            api__pb2.Buffer.SerializeToString,
-            api__pb2.Buffer.FromString,
+            buffer__pb2.Buffer.SerializeToString,
+            buffer__pb2.Buffer.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -325,8 +328,8 @@ class Solver(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.stream_stream(request_iterator, target, '/api.Solver/AddDataSet',
-            api__pb2.Buffer.SerializeToString,
-            api__pb2.Buffer.FromString,
+            buffer__pb2.Buffer.SerializeToString,
+            buffer__pb2.Buffer.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -342,8 +345,8 @@ class RandomStub(object):
         """
         self.RandomCnf = channel.stream_stream(
                 '/api.Random/RandomCnf',
-                request_serializer=api__pb2.Buffer.SerializeToString,
-                response_deserializer=api__pb2.Buffer.FromString,
+                request_serializer=buffer__pb2.Buffer.SerializeToString,
+                response_deserializer=buffer__pb2.Buffer.FromString,
                 )
 
 
@@ -361,8 +364,8 @@ def add_RandomServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'RandomCnf': grpc.stream_stream_rpc_method_handler(
                     servicer.RandomCnf,
-                    request_deserializer=api__pb2.Buffer.FromString,
-                    response_serializer=api__pb2.Buffer.SerializeToString,
+                    request_deserializer=buffer__pb2.Buffer.FromString,
+                    response_serializer=buffer__pb2.Buffer.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -386,7 +389,7 @@ class Random(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.stream_stream(request_iterator, target, '/api.Random/RandomCnf',
-            api__pb2.Buffer.SerializeToString,
-            api__pb2.Buffer.FromString,
+            buffer__pb2.Buffer.SerializeToString,
+            buffer__pb2.Buffer.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

@@ -2,11 +2,12 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-import gateway_pb2 as gateway__pb2
+import buffer_pb2 as buffer__pb2
 
 
 class GatewayStub(object):
-    """Missing associated documentation comment in .proto file."""
+    """GRPC.
+    """
 
     def __init__(self, channel):
         """Constructor.
@@ -16,18 +17,19 @@ class GatewayStub(object):
         """
         self.StartService = channel.stream_stream(
                 '/gateway.Gateway/StartService',
-                request_serializer=gateway__pb2.Buffer.SerializeToString,
-                response_deserializer=gateway__pb2.Buffer.FromString,
+                request_serializer=buffer__pb2.Buffer.SerializeToString,
+                response_deserializer=buffer__pb2.Buffer.FromString,
                 )
         self.StopService = channel.stream_stream(
                 '/gateway.Gateway/StopService',
-                request_serializer=gateway__pb2.Buffer.SerializeToString,
-                response_deserializer=gateway__pb2.Buffer.FromString,
+                request_serializer=buffer__pb2.Buffer.SerializeToString,
+                response_deserializer=buffer__pb2.Buffer.FromString,
                 )
 
 
 class GatewayServicer(object):
-    """Missing associated documentation comment in .proto file."""
+    """GRPC.
+    """
 
     def StartService(self, request_iterator, context):
         """Missing associated documentation comment in .proto file."""
@@ -46,13 +48,13 @@ def add_GatewayServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'StartService': grpc.stream_stream_rpc_method_handler(
                     servicer.StartService,
-                    request_deserializer=gateway__pb2.Buffer.FromString,
-                    response_serializer=gateway__pb2.Buffer.SerializeToString,
+                    request_deserializer=buffer__pb2.Buffer.FromString,
+                    response_serializer=buffer__pb2.Buffer.SerializeToString,
             ),
             'StopService': grpc.stream_stream_rpc_method_handler(
                     servicer.StopService,
-                    request_deserializer=gateway__pb2.Buffer.FromString,
-                    response_serializer=gateway__pb2.Buffer.SerializeToString,
+                    request_deserializer=buffer__pb2.Buffer.FromString,
+                    response_serializer=buffer__pb2.Buffer.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -62,7 +64,8 @@ def add_GatewayServicer_to_server(servicer, server):
 
  # This class is part of an EXPERIMENTAL API.
 class Gateway(object):
-    """Missing associated documentation comment in .proto file."""
+    """GRPC.
+    """
 
     @staticmethod
     def StartService(request_iterator,
@@ -76,8 +79,8 @@ class Gateway(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.stream_stream(request_iterator, target, '/gateway.Gateway/StartService',
-            gateway__pb2.Buffer.SerializeToString,
-            gateway__pb2.Buffer.FromString,
+            buffer__pb2.Buffer.SerializeToString,
+            buffer__pb2.Buffer.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -93,7 +96,7 @@ class Gateway(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.stream_stream(request_iterator, target, '/gateway.Gateway/StopService',
-            gateway__pb2.Buffer.SerializeToString,
-            gateway__pb2.Buffer.FromString,
+            buffer__pb2.Buffer.SerializeToString,
+            buffer__pb2.Buffer.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

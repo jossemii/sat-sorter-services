@@ -3,6 +3,7 @@ syntax = "proto3";
 import "onnx.proto";
 import "celaut.proto";
 import "solvers_dataset.proto";
+import "buffer.proto";
 
 package api;
 
@@ -58,27 +59,20 @@ message Tensor { // Like Onxx but with only SolverWithConfig'field elements.
 }
 
 // GRPC.
-message Buffer  {
-    optional bytes chunk = 1;
-    optional bool separator = 2;
-    optional bool signal = 3;
-    optional int32 head = 4;
-}
-
 service Solver {
-    rpc StartTrain ( stream Buffer) returns (stream Buffer) {}  // Empty -> Empty
-    rpc StopTrain ( stream Buffer) returns (stream Buffer) {}  // Empty -> Empty
-    rpc GetTensor ( stream Buffer) returns (stream Buffer) {}  // Empty -> Tensor
-    rpc UploadSolver ( stream Buffer) returns (stream Buffer) {}  // ServiceWithMeta -> Empty
-    rpc StreamLogs ( stream Buffer) returns (stream Buffer) {}  // Empty -> File
-    rpc Solve ( stream Buffer) returns (stream Buffer) {}  // Cnf -> Interpretation
-    rpc AddTensor( stream Buffer) returns (stream Buffer) {}  // Tensor -> Empty
+    rpc StartTrain ( stream buffer.Buffer) returns (stream buffer.Buffer) {}  // Empty -> Empty
+    rpc StopTrain ( stream buffer.Buffer) returns (stream buffer.Buffer) {}  // Empty -> Empty
+    rpc GetTensor ( stream buffer.Buffer) returns (stream buffer.Buffer) {}  // Empty -> Tensor
+    rpc UploadSolver ( stream buffer.Buffer) returns (stream buffer.Buffer) {}  // ServiceWithMeta -> Empty
+    rpc StreamLogs ( stream buffer.Buffer) returns (stream buffer.Buffer) {}  // Empty -> File
+    rpc Solve ( stream buffer.Buffer) returns (stream buffer.Buffer) {}  // Cnf -> Interpretation
+    rpc AddTensor( stream buffer.Buffer) returns (stream buffer.Buffer) {}  // Tensor -> Empty
 
     // Hasta que se implemente AddTensor.
-    rpc GetDataSet ( stream Buffer) returns (stream Buffer) {}  // Empty -> dataset.DataSet
-    rpc AddDataSet ( stream Buffer) returns (stream Buffer) {}  // dataset.DataSet -> Empty
+    rpc GetDataSet ( stream buffer.Buffer) returns (stream buffer.Buffer) {}  // Empty -> dataset.DataSet
+    rpc AddDataSet ( stream buffer.Buffer) returns (stream buffer.Buffer) {}  // dataset.DataSet -> Empty
 }
 
 service Random {
-    rpc RandomCnf(stream Buffer) returns (stream Buffer) {} // Empty -> Cnf 
+    rpc RandomCnf(stream buffer.Buffer) returns (stream buffer.Buffer) {} // Empty -> Cnf 
 }

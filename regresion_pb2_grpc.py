@@ -2,11 +2,13 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-import regresion_pb2 as regresion__pb2
+import buffer_pb2 as buffer__pb2
 
 
 class RegresionStub(object):
-    """Missing associated documentation comment in .proto file."""
+    """GRPC.
+
+    """
 
     def __init__(self, channel):
         """Constructor.
@@ -16,18 +18,20 @@ class RegresionStub(object):
         """
         self.StreamLogs = channel.stream_stream(
                 '/Regresion/StreamLogs',
-                request_serializer=regresion__pb2.Buffer.SerializeToString,
-                response_deserializer=regresion__pb2.Buffer.FromString,
+                request_serializer=buffer__pb2.Buffer.SerializeToString,
+                response_deserializer=buffer__pb2.Buffer.FromString,
                 )
         self.MakeRegresion = channel.stream_stream(
                 '/Regresion/MakeRegresion',
-                request_serializer=regresion__pb2.Buffer.SerializeToString,
-                response_deserializer=regresion__pb2.Buffer.FromString,
+                request_serializer=buffer__pb2.Buffer.SerializeToString,
+                response_deserializer=buffer__pb2.Buffer.FromString,
                 )
 
 
 class RegresionServicer(object):
-    """Missing associated documentation comment in .proto file."""
+    """GRPC.
+
+    """
 
     def StreamLogs(self, request_iterator, context):
         """Missing associated documentation comment in .proto file."""
@@ -46,13 +50,13 @@ def add_RegresionServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'StreamLogs': grpc.stream_stream_rpc_method_handler(
                     servicer.StreamLogs,
-                    request_deserializer=regresion__pb2.Buffer.FromString,
-                    response_serializer=regresion__pb2.Buffer.SerializeToString,
+                    request_deserializer=buffer__pb2.Buffer.FromString,
+                    response_serializer=buffer__pb2.Buffer.SerializeToString,
             ),
             'MakeRegresion': grpc.stream_stream_rpc_method_handler(
                     servicer.MakeRegresion,
-                    request_deserializer=regresion__pb2.Buffer.FromString,
-                    response_serializer=regresion__pb2.Buffer.SerializeToString,
+                    request_deserializer=buffer__pb2.Buffer.FromString,
+                    response_serializer=buffer__pb2.Buffer.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -62,7 +66,9 @@ def add_RegresionServicer_to_server(servicer, server):
 
  # This class is part of an EXPERIMENTAL API.
 class Regresion(object):
-    """Missing associated documentation comment in .proto file."""
+    """GRPC.
+
+    """
 
     @staticmethod
     def StreamLogs(request_iterator,
@@ -76,8 +82,8 @@ class Regresion(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.stream_stream(request_iterator, target, '/Regresion/StreamLogs',
-            regresion__pb2.Buffer.SerializeToString,
-            regresion__pb2.Buffer.FromString,
+            buffer__pb2.Buffer.SerializeToString,
+            buffer__pb2.Buffer.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -93,7 +99,7 @@ class Regresion(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.stream_stream(request_iterator, target, '/Regresion/MakeRegresion',
-            regresion__pb2.Buffer.SerializeToString,
-            regresion__pb2.Buffer.FromString,
+            buffer__pb2.Buffer.SerializeToString,
+            buffer__pb2.Buffer.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
