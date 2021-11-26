@@ -93,8 +93,8 @@ class Session(metaclass=Singleton):
 
         solver_hash = SHA3_256(
             value = grpcbf.partitions_to_buffer(
+                partitions_model = UploadService_input_partitions,
                 partitions = (
-                    UploadService_input_partitions,
                     partition1,
                     partition2,
                 )
