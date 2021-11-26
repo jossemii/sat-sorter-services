@@ -79,14 +79,3 @@ StartService_input_partitions = {
     }
 .proto
 """
-
-
-GetServiceCost_input = {
-    1 : gateway_pb2.celaut__pb2.Any.Metadata.HashTag.Hash,
-    2 : gateway_pb2.celaut__pb2.Any,
-}
-
-GetServiceTar_input = {
-    1 : gateway_pb2.celaut__pb2.Any.Metadata.HashTag.Hash,
-    2 : gateway_pb2.celaut__pb2.Any,
-}

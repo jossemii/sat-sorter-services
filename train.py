@@ -1,13 +1,16 @@
-from gateway_pb2_grpc_indices import StartService_indices
+import shutil
+from api_pb2_grpcbf import UploadService_input_partitions
+from gateway_pb2_grpcbf import StartService_input
 import regresion
 from threading import get_ident, Thread, Lock
+import grpcbigbuffer as grpcbf
 import grpc
 from time import sleep
 import api_pb2, api_pb2_grpc, solvers_dataset_pb2, gateway_pb2, gateway_pb2_grpc, celaut_pb2 as celaut
 from singleton import Singleton
 import _solve
 from start import LOGGER, DIR, SHA3_256, SHA3_256_ID, get_grpc_uri
-from utils import client_grpc, read_file, save_chunks_to_file
+from utils import client_grpc, read_file
 
 
 class Session(metaclass=Singleton):
@@ -71,33 +74,39 @@ class Session(metaclass=Singleton):
             self.do_stop = False
             self.thread = None
 
-    def load_solver(self, solver: solvers_dataset_pb2.celaut__pb2.Service, metadata: solvers_dataset_pb2.celaut__pb2.Any.Metadata) -> str:
+    def load_solver(self, partition1: api_pb2.SolverWithConfig, partition2: str) -> str:
+        
         # Se puede cargar un solver sin estar completo, 
         #  pero debe de contener si o si la sha3-256
         #  ya que el servicio no la calculará (ni comprobará).
 
         # En caso de no estar completo ni poseer la SHA3_256 identificará el servicio mediante la hash de su version incompleta. 
         # Si más tarde se vuelve a subir el servicio incompleto, no se podrá detectar que es el mismo y se entrenarán ambos por separado.
-        # Esto podría crear duplicaciones en el tensor, pero no debería suponer ningun tipo de error, solo una ineficiencia.
+        # Esto podría crear duplicaciones en el tensor, pero no debería suponer ningun tipo de error, solo ineficiencia.
 
         solver_hash = None
+        metadata =partition1.metadata
+        solver = partition1.solver
         for h in metadata.hashtag.hash:
             if h.type == SHA3_256_ID:
                 solver_hash = h.value.hex()   
 
         solver_hash = SHA3_256(
-            value = solver.SerializeToString()
+            value = grpcbf.partitions_to_buffer(
+                partitions = (
+                    UploadService_input_partitions,
+                    partition1,
+                    partition2,
+                )
+            )
         ) if not solver_hash else solver_hash
 
         self.solvers_lock.acquire()
         if solver_hash and solver_hash not in self.solvers:
             self.solvers.append(solver_hash)
-            with open(DIR + '__solvers__/' + solver_hash, 'wb') as file:
-                solver_with_meta = api_pb2.ServiceWithMeta(
-                    meta = metadata,
-                    service = solver
-                )
-                file.write(solver_with_meta.SerializeToString())
+            shutil.move(partition2, '__solvers__/'+solver_hash+'/p2')
+            with open(DIR + '__solvers__/'+solver_hash+'/p1', 'wb') as file:
+                file.write(partition1.SerializeToString())
 
             # En este punto se pueden crear varias versiones del mismo solver, 
             # con distintas variables de entorno.
@@ -146,7 +155,7 @@ class Session(metaclass=Singleton):
                     method = self.gateway_stub.StartService,
                     input = self.random_service_extended(),
                     output_field = gateway_pb2.Instance,
-                    indices_serializer = StartService_indices
+                    indices_serializer = StartService_input
                 ))
                 break
             except grpc.RpcError as e:

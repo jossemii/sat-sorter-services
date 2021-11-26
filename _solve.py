@@ -1,7 +1,7 @@
 from time import sleep, time as time_now
 from datetime import datetime, timedelta
 from threading import Thread, Lock
-from gateway_pb2_grpc_indices import StartService_indices
+from gateway_pb2_grpcbf import StartService_input_partitions, StartService_input
 from utils import client_grpc, read_file
 import grpc
 
@@ -113,7 +113,11 @@ class SolverConfig(object):
                     config = self.config
                 )
             yield hash
-        yield ('__solvers__/' + self.solver_hash, celaut.Any)
+        yield ( 
+            api_pb2.SolverWithConfig,
+            '__solvers__/'+self.solver_hash+'/p1',
+            '__solvers__/'+self.solver_hash+'/p2'
+        )
 
     def launch_instance(self, gateway_stub) -> SolverInstance:
         LOGGER('    launching new instance for solver ' + self.solver_hash)
@@ -122,8 +126,10 @@ class SolverConfig(object):
                 instance = next(client_grpc(
                     method = gateway_stub.StartService,
                     input = self.service_extended(),
-                    output_field = gateway_pb2.Instance,
-                    indices_serializer = StartService_indices
+                    indices_parser = gateway_pb2.Instance,
+                    partitions_message_mode_parser=True,
+                    indices_serializer = StartService_input,
+                    partitions_serializer = StartService_input_partitions
                 ))
                 break
             except grpc.RpcError as e:
