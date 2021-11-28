@@ -1,6 +1,8 @@
 import shutil
+
+from google.protobuf import message
 from api_pb2_grpcbf import UploadService_input_partitions
-from gateway_pb2_grpcbf import StartService_input
+from gateway_pb2_grpcbf import StartService_input, StartService_input_partitions
 import regresion
 from threading import get_ident, Thread, Lock
 import grpcbigbuffer as grpcbf
@@ -93,11 +95,12 @@ class Session(metaclass=Singleton):
 
         solver_hash = SHA3_256(
             value = grpcbf.partitions_to_buffer(
-                partitions_model = UploadService_input_partitions,
+                message = api_pb2.ServiceWithMeta,
                 partitions = (
                     partition1,
                     partition2,
-                )
+                ),
+                partitions_model = StartService_input_partitions[4]
             )
         ) if not solver_hash else solver_hash
 
