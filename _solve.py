@@ -2,7 +2,8 @@ from time import sleep, time as time_now
 from datetime import datetime, timedelta
 from threading import Thread, Lock
 from gateway_pb2_grpcbf import StartService_input_partitions, StartService_input
-from utils import client_grpc, read_file
+from utils import read_file
+from grpcbigbuffer import client_grpc
 import grpc
 
 import api_pb2, api_pb2_grpc, gateway_pb2, gateway_pb2_grpc, solvers_dataset_pb2, celaut_pb2 as celaut

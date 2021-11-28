@@ -74,7 +74,7 @@ class Session(metaclass=Singleton):
             self.do_stop = False
             self.thread = None
 
-    def load_solver(self, partition1: api_pb2.SolverWithConfig, partition2: str) -> str:
+    def load_solver(self, partition1: api_pb2.solvers__dataset__pb2.SolverWithConfig, partition2: str) -> str:
         
         # Se puede cargar un solver sin estar completo, 
         #  pero debe de contener si o si la sha3-256

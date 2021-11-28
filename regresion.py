@@ -4,9 +4,9 @@ from typing import Generator
 from gateway_pb2_grpcbf import StartService_input
 from singleton import Singleton
 from start import LOGGER, SHA3_256, get_grpc_uri, DIR
-import grpc, solvers_dataset_pb2, api_pb2, gateway_pb2_grpc, regresion_pb2_grpc, gateway_pb2, regresion_pb2, os
-from utils import read_file, save_chunks_to_file
-from grpcbigbuffer import client_grpc
+import grpc, solvers_dataset_pb2, api_pb2, gateway_pb2_grpc, regresion_pb2_grpc, gateway_pb2, regresion_pb2, os, buffer_pb2
+from utils import read_file
+from grpcbigbuffer import client_grpc, save_chunks_to_file
 
 class Session(metaclass = Singleton):
 
@@ -183,7 +183,7 @@ class Session(metaclass = Singleton):
                 self.error_control(e)
         
     # Make regresion Grpc method. Return the Tensor buffer.
-    def iterate_regression(self, data_set: solvers_dataset_pb2.DataSet) -> Generator[api_pb2.Buffer, None, None]:
+    def iterate_regression(self, data_set: solvers_dataset_pb2.DataSet) -> Generator[buffer_pb2.Buffer, None, None]:
         try:
             for b in client_grpc(
                 method= self.stub.MakeRegresion,

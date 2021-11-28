@@ -16,7 +16,7 @@ def get_grpc_uri(instance: celaut_pb2.Instance) -> celaut_pb2.Instance.Uri:
     raise Exception('Grpc over Http/2 not supported on this service ' + str(instance))
 
 ENVS = {
-    'GATEWAY_MAIN_DIR': '192.168.1.143:8080',
+    'GATEWAY_MAIN_DIR': 'localhost:8080', #  Note: Change the start.py port too.
     'SAVE_TRAIN_DATA': 10,
     'MAINTENANCE_SLEEP_TIME': 60,
     'SOLVER_PASS_TIMEOUT_TIMES': 5,
@@ -45,7 +45,7 @@ if __name__ == "__main__":
     import grpc, api_pb2, api_pb2_grpc, solvers_dataset_pb2
     from concurrent import futures
     import grpcbigbuffer as grpcbf, iobigdata
-    from api_pb2_grpcbf import UploadSolver_input_partitions
+    from api_pb2_grpcbf import UploadService_input_partitions
 
     """
         # Read __config__ file.
@@ -125,7 +125,7 @@ if __name__ == "__main__":
             LOGGER('New solver ...')
             pit = grpcbf.parse_from_buffer(
                 request_iterator=request_iterator, 
-                partitions_model = UploadSolver_input_partitions,
+                partitions_model = UploadService_input_partitions,
                 partitions_message_mode = [True, False]
                 )
             if next(pit) != api_pb2.ServiceWithMeta: raise Exception('UploadSolver error: this is not a ServiceWithMeta message. '+str(pit))
@@ -233,6 +233,6 @@ if __name__ == "__main__":
 
     # listen on port 8080
     LOGGER('Starting server. Listening on port 8080.')
-    server.add_insecure_port('[::]:8080')
+    server.add_insecure_port('[::]:8081') # TODO
     server.start()
     server.wait_for_termination()
