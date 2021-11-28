@@ -114,7 +114,7 @@ class SolverConfig(object):
                 )
             yield hash
         yield ( 
-            api_pb2.SolverWithConfig,
+            gateway_pb2.ServiceWithConfig,
             '__solvers__/'+self.solver_hash+'/p1',
             '__solvers__/'+self.solver_hash+'/p2'
         )

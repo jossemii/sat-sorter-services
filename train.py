@@ -1,7 +1,4 @@
 import shutil
-
-from google.protobuf import message
-from api_pb2_grpcbf import UploadService_input_partitions
 from gateway_pb2_grpcbf import StartService_input, StartService_input_partitions
 import regresion
 from threading import get_ident, Thread, Lock
@@ -12,7 +9,8 @@ import api_pb2, api_pb2_grpc, solvers_dataset_pb2, gateway_pb2, gateway_pb2_grpc
 from singleton import Singleton
 import _solve
 from start import LOGGER, DIR, SHA3_256, SHA3_256_ID, get_grpc_uri
-from utils import client_grpc, read_file
+from utils import read_file
+from grpcbigbuffer import client_grpc
 
 
 class Session(metaclass=Singleton):
@@ -148,7 +146,7 @@ class Session(metaclass=Singleton):
                     config = self.random_config
                 )
             yield hash
-        yield (DIR + 'random.service', celaut.Any)
+        yield (gateway_pb2.ServiceWithMeta, DIR + 'random.service')
 
     def init_random_cnf_service(self):
         LOGGER('Launching random service instance.')
@@ -157,7 +155,7 @@ class Session(metaclass=Singleton):
                 instance = next(client_grpc(
                     method = self.gateway_stub.StartService,
                     input = self.random_service_extended(),
-                    output_field = gateway_pb2.Instance,
+                    indices_parser = gateway_pb2.Instance,
                     indices_serializer = StartService_input
                 ))
                 break

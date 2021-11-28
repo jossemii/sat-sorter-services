@@ -1,11 +1,12 @@
 import threading
 from time import sleep
 from typing import Generator
-from gateway_pb2_grpc_indices import StartService_indices
+from gateway_pb2_grpcbf import StartService_input
 from singleton import Singleton
 from start import LOGGER, SHA3_256, get_grpc_uri, DIR
 import grpc, solvers_dataset_pb2, api_pb2, gateway_pb2_grpc, regresion_pb2_grpc, gateway_pb2, regresion_pb2, os
-from utils import client_grpc, read_file, save_chunks_to_file
+from utils import read_file, save_chunks_to_file
+from grpcbigbuffer import client_grpc
 
 class Session(metaclass = Singleton):
 
@@ -48,7 +49,7 @@ class Session(metaclass = Singleton):
                     config = self.config
                 )
             yield hash
-        yield (DIR + 'regresion.service', gateway_pb2.celaut__pb2.Any)
+        yield (gateway_pb2.ServiceWithMeta, DIR + 'regresion.service')
 
     def init_service(self):
         LOGGER('Launching regresion service instance.')
@@ -57,9 +58,9 @@ class Session(metaclass = Singleton):
                 instance = next(client_grpc(
                     method = self.gateway_stub.StartService,
                     input = self.service_extended(),
-                    output_field = gateway_pb2.Instance,
                     timeout=100,
-                    indices_serializer = StartService_indices
+                    indices_parser = gateway_pb2.Instance,
+                    indices_serializer = StartService_input
                 ))
                 break
             except grpc.RpcError as e:
