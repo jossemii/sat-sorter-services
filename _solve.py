@@ -217,7 +217,7 @@ class Session(metaclass = Singleton):
             interpretation = next(client_grpc(
                 method = instance.stub.Solve,
                 input = cnf,
-                output_field = api_pb2.Interpretation,
+                indices_parser = api_pb2.Interpretation,
                 timeout = timeout
             ))
             time = time_now() - start_time

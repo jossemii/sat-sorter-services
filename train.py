@@ -186,7 +186,7 @@ class Session(metaclass=Singleton):
                 return next(client_grpc(
                     method = self.random_stub.RandomCnf,
                     input = api_pb2.Empty(),
-                    output_field = api_pb2.Cnf,
+                    indices_parser = api_pb2.Cnf,
                     timeout = self.START_AVR_TIMEOUT
                 ))
             except (grpc.RpcError, TimeoutError) as e:

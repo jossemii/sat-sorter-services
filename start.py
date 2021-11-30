@@ -1,5 +1,4 @@
-import logging, celaut_pb2, os
-import shutil
+import logging, celaut_pb2, os, buffer_pb2
 from iterators import TimeoutIterator
 
 logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s')
@@ -135,7 +134,7 @@ if __name__ == "__main__":
                 partition2 = next(pit),
             )
 
-            yield api_pb2.Buffer(
+            yield buffer_pb2.Buffer(
                 chunk = api_pb2.Empty().SerializeToString(),
                 separator = True
             )
@@ -156,14 +155,14 @@ if __name__ == "__main__":
 
         def StartTrain(self, request, context):
             trainer.start()
-            yield api_pb2.Buffer(
+            yield buffer_pb2.Buffer(
                 chunk = api_pb2.Empty().SerializeToString(),
                 separator = True
             )
 
         def StopTrain(self, request, context):
             trainer.stop()
-            yield api_pb2.Buffer(
+            yield buffer_pb2.Buffer(
                 chunk = api_pb2.Empty().SerializeToString(),
                 separator = True
             )
@@ -203,7 +202,7 @@ if __name__ == "__main__":
             _regresion.add_data(
                 new_data_set = new_data_set
             )
-            yield api_pb2.Buffer(
+            yield buffer_pb2.Buffer(
                 chunk = api_pb2.Empty().SerializeToString(),
                 separator = True
             )
@@ -219,7 +218,7 @@ if __name__ == "__main__":
                     indices=api_pb2.solvers__dataset__pb2.DataSet
                 ))
             )
-            yield api_pb2.Buffer(
+            yield buffer_pb2.Buffer(
                 chunk = api_pb2.Empty().SerializeToString(),
                 separator = True
             )

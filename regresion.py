@@ -39,11 +39,11 @@ class Session(metaclass = Singleton):
         self.token = None
         self.dataset_lock = threading.Lock()
         self.connection_errors = 0
-        #self.init_service()
+        self.init_service()
 
         # for maintain.
         self.data_set_hash = ""
-        #threading.Thread(target = self.maintenance, name = 'Regresion').start()
+        threading.Thread(target = self.maintenance, name = 'Regresion').start()
     
     def service_extended(self):
         config = True
@@ -183,7 +183,7 @@ class Session(metaclass = Singleton):
                 for file in client_grpc(
                     method = self.stub.StreamLogs,
                     input = api_pb2.Empty(),
-                    output_field = regresion_pb2.File,
+                    indices_parser = regresion_pb2.File,
                     timeout = self.START_AVR_TIMEOUT
                 ): yield file
                 
