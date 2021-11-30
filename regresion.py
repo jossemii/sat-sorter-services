@@ -1,4 +1,4 @@
-import threading
+import threading, gc
 from time import sleep
 from typing import Generator
 from gateway_pb2_grpcbf import StartService_input
@@ -12,12 +12,18 @@ class Session(metaclass = Singleton):
 
     def __init__(self, ENVS) -> None:
         self.data_set = solvers_dataset_pb2.DataSet()
-
+        
         any = gateway_pb2.celaut__pb2.Any() # TODO could've the hashes on the code.
         any.ParseFromString(read_file(DIR + 'regresion.service'))
-        self.hashes = any.metadata.hashtag.hash
-        del any
-
+        self.hashes=[]
+        for hash in any.metadata.hashtag.hash:
+            self.hashes.append(
+                gateway_pb2.celaut__pb2.Any.Metadata.HashTag.Hash(
+                    type = hash.type,
+                    value = hash.value
+                )
+            )
+        
         self.config = gateway_pb2.celaut__pb2.Configuration()  
 
         # set used envs on variables.       
@@ -33,11 +39,11 @@ class Session(metaclass = Singleton):
         self.token = None
         self.dataset_lock = threading.Lock()
         self.connection_errors = 0
-        self.init_service()
+        #self.init_service()
 
         # for maintain.
         self.data_set_hash = ""
-        threading.Thread(target = self.maintenance, name = 'Regresion').start()
+        #threading.Thread(target = self.maintenance, name = 'Regresion').start()
     
     def service_extended(self):
         config = True
@@ -55,13 +61,15 @@ class Session(metaclass = Singleton):
         LOGGER('Launching regresion service instance.')
         while True:
             try:
-                instance = next(client_grpc(
+                instance  = None
+                for i in client_grpc(
                     method = self.gateway_stub.StartService,
                     input = self.service_extended(),
                     timeout=100,
                     indices_parser = gateway_pb2.Instance,
+                    partitions_message_mode_parser=True,
                     indices_serializer = StartService_input
-                ))
+                ): instance = i
                 break
             except grpc.RpcError as e:
                 LOGGER('GRPC ERROR.' + str(e))

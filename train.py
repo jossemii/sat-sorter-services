@@ -29,8 +29,14 @@ class Session(metaclass=Singleton):
         
         any = celaut.Any() # TODO could've the hashes on the code.
         any.ParseFromString(read_file(DIR + 'random.service'))
-        self.random_hashes = any.metadata.hashtag.hash
-        del any
+        self.random_hashes=[]
+        for hash in any.metadata.hashtag.hash:
+            self.random_hashes.append(
+                gateway_pb2.celaut__pb2.Any.Metadata.HashTag.Hash(
+                    type = hash.type,
+                    value = hash.value
+                )
+            )
 
         self.random_stub = None
         self.random_token = None
@@ -156,6 +162,7 @@ class Session(metaclass=Singleton):
                     method = self.gateway_stub.StartService,
                     input = self.random_service_extended(),
                     indices_parser = gateway_pb2.Instance,
+                    partitions_message_mode_parser=True,
                     indices_serializer = StartService_input
                 ))
                 break
