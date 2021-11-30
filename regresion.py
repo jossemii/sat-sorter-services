@@ -13,7 +13,7 @@ class Session(metaclass = Singleton):
     def __init__(self, ENVS) -> None:
         self.data_set = solvers_dataset_pb2.DataSet()
 
-        any = gateway_pb2.celaut__pb2.Any()
+        any = gateway_pb2.celaut__pb2.Any() # TODO could've the hashes on the code.
         any.ParseFromString(read_file(DIR + 'regresion.service'))
         self.hashes = any.metadata.hashtag.hash
         del any

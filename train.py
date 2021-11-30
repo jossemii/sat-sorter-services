@@ -27,7 +27,7 @@ class Session(metaclass=Singleton):
         self.thread = None
         self.gateway_stub = gateway_pb2_grpc.GatewayStub(grpc.insecure_channel(self.GATEWAY_MAIN_DIR))
         
-        any = celaut.Any()
+        any = celaut.Any() # TODO could've the hashes on the code.
         any.ParseFromString(read_file(DIR + 'random.service'))
         self.random_hashes = any.metadata.hashtag.hash
         del any
