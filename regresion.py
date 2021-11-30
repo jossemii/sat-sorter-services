@@ -23,6 +23,7 @@ class Session(metaclass = Singleton):
                     value = hash.value
                 )
             )
+        self.hashes = []
         
         self.config = gateway_pb2.celaut__pb2.Configuration()  
 
