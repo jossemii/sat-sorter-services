@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from threading import Thread, Lock
 from gateway_pb2_grpcbf import StartService_input_partitions, StartService_input
 from utils import read_file
-from grpcbigbuffer import client_grpc
+from grpcbigbuffer import Dir, client_grpc
 import grpc
 
 import api_pb2, api_pb2_grpc, gateway_pb2, gateway_pb2_grpc, solvers_dataset_pb2, celaut_pb2 as celaut
@@ -116,8 +116,8 @@ class SolverConfig(object):
             yield hash
         yield ( 
             gateway_pb2.ServiceWithConfig,
-            '__solvers__/'+self.solver_hash+'/p1',
-            '__solvers__/'+self.solver_hash+'/p2'
+            Dir('__solvers__/'+self.solver_hash+'/p1'),
+            Dir('__solvers__/'+self.solver_hash+'/p2')
         )
 
     def launch_instance(self, gateway_stub) -> SolverInstance:

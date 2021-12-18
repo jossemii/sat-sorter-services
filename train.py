@@ -10,7 +10,7 @@ from singleton import Singleton
 import _solve
 from start import LOGGER, DIR, SHA3_256, SHA3_256_ID, get_grpc_uri
 from utils import read_file
-from grpcbigbuffer import client_grpc
+from grpcbigbuffer import Dir, client_grpc
 
 
 class Session(metaclass=Singleton):
@@ -152,7 +152,7 @@ class Session(metaclass=Singleton):
                     config = self.random_config
                 )
             yield hash
-        yield (gateway_pb2.ServiceWithMeta, DIR + 'random.service')
+        yield (gateway_pb2.ServiceWithMeta, Dir(DIR + 'random.service'))
 
     def init_random_cnf_service(self):
         LOGGER('Launching random service instance.')
