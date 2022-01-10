@@ -106,7 +106,8 @@ def save_chunks_to_file(buffer_iterator, filename, signal):
     signal.wait()
     with open(filename, 'wb') as f:
         signal.wait()
-        f.write(b''.join([buffer.chunk for buffer in buffer_iterator]))
+        for buffer in buffer_iterator: f.write(buffer.chunk) # MAYBE IT'S MORE SLOW, BUT USES ONLY THE CHUNK LEN OF RAM.
+        # f.write(b''.join([buffer.chunk for buffer in buffer_iterator])) # MAYBE IT'S FASTER BUT CONSUMES A LOT OF RAM with big buffers.
 
 def get_subclass(partition, object_cls):
     return get_subclass(
@@ -129,23 +130,26 @@ def copy_message(obj, field_name, message):
         e = message
     return obj
 
-def get_submessage(partition, obj):
+def get_submessage(partition, obj, say_if_not_change = False):
     if len(partition.index) == 0:
-        return obj
+        return False if say_if_not_change else obj
     if len(partition.index) == 1:
         return get_submessage(
             partition = list(partition.index.values())[0],
             obj = getattr(obj, obj.DESCRIPTOR.fields[list(partition.index.keys())[0]-1].name)
         )
     for field in obj.DESCRIPTOR.fields:
-        if field.index+1 in partition.index: 
+        if field.index+1 in partition.index:
             try:
+                submessage = get_submessage(
+                        partition = partition.index[field.index+1],
+                        obj = getattr(obj, field.name),
+                        say_if_not_change = True
+                    )
+                if not submessage: continue  # Anything to prune.
                 copy_message(
                     obj=obj, field_name=field.name,
-                    message = get_submessage(
-                        partition = partition.index[field.index+1],
-                        obj = getattr(obj, field.name)
-                    )
+                    message = submessage
                 )
             except: pass
         else:
@@ -202,11 +206,12 @@ def parse_from_buffer(
         partitions_model: Union[list, dict] = [buffer_pb2.Buffer.Head.Partition()],
         partitions_message_mode: Union[bool, list, dict] = False,  # Write on disk by default.
         cache_dir: str = None,
-        mem_manager = Enviroment.mem_manager,
+        mem_manager = None,
         yield_remote_partition_dir: bool = False,
     ): 
     try:
         try:
+            if not mem_manager: mem_manager = Enviroment.mem_manager
             if not cache_dir: cache_dir = create_cache_dir()
             if type(indices) is protobuf.pyext.cpp_message.GeneratedProtocolMessageType: indices = {1: indices}
             if type(indices) is not dict: raise Exception
@@ -252,15 +257,19 @@ def parse_from_buffer(
                 signal=signal,
             ):
                 all_buffer += b.chunk
-            message = message_field()
+            
             if message_field is str:
                 message = all_buffer.decode('utf-8')
             elif type(message_field) is protobuf.pyext.cpp_message.GeneratedProtocolMessageType:
+                message = message_field()
                 message.ParseFromString(
                         all_buffer
                     )
             else:
-                raise Exception('gRPCbb error -> Parse message error: some primitive type message not suported for contain partition '+ str(message_field))
+                try:
+                    message = message_field(all_buffer)
+                except Exception as e:
+                    raise Exception('gRPCbb error -> Parse message error: some primitive type message not suported for contain partition '+ str(message_field) + str(e))
             if len(all_buffer)>0: return message
             else: raise EmptyBufferException()
 
@@ -313,7 +322,6 @@ def parse_from_buffer(
             ):
             yield pf_object
             try:
-                print(1)
                 os.mkdir(cache_dir+'remote/')
             except FileExistsError: raise Exception('gRPCbb error: Conversor error, remote dir already exists')
             dirs = []
@@ -327,7 +335,8 @@ def parse_from_buffer(
             if not pf_object or len(remote_partitions_model)>0 and len(dirs) != len(remote_partitions_model): return None
             # 3. Parse to the local partitions from the remote partitions using mem_manager.
             try:
-                with mem_manager(len = 2*sum([os.path.getsize(dir) for dir in dirs])):
+                # TODO: check the limit memory formula.
+                with mem_manager(len = 3*sum([os.path.getsize(dir) for dir in dirs[:-1]]) + 2*os.path.getsize(dirs[-1])):
                     if (len(remote_partitions_model)==0 or len(remote_partitions_model)==1) and len(dirs)==1:
                         main_object = pf_object()
                         main_object.ParseFromString(open(dirs[0], 'rb').read())
@@ -343,8 +352,11 @@ def parse_from_buffer(
                     # 4. yield local partitions.
                     if local_partitions_model == []: local_partitions_model.append(buffer_pb2.Buffer.Head.Partition())
                     for i, partition in enumerate(local_partitions_model):
-                        aux_object = pf_object()
-                        aux_object.CopyFrom(main_object)
+                        if i+1 == len(local_partitions_model): 
+                            aux_object = main_object
+                        else:
+                            aux_object = pf_object()
+                            aux_object.CopyFrom(main_object)
                         aux_object = get_submessage(partition = partition, obj = aux_object)
                         message_mode = partitions_message_mode[i]
                         if not message_mode:
@@ -355,6 +367,7 @@ def parse_from_buffer(
                                         aux_object.SerializeToString() if hasattr(aux_object, 'SerializeToString') \
                                             else bytes(aux_object) if type(aux_object) is not str else bytes(aux_object, 'utf8')
                                     )
+                                del aux_object
                                 yield filename
                             except Exception as e: print(e)
                         else:
@@ -450,10 +463,11 @@ def serialize_to_buffer(
         cache_dir: str = None, 
         indices: Union[protobuf.pyext.cpp_message.GeneratedProtocolMessageType, dict] = {},
         partitions_model: Union[list, dict] = [buffer_pb2.Buffer.Head.Partition()],
-        mem_manager = Enviroment.mem_manager
+        mem_manager = None
     ) -> Generator[buffer_pb2.Buffer, None, None]:  # method: indice
     try:
         try:
+            if not mem_manager: mem_manager = Enviroment.mem_manager
             if not cache_dir: cache_dir = create_cache_dir()
             if type(indices) is protobuf.pyext.cpp_message.GeneratedProtocolMessageType: indices = {1: indices}
             if type(indices) is not dict: raise Exception
@@ -594,11 +608,12 @@ def client_grpc(
         partitions_message_mode_parser: Union[bool, list, dict] = False,
         indices_serializer: Union[protobuf.pyext.cpp_message.GeneratedProtocolMessageType, dict] = {},
         partitions_serializer: Union[list, dict] = [buffer_pb2.Buffer.Head.Partition()],
-        mem_manager = Enviroment.mem_manager,
+        mem_manager = None,
         cache_dir: str = None, 
         yield_remote_partition_dir_on_serializer: bool = False,
     ): # indice: method
     try:
+        if not mem_manager: mem_manager = Enviroment.mem_manager
         if not cache_dir: cache_dir = create_cache_dir()
         signal = Signal()
         os.mkdir(cache_dir+'serializer/')

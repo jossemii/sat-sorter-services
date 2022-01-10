@@ -15,7 +15,7 @@ def get_grpc_uri(instance: celaut_pb2.Instance) -> celaut_pb2.Instance.Uri:
     raise Exception('Grpc over Http/2 not supported on this service ' + str(instance))
 
 ENVS = {
-    'GATEWAY_MAIN_DIR': 'localhost:8080', #  Note: Change the start.py port too.
+    'GATEWAY_MAIN_DIR': '192.168.1.145:8090',
     'SAVE_TRAIN_DATA': 10,
     'MAINTENANCE_SLEEP_TIME': 60,
     'SOLVER_PASS_TIMEOUT_TIMES': 5,
@@ -232,6 +232,6 @@ if __name__ == "__main__":
 
     # listen on port 8080
     LOGGER('Starting server. Listening on port 8080.')
-    server.add_insecure_port('[::]:8081') # TODO
+    server.add_insecure_port('[::]:8080') # TODO
     server.start()
     server.wait_for_termination()

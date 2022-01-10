@@ -65,7 +65,6 @@ class Session(metaclass = Singleton):
                 for i in client_grpc(
                     method = self.gateway_stub.StartService,
                     input = self.service_extended(),
-                    timeout=100,
                     indices_parser = gateway_pb2.Instance,
                     partitions_message_mode_parser=True,
                     indices_serializer = StartService_input
