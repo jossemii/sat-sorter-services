@@ -231,7 +231,7 @@ if __name__ == "__main__":
         SolverServicer(), server)
 
     # listen on port 8080
-    LOGGER('Starting server. Listening on port 8080.')
-    server.add_insecure_port('[::]:8080') # TODO
+    LOGGER('Starting server. Listening on port 8081.')
+    server.add_insecure_port('[::]:8081') # TODO
     server.start()
     server.wait_for_termination()
