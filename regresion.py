@@ -13,17 +13,12 @@ class Session(metaclass = Singleton):
     def __init__(self, ENVS) -> None:
         self.data_set = solvers_dataset_pb2.DataSet()
         
-        any = gateway_pb2.celaut__pb2.Any() # TODO could've the hashes on the code.
-        any.ParseFromString(read_file(DIR + 'regresion.service'))
-        self.hashes=[]
-        for hash in any.metadata.hashtag.hash:
-            self.hashes.append(
-                gateway_pb2.celaut__pb2.Any.Metadata.HashTag.Hash(
-                    type = hash.type,
-                    value = hash.value
-                )
+        self.hashes=[
+            gateway_pb2.celaut__pb2.Any.Metadata.HashTag.Hash(
+                type = bytes.fromhex("a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a"),
+                value = bytes.fromhex("85b69d485607107c5845f4d30cbb14608b3cea5257c651d62de5371e52df9901")
             )
-        
+        ]
         self.config = gateway_pb2.celaut__pb2.Configuration()  
 
         # set used envs on variables.       

@@ -27,17 +27,12 @@ class Session(metaclass=Singleton):
         self.thread = None
         self.gateway_stub = gateway_pb2_grpc.GatewayStub(grpc.insecure_channel(self.GATEWAY_MAIN_DIR))
         
-        any = celaut.Any() # TODO could've the hashes on the code.
-        any.ParseFromString(read_file(DIR + 'random.service'))
-        self.random_hashes=[]
-        for hash in any.metadata.hashtag.hash:
-            self.random_hashes.append(
-                gateway_pb2.celaut__pb2.Any.Metadata.HashTag.Hash(
-                    type = hash.type,
-                    value = hash.value
-                )
+        self.random_hashes=[
+            gateway_pb2.celaut__pb2.Any.Metadata.HashTag.Hash(
+                type = bytes.fromhex("a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a"),
+                value = bytes.fromhex("db326b6fecef9d4c76ff6381b19b30b4300fa795457a9d7d70e884882c082d69")
             )
-
+        ]
         self.random_stub = None
         self.random_token = None
         self.solvers_dataset = solvers_dataset_pb2.DataSet()
