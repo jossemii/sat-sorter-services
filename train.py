@@ -30,7 +30,7 @@ class Session(metaclass=Singleton):
         self.random_hashes=[
             gateway_pb2.celaut__pb2.Any.Metadata.HashTag.Hash(
                 type = bytes.fromhex("a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a"),
-                value = bytes.fromhex("db326b6fecef9d4c76ff6381b19b30b4300fa795457a9d7d70e884882c082d69")
+                value = bytes.fromhex("b11074a440261eee100bb8751610be5c5cf6efdf9a9a1128de7d61dd93dc0fd9")
             )
         ]
         self.random_stub = None
@@ -182,9 +182,10 @@ class Session(metaclass=Singleton):
                     method = self.random_stub.RandomCnf,
                     input = api_pb2.Empty(),
                     indices_parser = api_pb2.Cnf,
+                    partitions_message_mode_parser = True,
                     # timeout = self.START_AVR_TIMEOUT
                 ))
-            except (grpc.RpcError, TimeoutError) as e:
+            except (grpc.RpcError, TimeoutError, Exception) as e:
                 if connection_errors < self.CONNECTION_ERRORS:
                     connection_errors = connection_errors + 1
                     sleep(1)  # Evita condiciones de carrera si lo ejecuta tras recibir la instancia.
@@ -251,7 +252,7 @@ class Session(metaclass=Singleton):
                 LOGGER('REFRESH ES MENOR')
                 refresh = refresh + 1
                 cnf = self.random_cnf()
-                LOGGER('OBTENIDO NUEVO CNF. ')+str(cnf)
+                LOGGER('OBTENIDO NUEVO CNF. ')
                 is_insat = True  # En caso en que se demuestre lo contrario.
                 insats = []  # Solvers que afirman la insatisfactibilidad junto con su respectivo tiempo.
                 LOGGER('VAMOS A PROBAR LOS SOLVERS')
