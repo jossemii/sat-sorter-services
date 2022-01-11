@@ -62,7 +62,8 @@ class Session(metaclass = Singleton):
                     input = self.service_extended(),
                     indices_parser = gateway_pb2.Instance,
                     partitions_message_mode_parser=True,
-                    indices_serializer = StartService_input
+                    indices_serializer = StartService_input,
+                    # timeout = self.START_AVR_TIMEOUT
                 ): instance = i
                 break
             except grpc.RpcError as e:

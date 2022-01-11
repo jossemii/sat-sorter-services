@@ -182,7 +182,7 @@ class Session(metaclass=Singleton):
                     method = self.random_stub.RandomCnf,
                     input = api_pb2.Empty(),
                     indices_parser = api_pb2.Cnf,
-                    timeout = self.START_AVR_TIMEOUT
+                    # timeout = self.START_AVR_TIMEOUT
                 ))
             except (grpc.RpcError, TimeoutError) as e:
                 if connection_errors < self.CONNECTION_ERRORS:
@@ -251,7 +251,7 @@ class Session(metaclass=Singleton):
                 LOGGER('REFRESH ES MENOR')
                 refresh = refresh + 1
                 cnf = self.random_cnf()
-                LOGGER('OBTENIDO NUEVO CNF. ')
+                LOGGER('OBTENIDO NUEVO CNF. ')+str(cnf)
                 is_insat = True  # En caso en que se demuestre lo contrario.
                 insats = []  # Solvers que afirman la insatisfactibilidad junto con su respectivo tiempo.
                 LOGGER('VAMOS A PROBAR LOS SOLVERS')

@@ -58,7 +58,6 @@ message Tensor { // Like Onxx but with only SolverWithConfig'field elements.
     }
 }
 
-// GRPC.
 service Solver {
     rpc StartTrain ( stream buffer.Buffer) returns (stream buffer.Buffer) {}  // Empty -> Empty
     rpc StopTrain ( stream buffer.Buffer) returns (stream buffer.Buffer) {}  // Empty -> Empty
@@ -74,5 +73,5 @@ service Solver {
 }
 
 service Random {
-    rpc RandomCnf(stream buffer.Buffer) returns (stream buffer.Buffer) {} // Empty -> Cnf 
+    rpc RandomCnf(stream buffer.Buffer) returns (stream buffer.Buffer) {} // Empty -> Cnf
 }

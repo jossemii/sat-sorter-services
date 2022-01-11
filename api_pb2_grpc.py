@@ -6,8 +6,7 @@ import buffer_pb2 as buffer__pb2
 
 
 class SolverStub(object):
-    """GRPC.
-    """
+    """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
         """Constructor.
@@ -63,8 +62,7 @@ class SolverStub(object):
 
 
 class SolverServicer(object):
-    """GRPC.
-    """
+    """Missing associated documentation comment in .proto file."""
 
     def StartTrain(self, request_iterator, context):
         """Missing associated documentation comment in .proto file."""
@@ -177,8 +175,7 @@ def add_SolverServicer_to_server(servicer, server):
 
  # This class is part of an EXPERIMENTAL API.
 class Solver(object):
-    """GRPC.
-    """
+    """Missing associated documentation comment in .proto file."""
 
     @staticmethod
     def StartTrain(request_iterator,
