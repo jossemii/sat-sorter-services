@@ -102,7 +102,7 @@ def get_file_chunks(filename, signal = Signal(exist=False)) -> Generator[buffer_
     finally: 
         gc.collect()
 
-def save_chunks_to_file(buffer_iterator, filename, signal):
+def save_chunks_to_file(buffer_iterator, filename, signal = Signal(exist=False)):
     signal.wait()
     with open(filename, 'wb') as f:
         signal.wait()
