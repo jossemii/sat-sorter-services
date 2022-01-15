@@ -1,3 +1,4 @@
+import os
 import shutil
 from gateway_pb2_grpcbf import StartService_input, StartService_input_partitions
 import regresion
@@ -76,7 +77,6 @@ class Session(metaclass=Singleton):
             self.thread = None
 
     def load_solver(self, partition1: api_pb2.solvers__dataset__pb2.SolverWithConfig, partition2: str) -> str:
-        
         # Se puede cargar un solver sin estar completo, 
         #  pero debe de contener si o si la sha3-256
         #  ya que el servicio no la calculará (ni comprobará).
@@ -86,8 +86,8 @@ class Session(metaclass=Singleton):
         # Esto podría crear duplicaciones en el tensor, pero no debería suponer ningun tipo de error, solo ineficiencia.
 
         solver_hash = None
-        metadata =partition1.metadata
-        solver = partition1.solver
+        metadata =partition1.meta
+        solver = partition1.service
         for h in metadata.hashtag.hash:
             if h.type == SHA3_256_ID:
                 solver_hash = h.value.hex()   
@@ -106,6 +106,7 @@ class Session(metaclass=Singleton):
         self.solvers_lock.acquire()
         if solver_hash and solver_hash not in self.solvers:
             self.solvers.append(solver_hash)
+            os.mkdir('__solvers__/'+solver_hash)
             shutil.move(partition2, '__solvers__/'+solver_hash+'/p2')
             with open(DIR + '__solvers__/'+solver_hash+'/p1', 'wb') as file:
                 file.write(partition1.SerializeToString())
@@ -185,7 +186,7 @@ class Session(metaclass=Singleton):
                     partitions_message_mode_parser = True,
                     # timeout = self.START_AVR_TIMEOUT
                 ))
-            except (grpc.RpcError, TimeoutError, Exception) as e:
+            except (grpc.RpcError, TimeoutError, grpc.FutureTimeoutError, Exception):
                 if connection_errors < self.CONNECTION_ERRORS:
                     connection_errors = connection_errors + 1
                     sleep(1)  # Evita condiciones de carrera si lo ejecuta tras recibir la instancia.

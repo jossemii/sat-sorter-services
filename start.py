@@ -123,17 +123,16 @@ if __name__ == "__main__":
         def UploadSolver(self, request_iterator, context):
             LOGGER('New solver ...')
             pit = grpcbf.parse_from_buffer(
-                request_iterator=request_iterator, 
+                request_iterator = request_iterator,
                 partitions_model = UploadService_input_partitions,
+                indices = api_pb2.ServiceWithMeta,
                 partitions_message_mode = [True, False]
-                )
+            )
             if next(pit) != api_pb2.ServiceWithMeta: raise Exception('UploadSolver error: this is not a ServiceWithMeta message. '+str(pit))
-            
             trainer.load_solver(
                 partition1 = next(pit),
                 partition2 = next(pit),
             )
-
             yield buffer_pb2.Buffer(
                 chunk = api_pb2.Empty().SerializeToString(),
                 separator = True
@@ -230,8 +229,16 @@ if __name__ == "__main__":
     api_pb2_grpc.add_SolverServicer_to_server(
         SolverServicer(), server)
 
+    # Create __solvers__ if it does not exists.
+    try:
+        os.mkdir('__solvers__')
+    except:
+        # for dev.
+        os.system('rm -rf __solvers__')
+        os.mkdir('__solvers__')
+
     # listen on port 8080
     LOGGER('Starting server. Listening on port 8081.')
-    server.add_insecure_port('[::]:8081') # TODO
+    server.add_insecure_port('[::]:8081')
     server.start()
     server.wait_for_termination()
