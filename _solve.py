@@ -115,7 +115,7 @@ class SolverConfig(object):
                 )
             yield hash
         yield ( 
-            gateway_pb2.ServiceWithConfig,
+            gateway_pb2.ServiceWithMeta,
             Dir('__solvers__/'+self.solver_hash+'/p1'),
             Dir('__solvers__/'+self.solver_hash+'/p2')
         )
