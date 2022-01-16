@@ -218,6 +218,8 @@ class Session(metaclass = Singleton):
                 method = instance.stub.Solve,
                 input = cnf,
                 indices_parser = api_pb2.Interpretation,
+                partitions_message_mode_parser = True,
+                indices_serializer = api_pb2.Cnf,
                 timeout = timeout
             ))
             time = time_now() - start_time
