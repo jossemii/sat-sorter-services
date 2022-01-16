@@ -4,6 +4,7 @@
 
 __tensor__
 __solvers__/*
+__cache__/*
 protodot
 config.json
 templates/
