@@ -90,7 +90,8 @@ if __name__ == "__main__":
                         message_iterator = _solver.cnf(
                             cnf = cnf,
                             solver_config_id = solver_config_id
-                        )[0]
+                        )[0],
+                        indices = api_pb2.Interpretation
                     ): yield b
                 except Exception as e:
                     LOGGER(str(i) + ' ERROR SOLVING A CNF ON Solve ' + str(e))

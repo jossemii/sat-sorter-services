@@ -59,6 +59,7 @@ class SolverInstance(object):
             next(client_grpc(
                 method = self.stub.Solve,
                 input = cnf,
+                indices_serializer = api_pb2.Cnf,
                 timeout = timeout
             ))
             return True
@@ -73,7 +74,8 @@ class SolverInstance(object):
                     method = gateway_stub.StopService,
                     input = gateway_pb2.TokenMessage(
                             token = self.token
-                        )
+                        ),
+                    indices_serializer = gateway_pb2.TokenMessage
                 ))
                 break
             except grpc.RpcError as e:

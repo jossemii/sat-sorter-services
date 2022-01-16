@@ -55,7 +55,8 @@ class Session(metaclass=Singleton):
                     method = self.gateway_stub.StopService,
                     input = gateway_pb2.TokenMessage(
                             token = self.random_token
-                        )
+                        ),
+                    indices_serializer = gateway_pb2.TokenMessage
                 ))
                 break
             except grpc.RpcError as e:
@@ -184,7 +185,7 @@ class Session(metaclass=Singleton):
                     input = api_pb2.Empty(),
                     indices_parser = api_pb2.Cnf,
                     partitions_message_mode_parser = True,
-                    # timeout = self.START_AVR_TIMEOUT
+                    timeout = self.START_AVR_TIMEOUT
                 ))
             except (grpc.RpcError, TimeoutError, grpc.FutureTimeoutError, Exception):
                 if connection_errors < self.CONNECTION_ERRORS:

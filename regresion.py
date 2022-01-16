@@ -1,3 +1,4 @@
+from doctest import FAIL_FAST
 import threading, gc
 from time import sleep
 from typing import Generator
@@ -85,7 +86,8 @@ class Session(metaclass = Singleton):
                     method = self.gateway_stub.StopService,
                     input = gateway_pb2.TokenMessage(
                             token = self.token
-                        )
+                        ),
+                    indices_serializer = gateway_pb2.TokenMessage,
                 ))
                 break
             except grpc.RpcError as e:
@@ -127,11 +129,12 @@ class Session(metaclass = Singleton):
 
                 LOGGER('..........')
                 try:
-                    save_chunks_to_file(
-                        buffer_iterator = self.iterate_regression(
-                                    data_set = data_set
-                                ),
-                        filename = '__tensor__'
+                    os.remove('__tensor__')
+                    os.move(
+                        self.iterate_regression(
+                            data_set = data_set
+                        ),
+                        '__tensor__'
                     )
                 except Exception as e:
                     LOGGER('Exception with regresion service, ' + str(e))
@@ -179,6 +182,7 @@ class Session(metaclass = Singleton):
                     method = self.stub.StreamLogs,
                     input = api_pb2.Empty(),
                     indices_parser = regresion_pb2.File,
+                    partitions_message_mode_parser = True,
                     timeout = self.START_AVR_TIMEOUT
                 ): yield file
                 
@@ -186,12 +190,15 @@ class Session(metaclass = Singleton):
                 self.error_control(e)
         
     # Make regresion Grpc method. Return the Tensor buffer.
-    def iterate_regression(self, data_set: solvers_dataset_pb2.DataSet) -> Generator[buffer_pb2.Buffer, None, None]:
+    def iterate_regression(self, data_set: solvers_dataset_pb2.DataSet) -> str:
         try:
-            for b in client_grpc(
+            return next(client_grpc(
                 method= self.stub.MakeRegresion,
-                input = data_set
-            ): yield b
+                input = data_set,
+                indices_serializer = solvers_dataset_pb2.DataSet,
+                indices_parser = regresion_pb2.Tensor,
+                partitions_message_mode_parser = False,
+            ))
         except (grpc.RpcError, TimeoutError) as e:
             self.error_control(e)
             raise Exception
