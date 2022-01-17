@@ -1,4 +1,6 @@
+from asyncio import shield
 from doctest import FAIL_FAST
+import shutil
 import threading, gc
 from time import sleep
 from typing import Generator
@@ -129,8 +131,7 @@ class Session(metaclass = Singleton):
 
                 LOGGER('..........')
                 try:
-                    os.remove('__tensor__')
-                    os.move(
+                    shutil.move(
                         self.iterate_regression(
                             data_set = data_set
                         ),

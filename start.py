@@ -72,7 +72,11 @@ if __name__ == "__main__":
     class SolverServicer(api_pb2_grpc.SolverServicer):
 
         def Solve(self, request_iterator, context):
-            cnf = next(grpcbf.parse_from_buffer(request_iterator=request_iterator, indices=api_pb2.Cnf))
+            cnf = next(grpcbf.parse_from_buffer(
+                request_iterator=request_iterator, 
+                indices = api_pb2.Cnf,
+                partitions_message_mode = True
+            ))
             try:
                 solver_config_id = _get.cnf(
                     cnf = cnf,
@@ -80,7 +84,10 @@ if __name__ == "__main__":
                 )
             except:
                 LOGGER('Wait more for it, tensor is not ready yet. ')
-                for b in grpcbf.serialize_to_buffer(message_iterator = api_pb2.Empty()): yield b
+                yield buffer_pb2.Buffer(
+                    chunk = api_pb2.Empty().SerializeToString(),
+                    separator = True
+                )
 
             LOGGER('USING SOLVER --> ' + str(solver_config_id))
 
