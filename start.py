@@ -82,29 +82,30 @@ if __name__ == "__main__":
                     cnf = cnf,
                     tensors = _regresion.get_tensor()
                 )
-            except:
+                LOGGER('USING SOLVER --> ' + str(solver_config_id))
+
+                for i in range(5):
+                    try:
+                        for b in grpcbf.serialize_to_buffer(
+                            message_iterator = _solver.cnf(
+                                cnf = cnf,
+                                solver_config_id = solver_config_id
+                            )[0],
+                            indices = api_pb2.Interpretation
+                        ): yield b
+                    except Exception as e:
+                        LOGGER(str(i) + ' ERROR SOLVING A CNF ON Solve ' + str(e))
+                        sleep(1) # TODO check
+                        continue
+                raise Exception
+
+            except Exception as e:
                 LOGGER('Wait more for it, tensor is not ready yet. ')
                 yield buffer_pb2.Buffer(
                     chunk = api_pb2.Empty().SerializeToString(),
                     separator = True
                 )
-
-            LOGGER('USING SOLVER --> ' + str(solver_config_id))
-
-            for i in range(5):
-                try:
-                    for b in grpcbf.serialize_to_buffer(
-                        message_iterator = _solver.cnf(
-                            cnf = cnf,
-                            solver_config_id = solver_config_id
-                        )[0],
-                        indices = api_pb2.Interpretation
-                    ): yield b
-                except Exception as e:
-                    LOGGER(str(i) + ' ERROR SOLVING A CNF ON Solve ' + str(e))
-                    sleep(1) # TODO check
-                    continue
-            raise Exception
+                raise StopIteration
 
         def StreamLogs(self, request_iterator, context):
             if hasattr(self.StreamLogs, 'has_been_called'): 
@@ -215,7 +216,7 @@ if __name__ == "__main__":
             )
 
         def GetDataSet(self, request, context):
-            for b in grpcbf.serialize_to_buffer(message_iterator = _regresion.get_data_set()): yield b
+            for b in grpcbf.serialize_to_buffer(message_iterator = _regresion.get_data_set(), indices=solvers_dataset_pb2.DataSet): yield b
         
         # Hasta que se implemente AddTensor.
         def AddDataSet(self, request_iterator, context):

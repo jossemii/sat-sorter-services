@@ -139,6 +139,7 @@ class Session(metaclass = Singleton):
                     )
                 except Exception as e:
                     LOGGER('Exception with regresion service, ' + str(e))
+                    continue
 
     def get_tensor(self) -> regresion_pb2.Tensor:
         # No hay condiciones de carrera aunque lo reescriba en ese momento.
