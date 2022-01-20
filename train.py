@@ -187,7 +187,7 @@ class Session(metaclass=Singleton):
                     partitions_message_mode_parser = True,
                     timeout = self.START_AVR_TIMEOUT
                 ))
-            except (grpc.RpcError, TimeoutError, grpc.FutureTimeoutError, Exception):
+            except (grpc.RpcError, TimeoutError, grpc.FutureTimeoutError, Exception) as e:
                 if connection_errors < self.CONNECTION_ERRORS:
                     connection_errors = connection_errors + 1
                     sleep(1)  # Evita condiciones de carrera si lo ejecuta tras recibir la instancia.

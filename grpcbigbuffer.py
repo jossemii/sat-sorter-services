@@ -452,7 +452,7 @@ def parse_from_buffer(
                     raise Exception('Parse from buffer error: index are not correct ' + str(indices))
         except StopIteration:
             try:
-                shutil.rmtree(cache_dir)
+                pass#shutil.rmtree(cache_dir)
             except: pass
             return
     except Exception as e: print(e)
@@ -594,7 +594,7 @@ def serialize_to_buffer(
                     cache_dir = cache_dir,
                 ): yield b
         try:
-            shutil.rmtree(cache_dir)
+            pass#shutil.rmtree(cache_dir)
         except: pass
         return
     except Exception as e: print(e)
@@ -640,7 +640,7 @@ def client_grpc(
     except Exception as e: print(e)
     finally:
         try:
-            shutil.rmtree(cache_dir)
+            pass#shutil.rmtree(cache_dir)
         except: pass
 
 

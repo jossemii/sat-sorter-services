@@ -223,7 +223,8 @@ if __name__ == "__main__":
             _regresion.add_data(
                 new_data_set = next(grpcbf.parse_from_buffer(
                     request_iterator=request_iterator,
-                    indices=api_pb2.solvers__dataset__pb2.DataSet
+                    indices=api_pb2.solvers__dataset__pb2.DataSet,
+                    partitions_message_mode = True
                 ))
             )
             yield buffer_pb2.Buffer(
