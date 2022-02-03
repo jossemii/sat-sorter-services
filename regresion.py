@@ -57,7 +57,6 @@ class Session(metaclass = Singleton):
 
     def init_service(self):
         LOGGER('Launching regresion service instance.')
-        """
         while True:
             try:
                 instance  = None
@@ -74,11 +73,10 @@ class Session(metaclass = Singleton):
                 LOGGER('GRPC ERROR.' + str(e))
                 sleep(10)
         uri = get_grpc_uri(instance.instance)        
-        """
 
         self.stub = regresion_pb2_grpc.RegresionStub(
             grpc.insecure_channel(
-                'localhost:9999'#uri.ip + ':' + str(uri.port)
+                uri.ip + ':' + str(uri.port)
             )
         )
         #self.token = instance.token
