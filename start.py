@@ -15,7 +15,7 @@ def get_grpc_uri(instance: celaut_pb2.Instance) -> celaut_pb2.Instance.Uri:
     raise Exception('Grpc over Http/2 not supported on this service ' + str(instance))
 
 ENVS = {
-    'GATEWAY_MAIN_DIR': 'localhost:8090',
+    'GATEWAY_MAIN_DIR': '192.168.1.143:8090',
     'SAVE_TRAIN_DATA': 10,
     'MAINTENANCE_SLEEP_TIME': 60,
     'SOLVER_PASS_TIMEOUT_TIMES': 5,
@@ -23,7 +23,7 @@ ENVS = {
     'TRAIN_SOLVERS_TIMEOUT': 30,
     'MAX_REGRESSION_DEGREE': 100,
     'TIME_FOR_EACH_REGRESSION_LOOP': 900,
-    'CONNECTION_ERRORS': 5,
+    'CONNECTION_ERRORS': 20,
     'START_AVR_TIMEOUT': 30,
     'MAX_WORKERS': 20,
     'MAX_REGRESION_WORKERS': 5,
