@@ -142,10 +142,9 @@ if __name__ == "__main__":
                 partition1 = next(pit),
                 partition2 = next(pit),
             )
-            yield buffer_pb2.Buffer(
-                chunk = api_pb2.Empty().SerializeToString(),
-                separator = True
-            )
+            for b in grpcbf.serialize_to_buffer(
+                message_iterator = api_pb2.Empty()
+            ): yield b
 
         def GetTensor(self, request, context):
             tensor_with_ids =  _regresion.get_tensor()
@@ -163,17 +162,15 @@ if __name__ == "__main__":
 
         def StartTrain(self, request, context):
             trainer.start()
-            yield buffer_pb2.Buffer(
-                chunk = api_pb2.Empty().SerializeToString(),
-                separator = True
-            )
+            for b in grpcbf.serialize_to_buffer(
+                message_iterator = api_pb2.Empty()
+            ): yield b
 
         def StopTrain(self, request, context):
             trainer.stop()
-            yield buffer_pb2.Buffer(
-                chunk = api_pb2.Empty().SerializeToString(),
-                separator = True
-            )
+            for b in grpcbf.serialize_to_buffer(
+                message_iterator = api_pb2.Empty()
+            ): yield b
 
         # Integrate other tensor
         def AddTensor(self, request_iterator, context):
@@ -210,13 +207,14 @@ if __name__ == "__main__":
             _regresion.add_data(
                 new_data_set = new_data_set
             )
-            yield buffer_pb2.Buffer(
-                chunk = api_pb2.Empty().SerializeToString(),
-                separator = True
-            )
+            for b in grpcbf.serialize_to_buffer(
+                message_iterator = api_pb2.Empty()
+            ): yield b
 
-        def GetDataSet(self, request, context):
-            for b in grpcbf.serialize_to_buffer(message_iterator = _regresion.get_data_set(), indices=solvers_dataset_pb2.DataSet): yield b
+        def GetDataSet(self, request_iterator, context):
+            for b in grpcbf.serialize_to_buffer(
+                message_iterator = _regresion.get_data_set()
+            ): yield b
         
         # Hasta que se implemente AddTensor.
         def AddDataSet(self, request_iterator, context):
@@ -227,10 +225,9 @@ if __name__ == "__main__":
                     partitions_message_mode = True
                 ))
             )
-            yield buffer_pb2.Buffer(
-                chunk = api_pb2.Empty().SerializeToString(),
-                separator = True
-            )
+            for b in grpcbf.serialize_to_buffer(
+                message_iterator = api_pb2.Empty()
+            ): yield b
 
 
     # create a gRPC server
