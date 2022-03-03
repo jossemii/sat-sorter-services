@@ -64,7 +64,7 @@ service Solver {
     rpc GetTensor ( stream buffer.Buffer) returns (stream buffer.Buffer) {}  // Empty -> Tensor
     rpc UploadSolver ( stream buffer.Buffer) returns (stream buffer.Buffer) {}  // ServiceWithMeta -> Empty
     rpc StreamLogs ( stream buffer.Buffer) returns (stream buffer.Buffer) {}  // Empty -> File
-    rpc Solve ( stream buffer.Buffer) returns (stream buffer.Buffer) {}  // Cnf -> Interpretation
+    rpc Solve ( stream buffer.Buffer) returns (stream buffer.Buffer) {}  // Cnf -> 1: Interpretation, 2: Empty
     rpc AddTensor( stream buffer.Buffer) returns (stream buffer.Buffer) {}  // Tensor -> Empty
 
     // Hasta que se implemente AddTensor.

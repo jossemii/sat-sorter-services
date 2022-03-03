@@ -103,7 +103,10 @@ if __name__ == "__main__":
                 LOGGER('Wait more for it, tensor is not ready yet. ')
                 yield buffer_pb2.Buffer(
                     chunk = api_pb2.Empty().SerializeToString(),
-                    separator = True
+                    separator = True,
+                    head = buffer_pb2.Buffer.Head(
+                        index = {1: api_pb2.Interpretation, 2: api_pb2.Empty}
+                    )
                 )
                 raise StopIteration
 
