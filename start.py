@@ -103,13 +103,10 @@ if __name__ == "__main__":
 
             except Exception as e:
                 LOGGER('Wait more for it, tensor is not ready yet. ')
-                yield buffer_pb2.Buffer(
-                    chunk = api_pb2.Empty().SerializeToString(),
-                    separator = True,
-                    head = buffer_pb2.Buffer.Head(
-                        index = 2
-                    )
-                )
+                for b in grpcbf.serialize_to_buffer(
+                    message_iterator = api_pb2.Empty(),
+                    indices = {1: api_pb2.Interpretation, 2: api_pb2.Empty}
+                ): yield b
 
         def StreamLogs(self, request_iterator, context):
             if hasattr(self.StreamLogs, 'has_been_called'): 
