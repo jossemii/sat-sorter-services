@@ -28,6 +28,8 @@ ENVS = {
     'MAX_WORKERS': 20,
     'MAX_REGRESION_WORKERS': 5,
     'MAX_DISUSE_TIME_FACTOR': 1,
+    'TIME_SLEEP_WHEN_SOLVER_ERROR_OCCURS': 1,
+    'MAX_ERRORS_FOR_SOLVER': 5,
 }
 
 import hashlib
@@ -78,26 +80,26 @@ if __name__ == "__main__":
                 partitions_message_mode = True
             ))
             try:
-                solver_config_id = _get.cnf(
-                    cnf = cnf,
-                    tensors = _regresion.get_tensor()
-                )
-                LOGGER('USING SOLVER --> ' + str(solver_config_id))
+                while True:
+                    solver_config_id = _get.cnf(
+                        cnf = cnf,
+                        tensors = _regresion.get_tensor()
+                    )
+                    LOGGER('USING SOLVER --> ' + str(solver_config_id))
 
-                for i in range(5):
-                    try:
-                        for b in grpcbf.serialize_to_buffer(
-                            message_iterator = _solver.cnf(
-                                cnf = cnf,
-                                solver_config_id = solver_config_id
-                            )[0],
-                            indices = api_pb2.Interpretation
-                        ): yield b
-                    except Exception as e:
-                        LOGGER(str(i) + ' ERROR SOLVING A CNF ON Solve ' + str(e))
-                        sleep(1) # TODO check
-                        continue
-                raise Exception
+                    for i in range(ENVS['MAX_ERRORS_FOR_SOLVER']):
+                        try:
+                            for b in grpcbf.serialize_to_buffer(
+                                message_iterator = _solver.cnf(
+                                    cnf = cnf,
+                                    solver_config_id = solver_config_id
+                                )[0],
+                                indices = api_pb2.Interpretation
+                            ): yield b
+                        except Exception as e:
+                            LOGGER(str(i) + ' ERROR SOLVING A CNF ON Solve ' + str(e))
+                            sleep(ENVS['TIME_SLEEP_WHEN_SOLVER_ERROR_OCCURS'])
+                            continue
 
             except Exception as e:
                 LOGGER('Wait more for it, tensor is not ready yet. ')
@@ -108,7 +110,6 @@ if __name__ == "__main__":
                         index = 2
                     )
                 )
-                raise StopIteration
 
         def StreamLogs(self, request_iterator, context):
             if hasattr(self.StreamLogs, 'has_been_called'): 
