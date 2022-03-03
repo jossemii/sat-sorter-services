@@ -105,7 +105,7 @@ if __name__ == "__main__":
                     chunk = api_pb2.Empty().SerializeToString(),
                     separator = True,
                     head = buffer_pb2.Buffer.Head(
-                        index = {1: api_pb2.Interpretation, 2: api_pb2.Empty}
+                        index = 2
                     )
                 )
                 raise StopIteration
