@@ -2,7 +2,7 @@ import logging, celaut_pb2, os, buffer_pb2
 from iterators import TimeoutIterator
 
 logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s')
-LOGGER = lambda message: print(message + '\n')#logging.getLogger().debug(message + '\n')
+LOGGER = lambda message: print(message + '\n') # logging.getLogger().debug(message + '\n')
 DIR = os.path.abspath(os.curdir) + '/'  #'/satsorter/'
 
 def get_grpc_uri(instance: celaut_pb2.Instance) -> celaut_pb2.Instance.Uri:
