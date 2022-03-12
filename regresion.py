@@ -113,7 +113,7 @@ class Session(metaclass = Singleton):
             LOGGER('listo. ahora vamos a probar otra vez.')  
 
     def maintenance(self):
-        while False: # TODO chanche.
+        while True:
             sleep(self.TIME_FOR_EACH_LOOP)
             # Obtiene una hash del dataset para saber si se han añadido datos.
             actual_hash = SHA3_256(
