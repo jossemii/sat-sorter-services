@@ -14,7 +14,7 @@ from grpcbigbuffer import client_grpc, save_chunks_to_file, Dir
 class Session(metaclass = Singleton):
 
     def __init__(self, ENVS) -> None:
-        self.data_set = solvers_dataset_pb2.DataSet()
+        self.data_set = None
         
         self.hashes=[
             gateway_pb2.celaut__pb2.Any.Metadata.HashTag.Hash(
@@ -116,31 +116,32 @@ class Session(metaclass = Singleton):
         while True:
             sleep(self.TIME_FOR_EACH_LOOP)
             # Obtiene una hash del dataset para saber si se han añadido datos.
-            actual_hash = SHA3_256(
-                value = self.data_set.SerializeToString()
-                ).hex()
-            LOGGER('Check if dataset was modified ' + actual_hash + self.data_set_hash)
-            if actual_hash != self.data_set_hash:
-                LOGGER('Perform other regresion.')
-                self.data_set_hash = actual_hash
-                
-                # Se evita crear condiciones de carrera.
-                self.dataset_lock.acquire()
-                data_set = solvers_dataset_pb2.DataSet()
-                data_set.CopyFrom(self.data_set)
-                self.dataset_lock.release()
+            if self.data_set:
+                actual_hash = SHA3_256(
+                    value = self.data_set.SerializeToString()
+                    ).hex()
+                LOGGER('Check if dataset was modified ' + actual_hash + self.data_set_hash)
+                if actual_hash != self.data_set_hash:
+                    LOGGER('Perform other regresion.')
+                    self.data_set_hash = actual_hash
+                    
+                    # Se evita crear condiciones de carrera.
+                    self.dataset_lock.acquire()
+                    data_set = solvers_dataset_pb2.DataSet()
+                    data_set.CopyFrom(self.data_set)
+                    self.dataset_lock.release()
 
-                LOGGER('..........')
-                try:
-                    shutil.move(
-                        self.iterate_regression(
-                            data_set = data_set
-                        ),
-                        '__tensor__'
-                    )
-                except Exception as e:
-                    LOGGER('Exception with regresion service, ' + str(e))
-                    continue
+                    LOGGER('..........')
+                    try:
+                        shutil.move(
+                            self.iterate_regression(
+                                data_set = data_set
+                            ),
+                            '__tensor__'
+                        )
+                    except Exception as e:
+                        LOGGER('Exception with regresion service, ' + str(e))
+                        continue
 
     def get_tensor(self) -> regresion_pb2.Tensor:
         # No hay condiciones de carrera aunque lo reescriba en ese momento.
@@ -156,6 +157,7 @@ class Session(metaclass = Singleton):
     # Add new data
     def add_data(self, new_data_set: solvers_dataset_pb2.DataSet) -> None:
         self.dataset_lock.acquire()
+        if not self.data_set: self.data_set = solvers_dataset_pb2.DataSet()
         for hash, solver_data in new_data_set.data.items():
             if hash in self.data_set.data:
                 for cnf, data in solver_data.data.items():
