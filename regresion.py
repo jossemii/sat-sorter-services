@@ -37,7 +37,6 @@ class Session(metaclass = Singleton):
         self.token = None
         self.dataset_lock = threading.Lock()
         self.connection_errors = 0
-        self.init_service()
 
         # for maintain.
         self.data_set_hash = ""
@@ -113,6 +112,7 @@ class Session(metaclass = Singleton):
             LOGGER('listo. ahora vamos a probar otra vez.')  
 
     def maintenance(self):
+        self.init_service()
         while True:
             sleep(self.TIME_FOR_EACH_LOOP)
             # Obtiene una hash del dataset para saber si se han añadido datos.

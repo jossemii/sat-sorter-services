@@ -648,9 +648,9 @@ def client_grpc(
             cache_dir = cache_dir+'parser/',
         ): yield b
     finally:
-        try:
-            shutil.rmtree(cache_dir)
-        except: pass
+        #try:    shutil.rmtree(cache_dir)
+        #except: pass
+        pass
 
 
 """
