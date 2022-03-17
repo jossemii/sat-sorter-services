@@ -73,8 +73,8 @@ class SolverInstance(object):
                 next(client_grpc(
                     method = gateway_stub.StopService,
                     input = gateway_pb2.TokenMessage(
-                            token = self.token
-                        ),
+                                token = self.token
+                            ),
                     indices_serializer = gateway_pb2.TokenMessage
                 ))
                 break

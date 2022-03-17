@@ -54,8 +54,8 @@ class Session(metaclass=Singleton):
                 next(client_grpc(
                     method = self.gateway_stub.StopService,
                     input = gateway_pb2.TokenMessage(
-                            token = self.random_token
-                        ),
+                                token = self.random_token
+                            ),
                     indices_serializer = gateway_pb2.TokenMessage,
                     indices_parser = gateway_pb2.Empty
                 ))
