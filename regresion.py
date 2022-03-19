@@ -78,7 +78,8 @@ class Session(metaclass = Singleton):
                 uri.ip + ':' + str(uri.port)
             )
         )
-        #self.token = instance.token
+        self.token = instance.token
+        LOGGER('Regression service instance was recived.')
 
     def stop(self):
         LOGGER('Stopping regresion service instance.')
