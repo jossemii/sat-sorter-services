@@ -21,36 +21,11 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0fregresion.proto\x1a\nonnx.proto\x1a\x0c\x62uffer.proto\"\x07\n\x05\x45mpty\"\x14\n\x04\x46ile\x12\x0c\n\x04\x66ile\x18\x01 \x01(\t\"\xcf\x02\n\x06Tensor\x12*\n\x07\x65scalar\x18\x01 \x01(\x0b\x32\x17.tensor_onnx.ModelProtoH\x00\x12\x32\n\x0bnon_escalar\x18\x02 \x01(\x0b\x32\x1b.Tensor.NonEscalarDimensionH\x00\x1a\xdb\x01\n\x13NonEscalarDimension\x12;\n\x0bnon_escalar\x18\x01 \x03(\x0b\x32&.Tensor.NonEscalarDimension.NonEscalar\x1a\x86\x01\n\nNonEscalar\x12\x0f\n\x07\x65lement\x18\x01 \x01(\t\x12*\n\x07\x65scalar\x18\x02 \x01(\x0b\x32\x17.tensor_onnx.ModelProtoH\x00\x12\x32\n\x0bnon_escalar\x18\x03 \x01(\x0b\x32\x1b.Tensor.NonEscalarDimensionH\x00\x42\x07\n\x05modelB\x07\n\x05model2v\n\tRegresion\x12\x32\n\nStreamLogs\x12\x0e.buffer.Buffer\x1a\x0e.buffer.Buffer\"\x00(\x01\x30\x01\x12\x35\n\rMakeRegresion\x12\x0e.buffer.Buffer\x1a\x0e.buffer.Buffer\"\x00(\x01\x30\x01\x62\x06proto3'
+  serialized_pb=b'\n\x0fregresion.proto\x1a\nonnx.proto\x1a\x0c\x62uffer.proto\"\x14\n\x04\x46ile\x12\x0c\n\x04\x66ile\x18\x01 \x01(\t\"\xcf\x02\n\x06Tensor\x12*\n\x07\x65scalar\x18\x01 \x01(\x0b\x32\x17.tensor_onnx.ModelProtoH\x00\x12\x32\n\x0bnon_escalar\x18\x02 \x01(\x0b\x32\x1b.Tensor.NonEscalarDimensionH\x00\x1a\xdb\x01\n\x13NonEscalarDimension\x12;\n\x0bnon_escalar\x18\x01 \x03(\x0b\x32&.Tensor.NonEscalarDimension.NonEscalar\x1a\x86\x01\n\nNonEscalar\x12\x0f\n\x07\x65lement\x18\x01 \x01(\t\x12*\n\x07\x65scalar\x18\x02 \x01(\x0b\x32\x17.tensor_onnx.ModelProtoH\x00\x12\x32\n\x0bnon_escalar\x18\x03 \x01(\x0b\x32\x1b.Tensor.NonEscalarDimensionH\x00\x42\x07\n\x05modelB\x07\n\x05model2v\n\tRegresion\x12\x32\n\nStreamLogs\x12\x0e.buffer.Buffer\x1a\x0e.buffer.Buffer\"\x00(\x01\x30\x01\x12\x35\n\rMakeRegresion\x12\x0e.buffer.Buffer\x1a\x0e.buffer.Buffer\"\x00(\x01\x30\x01\x62\x06proto3'
   ,
   dependencies=[onnx__pb2.DESCRIPTOR,buffer__pb2.DESCRIPTOR,])
 
 
-
-
-_EMPTY = _descriptor.Descriptor(
-  name='Empty',
-  full_name='Empty',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=45,
-  serialized_end=52,
-)
 
 
 _FILE = _descriptor.Descriptor(
@@ -80,8 +55,8 @@ _FILE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=54,
-  serialized_end=74,
+  serialized_start=45,
+  serialized_end=65,
 )
 
 
@@ -131,8 +106,8 @@ _TENSOR_NONESCALARDIMENSION_NONESCALAR = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=269,
-  serialized_end=403,
+  serialized_start=260,
+  serialized_end=394,
 )
 
 _TENSOR_NONESCALARDIMENSION = _descriptor.Descriptor(
@@ -162,8 +137,8 @@ _TENSOR_NONESCALARDIMENSION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=184,
-  serialized_end=403,
+  serialized_start=175,
+  serialized_end=394,
 )
 
 _TENSOR = _descriptor.Descriptor(
@@ -205,8 +180,8 @@ _TENSOR = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=77,
-  serialized_end=412,
+  serialized_start=68,
+  serialized_end=403,
 )
 
 _TENSOR_NONESCALARDIMENSION_NONESCALAR.fields_by_name['escalar'].message_type = onnx__pb2._MODELPROTO
@@ -228,17 +203,9 @@ _TENSOR.fields_by_name['escalar'].containing_oneof = _TENSOR.oneofs_by_name['mod
 _TENSOR.oneofs_by_name['model'].fields.append(
   _TENSOR.fields_by_name['non_escalar'])
 _TENSOR.fields_by_name['non_escalar'].containing_oneof = _TENSOR.oneofs_by_name['model']
-DESCRIPTOR.message_types_by_name['Empty'] = _EMPTY
 DESCRIPTOR.message_types_by_name['File'] = _FILE
 DESCRIPTOR.message_types_by_name['Tensor'] = _TENSOR
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
-
-Empty = _reflection.GeneratedProtocolMessageType('Empty', (_message.Message,), {
-  'DESCRIPTOR' : _EMPTY,
-  '__module__' : 'regresion_pb2'
-  # @@protoc_insertion_point(class_scope:Empty)
-  })
-_sym_db.RegisterMessage(Empty)
 
 File = _reflection.GeneratedProtocolMessageType('File', (_message.Message,), {
   'DESCRIPTOR' : _FILE,
@@ -279,8 +246,8 @@ _REGRESION = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=414,
-  serialized_end=532,
+  serialized_start=405,
+  serialized_end=523,
   methods=[
   _descriptor.MethodDescriptor(
     name='StreamLogs',

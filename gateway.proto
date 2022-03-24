@@ -4,8 +4,6 @@ package gateway;
 import "celaut.proto";
 import "buffer.proto";
 
-message Empty {}
-
 message TokenMessage {
     string token = 1;
 }

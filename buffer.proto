@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+package buffer;
+
 message Empty {}
 
 message Buffer  {

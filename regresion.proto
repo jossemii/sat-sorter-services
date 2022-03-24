@@ -3,8 +3,6 @@ syntax = "proto3";
 import "onnx.proto";
 import "buffer.proto";
 
-message Empty {}
-
 message File {
     string file = 1;
 }
