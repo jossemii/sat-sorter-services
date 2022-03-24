@@ -255,27 +255,28 @@ def parse_from_buffer(
                 break
 
     def parse_message(message_field, request_iterator, signal):
-        all_buffer = bytes()
+        all_buffer = None
         for b in parser_iterator(
             request_iterator=request_iterator,
             signal=signal,
         ):
-            all_buffer += b.chunk
+            if not all_buffer: all_buffer = b.chunk
+            else: all_buffer += b.chunk
         
+        if all_buffer == None: raise EmptyBufferException()
         if message_field is str:
-            message = all_buffer.decode('utf-8')
+            return all_buffer.decode('utf-8')
         elif type(message_field) is protobuf.pyext.cpp_message.GeneratedProtocolMessageType:
             message = message_field()
             message.ParseFromString(
                     all_buffer
                 )
+            return message
         else:
             try:
-                message = message_field(all_buffer)
+                return message_field(all_buffer)
             except Exception as e:
                 raise Exception('gRPCbb error -> Parse message error: some primitive type message not suported for contain partition '+ str(message_field) + str(e))
-        if len(all_buffer)>0: return message
-        else: raise EmptyBufferException()
 
     def save_to_file(request_iterator, signal) -> str:
         filename = generate_random_dir()
