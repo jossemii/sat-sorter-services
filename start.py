@@ -104,7 +104,6 @@ if __name__ == "__main__":
             except Exception as e:
                 LOGGER('Wait more for it, tensor is not ready yet. ')
                 for b in grpcbf.serialize_to_buffer(
-                    message_iterator = api_pb2.Empty(),
                     indices = {1: api_pb2.Interpretation, 2: api_pb2.Empty}
                 ): yield b
 
@@ -143,9 +142,7 @@ if __name__ == "__main__":
                 partition1 = next(pit),
                 partition2 = next(pit),
             )
-            for b in grpcbf.serialize_to_buffer(
-                message_iterator = api_pb2.Empty()
-            ): yield b
+            for b in grpcbf.serialize_to_buffer(): yield b
 
         def GetTensor(self, request, context):
             tensor_with_ids =  _regresion.get_tensor()
@@ -163,15 +160,11 @@ if __name__ == "__main__":
 
         def StartTrain(self, request, context):
             trainer.start()
-            for b in grpcbf.serialize_to_buffer(
-                message_iterator = api_pb2.Empty()
-            ): yield b
+            for b in grpcbf.serialize_to_buffer(): yield b
 
         def StopTrain(self, request, context):
             trainer.stop()
-            for b in grpcbf.serialize_to_buffer(
-                message_iterator = api_pb2.Empty()
-            ): yield b
+            for b in grpcbf.serialize_to_buffer(): yield b
 
         # Integrate other tensor
         def AddTensor(self, request_iterator, context):
@@ -208,9 +201,7 @@ if __name__ == "__main__":
             _regresion.add_data(
                 new_data_set = new_data_set
             )
-            for b in grpcbf.serialize_to_buffer(
-                message_iterator = api_pb2.Empty()
-            ): yield b
+            for b in grpcbf.serialize_to_buffer(): yield b
 
         def GetDataSet(self, request_iterator, context):
             for b in grpcbf.serialize_to_buffer(
@@ -226,9 +217,7 @@ if __name__ == "__main__":
                     partitions_message_mode = True
                 ))
             )
-            for b in grpcbf.serialize_to_buffer(
-                message_iterator = api_pb2.Empty()
-            ): yield b
+            for b in grpcbf.serialize_to_buffer(): yield b
 
 
     # create a gRPC server

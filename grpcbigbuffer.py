@@ -446,13 +446,14 @@ def parse_from_buffer(
             raise Exception('Parse from buffer error: index are not correct ' + str(indices))
 
 def serialize_to_buffer(
-        message_iterator, # Message or tuples (with head on the first item.)
+        message_iterator = None, # Message or tuples (with head on the first item.)
         signal = None,
         indices: Union[protobuf.pyext.cpp_message.GeneratedProtocolMessageType, dict] = None,
         partitions_model: Union[list, dict] = None,
         mem_manager = None
     ) -> Generator[buffer_pb2.Buffer, None, None]:  # method: indice
     try:
+        if not message_iterator: message_iterator = buffer_pb2.Empty()
         if not indices: indices = {}
         if not partitions_model: partitions_model = [buffer_pb2.Buffer.Head.Partition()]
         if not signal: signal = Signal(exist=False)

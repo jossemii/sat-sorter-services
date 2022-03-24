@@ -56,8 +56,7 @@ class Session(metaclass=Singleton):
                     input = gateway_pb2.TokenMessage(
                                 token = self.random_token
                             ),
-                    indices_serializer = gateway_pb2.TokenMessage,
-                    indices_parser = gateway_pb2.Empty
+                    indices_serializer = gateway_pb2.TokenMessage
                 ))
                 break
             except grpc.RpcError as e:
@@ -183,7 +182,6 @@ class Session(metaclass=Singleton):
                 LOGGER('OBTENIENDO RANDON CNF')
                 return next(client_grpc(
                     method = self.random_stub.RandomCnf,
-                    input = api_pb2.Empty(),
                     indices_parser = api_pb2.Cnf,
                     partitions_message_mode_parser = True,
                     timeout = self.START_AVR_TIMEOUT

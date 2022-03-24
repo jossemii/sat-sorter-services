@@ -7,9 +7,9 @@ from typing import Generator
 from gateway_pb2_grpcbf import StartService_input
 from singleton import Singleton
 from start import LOGGER, SHA3_256, get_grpc_uri, DIR
-import grpc, solvers_dataset_pb2, api_pb2, gateway_pb2_grpc, regresion_pb2_grpc, gateway_pb2, regresion_pb2, os, buffer_pb2
+import grpc, solvers_dataset_pb2, api_pb2, gateway_pb2_grpc, regresion_pb2_grpc, gateway_pb2, regresion_pb2, os
 from utils import read_file
-from grpcbigbuffer import client_grpc, save_chunks_to_file, Dir
+from grpcbigbuffer import client_grpc, Dir
 
 class Session(metaclass = Singleton):
 
@@ -186,7 +186,6 @@ class Session(metaclass = Singleton):
             try:
                 for file in client_grpc(
                     method = self.stub.StreamLogs,
-                    input = api_pb2.Empty(),
                     indices_parser = regresion_pb2.File,
                     partitions_message_mode_parser = True,
                     timeout = self.START_AVR_TIMEOUT
