@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0c\x63\x65laut.proto\x12\x06\x63\x65laut\"\xe5\x04\n\x08\x46ieldDef\x12.\n\x07message\x18\x01 \x01(\x0b\x32\x1b.celaut.FieldDef.MessageDefH\x00\x12\x32\n\tprimitive\x18\x02 \x01(\x0b\x32\x1d.celaut.FieldDef.PrimitiveDefH\x00\x12(\n\x04\x65num\x18\x03 \x01(\x0b\x32\x18.celaut.FieldDef.EnumDefH\x00\x1a,\n\x0cPrimitiveDef\x12\x12\n\x05regex\x18\x01 \x01(\tH\x00\x88\x01\x01\x42\x08\n\x06_regex\x1ak\n\x07\x45numDef\x12\x32\n\x05value\x18\x01 \x03(\x0b\x32#.celaut.FieldDef.EnumDef.ValueEntry\x1a,\n\nValueEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x05:\x02\x38\x01\x1a\xa6\x02\n\nMessageDef\x12\x35\n\x05param\x18\x01 \x03(\x0b\x32&.celaut.FieldDef.MessageDef.ParamEntry\x12\x33\n\x05oneof\x18\x02 \x03(\x0b\x32$.celaut.FieldDef.MessageDef.OneofDef\x1a=\n\x08ParamDef\x12\x1f\n\x05\x66ield\x18\x01 \x01(\x0b\x32\x10.celaut.FieldDef\x12\x10\n\x08repeated\x18\x02 \x01(\x08\x1a\x19\n\x08OneofDef\x12\r\n\x05index\x18\x01 \x03(\x05\x1aR\n\nParamEntry\x12\x0b\n\x03key\x18\x01 \x01(\x05\x12\x33\n\x05value\x18\x02 \x01(\x0b\x32$.celaut.FieldDef.MessageDef.ParamDef:\x02\x38\x01\x42\x07\n\x05value\"\xbf\x03\n\x03\x41ny\x12+\n\x08metadata\x18\x01 \x01(\x0b\x32\x14.celaut.Any.MetadataH\x00\x88\x01\x01\x12\r\n\x05value\x18\x02 \x01(\x0c\x1a\xee\x02\n\x08Metadata\x12\x32\n\x07hashtag\x18\x01 \x01(\x0b\x32\x1c.celaut.Any.Metadata.HashTagH\x00\x88\x01\x01\x12%\n\x06\x66ormat\x18\x02 \x01(\x0b\x32\x10.celaut.FieldDefH\x01\x88\x01\x01\x12\x15\n\x08\x63omplete\x18\x03 \x01(\x08H\x02\x88\x01\x01\x1a\xcb\x01\n\x07HashTag\x12/\n\x04hash\x18\x01 \x03(\x0b\x32!.celaut.Any.Metadata.HashTag.Hash\x12\x0b\n\x03tag\x18\x02 \x03(\t\x12\x14\n\x0c\x61ttr_hashtag\x18\x03 \x03(\x0c\x1a#\n\x04Hash\x12\x0c\n\x04type\x18\x01 \x01(\x0c\x12\r\n\x05value\x18\x02 \x01(\x0c\x1aG\n\x0b\x41ttrHashTag\x12\x0b\n\x03key\x18\x01 \x01(\x05\x12+\n\x05value\x18\x02 \x03(\x0b\x32\x1c.celaut.Any.Metadata.HashTagB\n\n\x08_hashtagB\t\n\x07_formatB\x0b\n\t_completeB\x0b\n\t_metadata\"\xc5\x0c\n\x07Service\x12,\n\tcontainer\x18\x01 \x01(\x0b\x32\x19.celaut.Service.Container\x12 \n\x03\x61pi\x18\x02 \x01(\x0b\x32\x13.celaut.Service.Api\x12&\n\x06tensor\x18\x03 \x01(\x0b\x32\x16.celaut.Service.Tensor\x12&\n\x06ledger\x18\x04 \x01(\x0b\x32\x16.celaut.Service.Ledger\x1a\xdf\x03\n\x03\x41pi\x12\x30\n\x0c\x61pp_protocol\x18\x01 \x01(\x0b\x32\x1a.celaut.Service.Api.AppDef\x12&\n\x04slot\x18\x02 \x03(\x0b\x32\x18.celaut.Service.Api.Slot\x12*\n\x06\x63onfig\x18\x03 \x01(\x0b\x32\x1a.celaut.Service.Api.Config\x1a\xe5\x01\n\x06\x41ppDef\x12\x36\n\x06method\x18\x01 \x03(\x0b\x32&.celaut.Service.Api.AppDef.MethodEntry\x1aN\n\tMethodDef\x12\x1f\n\x05input\x18\x01 \x01(\x0b\x32\x10.celaut.FieldDef\x12 \n\x06output\x18\x02 \x01(\x0b\x32\x10.celaut.FieldDef\x1aS\n\x0bMethodEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x33\n\x05value\x18\x02 \x01(\x0b\x32$.celaut.Service.Api.AppDef.MethodDef:\x02\x38\x01\x1a\x30\n\x04Slot\x12\x0c\n\x04port\x18\x01 \x01(\x05\x12\x1a\n\x12transport_protocol\x18\x02 \x01(\x0c\x1a\x38\n\x06\x43onfig\x12\x0c\n\x04path\x18\x01 \x03(\t\x12 \n\x06\x66ormat\x18\x02 \x01(\x0b\x32\x10.celaut.FieldDef\x1a\xb9\x03\n\tContainer\x12\x14\n\x0c\x61rchitecture\x18\x01 \x01(\x0c\x12\x12\n\nfilesystem\x18\x02 \x01(\x0c\x12P\n\x14\x65nviroment_variables\x18\x03 \x03(\x0b\x32\x32.celaut.Service.Container.EnviromentVariablesEntry\x12\x12\n\nentrypoint\x18\x04 \x01(\t\x1a\xcd\x01\n\nFilesystem\x12?\n\x06\x62ranch\x18\x01 \x03(\x0b\x32/.celaut.Service.Container.Filesystem.ItemBranch\x1a~\n\nItemBranch\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0e\n\x04\x66ile\x18\x02 \x01(\x0cH\x00\x12\x0e\n\x04link\x18\x03 \x01(\tH\x00\x12:\n\nfilesystem\x18\x04 \x01(\x0b\x32$.celaut.Service.Container.FilesystemH\x00\x42\x06\n\x04item\x1aL\n\x18\x45nviromentVariablesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x1f\n\x05value\x18\x02 \x01(\x0b\x32\x10.celaut.FieldDef:\x02\x38\x01\x1a\x88\x01\n\x06Tensor\x12\x30\n\x05index\x18\x01 \x03(\x0b\x32!.celaut.Service.Tensor.IndexEntry\x12\x0c\n\x04rank\x18\x02 \x01(\x05\x1a>\n\nIndexEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x1f\n\x05value\x18\x02 \x01(\x0b\x32\x10.celaut.FieldDef:\x02\x38\x01\x1a\xf0\x02\n\x06Ledger\x12:\n\rclass_diagram\x18\x01 \x01(\x0b\x32#.celaut.Service.Ledger.ClassDiagram\x12\x1f\n\x12\x63onsensus_protocol\x18\x02 \x01(\x0cH\x00\x88\x01\x01\x1a\xf1\x01\n\x0c\x43lassDiagram\x12?\n\x06\x63lases\x18\x01 \x03(\x0b\x32/.celaut.Service.Ledger.ClassDiagram.ClasesEntry\x1a@\n\x0bRelationDef\x12\x1f\n\x05\x66ield\x18\x01 \x01(\x0b\x32\x10.celaut.FieldDef\x12\x10\n\x08relation\x18\x02 \x01(\t\x1a^\n\x0b\x43lasesEntry\x12\x0b\n\x03key\x18\x01 \x01(\x05\x12>\n\x05value\x18\x02 \x01(\x0b\x32/.celaut.Service.Ledger.ClassDiagram.RelationDef:\x02\x38\x01\x42\x15\n\x13_consensus_protocol\"\xc0\x01\n\x08Instance\x12 \n\x03\x61pi\x18\x01 \x01(\x0b\x32\x13.celaut.Service.Api\x12+\n\x08uri_slot\x18\x02 \x03(\x0b\x32\x19.celaut.Instance.Uri_Slot\x1a\x1f\n\x03Uri\x12\n\n\x02ip\x18\x01 \x01(\t\x12\x0c\n\x04port\x18\x02 \x01(\x05\x1a\x44\n\x08Uri_Slot\x12\x15\n\rinternal_port\x18\x01 \x01(\x05\x12!\n\x03uri\x18\x02 \x03(\x0b\x32\x14.celaut.Instance.Uri\"\xac\x01\n\rConfiguration\x12L\n\x14\x65nviroment_variables\x18\x01 \x03(\x0b\x32..celaut.Configuration.EnviromentVariablesEntry\x12\x11\n\tspec_slot\x18\x02 \x03(\x05\x1a:\n\x18\x45nviromentVariablesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x0c:\x02\x38\x01\"\xb5\x01\n\x11\x43onfigurationFile\x12!\n\x07gateway\x18\x01 \x01(\x0b\x32\x10.celaut.Instance\x12%\n\x06\x63onfig\x18\x02 \x01(\x0b\x32\x15.celaut.Configuration\x12*\n\x10tensor_instances\x18\x03 \x03(\x0b\x32\x10.celaut.Instance\x12*\n\x10ledger_instances\x18\x04 \x03(\x0b\x32\x10.celaut.Instanceb\x06proto3'
+  serialized_pb=b'\n\x0c\x63\x65laut.proto\x12\x06\x63\x65laut\"\xe5\x04\n\x08\x46ieldDef\x12.\n\x07message\x18\x01 \x01(\x0b\x32\x1b.celaut.FieldDef.MessageDefH\x00\x12\x32\n\tprimitive\x18\x02 \x01(\x0b\x32\x1d.celaut.FieldDef.PrimitiveDefH\x00\x12(\n\x04\x65num\x18\x03 \x01(\x0b\x32\x18.celaut.FieldDef.EnumDefH\x00\x1a,\n\x0cPrimitiveDef\x12\x12\n\x05regex\x18\x01 \x01(\tH\x00\x88\x01\x01\x42\x08\n\x06_regex\x1ak\n\x07\x45numDef\x12\x32\n\x05value\x18\x01 \x03(\x0b\x32#.celaut.FieldDef.EnumDef.ValueEntry\x1a,\n\nValueEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x05:\x02\x38\x01\x1a\xa6\x02\n\nMessageDef\x12\x35\n\x05param\x18\x01 \x03(\x0b\x32&.celaut.FieldDef.MessageDef.ParamEntry\x12\x33\n\x05oneof\x18\x02 \x03(\x0b\x32$.celaut.FieldDef.MessageDef.OneofDef\x1a=\n\x08ParamDef\x12\x1f\n\x05\x66ield\x18\x01 \x01(\x0b\x32\x10.celaut.FieldDef\x12\x10\n\x08repeated\x18\x02 \x01(\x08\x1a\x19\n\x08OneofDef\x12\r\n\x05index\x18\x01 \x03(\x05\x1aR\n\nParamEntry\x12\x0b\n\x03key\x18\x01 \x01(\x05\x12\x33\n\x05value\x18\x02 \x01(\x0b\x32$.celaut.FieldDef.MessageDef.ParamDef:\x02\x38\x01\x42\x07\n\x05value\"\xbf\x03\n\x03\x41ny\x12+\n\x08metadata\x18\x01 \x01(\x0b\x32\x14.celaut.Any.MetadataH\x00\x88\x01\x01\x12\r\n\x05value\x18\x02 \x01(\x0c\x1a\xee\x02\n\x08Metadata\x12\x32\n\x07hashtag\x18\x01 \x01(\x0b\x32\x1c.celaut.Any.Metadata.HashTagH\x00\x88\x01\x01\x12%\n\x06\x66ormat\x18\x02 \x01(\x0b\x32\x10.celaut.FieldDefH\x01\x88\x01\x01\x12\x15\n\x08\x63omplete\x18\x03 \x01(\x08H\x02\x88\x01\x01\x1a\xcb\x01\n\x07HashTag\x12/\n\x04hash\x18\x01 \x03(\x0b\x32!.celaut.Any.Metadata.HashTag.Hash\x12\x0b\n\x03tag\x18\x02 \x03(\t\x12\x14\n\x0c\x61ttr_hashtag\x18\x03 \x03(\x0c\x1a#\n\x04Hash\x12\x0c\n\x04type\x18\x01 \x01(\x0c\x12\r\n\x05value\x18\x02 \x01(\x0c\x1aG\n\x0b\x41ttrHashTag\x12\x0b\n\x03key\x18\x01 \x01(\x05\x12+\n\x05value\x18\x02 \x03(\x0b\x32\x1c.celaut.Any.Metadata.HashTagB\n\n\x08_hashtagB\t\n\x07_formatB\x0b\n\t_completeB\x0b\n\t_metadata\"\x9e\r\n\x07Service\x12,\n\tcontainer\x18\x01 \x01(\x0b\x32\x19.celaut.Service.Container\x12 \n\x03\x61pi\x18\x02 \x01(\x0b\x32\x13.celaut.Service.Api\x12&\n\x06tensor\x18\x03 \x01(\x0b\x32\x16.celaut.Service.Tensor\x12&\n\x06ledger\x18\x04 \x01(\x0b\x32\x16.celaut.Service.Ledger\x1a\xdf\x03\n\x03\x41pi\x12\x30\n\x0c\x61pp_protocol\x18\x01 \x01(\x0b\x32\x1a.celaut.Service.Api.AppDef\x12&\n\x04slot\x18\x02 \x03(\x0b\x32\x18.celaut.Service.Api.Slot\x12*\n\x06\x63onfig\x18\x03 \x01(\x0b\x32\x1a.celaut.Service.Api.Config\x1a\xe5\x01\n\x06\x41ppDef\x12\x36\n\x06method\x18\x01 \x03(\x0b\x32&.celaut.Service.Api.AppDef.MethodEntry\x1aN\n\tMethodDef\x12\x1f\n\x05input\x18\x01 \x01(\x0b\x32\x10.celaut.FieldDef\x12 \n\x06output\x18\x02 \x01(\x0b\x32\x10.celaut.FieldDef\x1aS\n\x0bMethodEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x33\n\x05value\x18\x02 \x01(\x0b\x32$.celaut.Service.Api.AppDef.MethodDef:\x02\x38\x01\x1a\x30\n\x04Slot\x12\x0c\n\x04port\x18\x01 \x01(\x05\x12\x1a\n\x12transport_protocol\x18\x02 \x01(\x0c\x1a\x38\n\x06\x43onfig\x12\x0c\n\x04path\x18\x01 \x03(\t\x12 \n\x06\x66ormat\x18\x02 \x01(\x0b\x32\x10.celaut.FieldDef\x1a\x92\x04\n\tContainer\x12\x14\n\x0c\x61rchitecture\x18\x01 \x01(\x0c\x12\x12\n\nfilesystem\x18\x02 \x01(\x0c\x12P\n\x14\x65nviroment_variables\x18\x03 \x03(\x0b\x32\x32.celaut.Service.Container.EnviromentVariablesEntry\x12\x12\n\nentrypoint\x18\x04 \x01(\t\x1a\xa6\x02\n\nFilesystem\x12?\n\x06\x62ranch\x18\x01 \x03(\x0b\x32/.celaut.Service.Container.Filesystem.ItemBranch\x1a\xd6\x01\n\nItemBranch\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x0e\n\x04\x66ile\x18\x02 \x01(\x0cH\x00\x12\x44\n\x04link\x18\x03 \x01(\x0b\x32\x34.celaut.Service.Container.Filesystem.ItemBranch.LinkH\x00\x12:\n\nfilesystem\x18\x04 \x01(\x0b\x32$.celaut.Service.Container.FilesystemH\x00\x1a \n\x04Link\x12\x0b\n\x03src\x18\x01 \x01(\t\x12\x0b\n\x03\x64st\x18\x02 \x01(\tB\x06\n\x04item\x1aL\n\x18\x45nviromentVariablesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x1f\n\x05value\x18\x02 \x01(\x0b\x32\x10.celaut.FieldDef:\x02\x38\x01\x1a\x88\x01\n\x06Tensor\x12\x30\n\x05index\x18\x01 \x03(\x0b\x32!.celaut.Service.Tensor.IndexEntry\x12\x0c\n\x04rank\x18\x02 \x01(\x05\x1a>\n\nIndexEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x1f\n\x05value\x18\x02 \x01(\x0b\x32\x10.celaut.FieldDef:\x02\x38\x01\x1a\xf0\x02\n\x06Ledger\x12:\n\rclass_diagram\x18\x01 \x01(\x0b\x32#.celaut.Service.Ledger.ClassDiagram\x12\x1f\n\x12\x63onsensus_protocol\x18\x02 \x01(\x0cH\x00\x88\x01\x01\x1a\xf1\x01\n\x0c\x43lassDiagram\x12?\n\x06\x63lases\x18\x01 \x03(\x0b\x32/.celaut.Service.Ledger.ClassDiagram.ClasesEntry\x1a@\n\x0bRelationDef\x12\x1f\n\x05\x66ield\x18\x01 \x01(\x0b\x32\x10.celaut.FieldDef\x12\x10\n\x08relation\x18\x02 \x01(\t\x1a^\n\x0b\x43lasesEntry\x12\x0b\n\x03key\x18\x01 \x01(\x05\x12>\n\x05value\x18\x02 \x01(\x0b\x32/.celaut.Service.Ledger.ClassDiagram.RelationDef:\x02\x38\x01\x42\x15\n\x13_consensus_protocol\"\xc0\x01\n\x08Instance\x12 \n\x03\x61pi\x18\x01 \x01(\x0b\x32\x13.celaut.Service.Api\x12+\n\x08uri_slot\x18\x02 \x03(\x0b\x32\x19.celaut.Instance.Uri_Slot\x1a\x1f\n\x03Uri\x12\n\n\x02ip\x18\x01 \x01(\t\x12\x0c\n\x04port\x18\x02 \x01(\x05\x1a\x44\n\x08Uri_Slot\x12\x15\n\rinternal_port\x18\x01 \x01(\x05\x12!\n\x03uri\x18\x02 \x03(\x0b\x32\x14.celaut.Instance.Uri\"\xac\x01\n\rConfiguration\x12L\n\x14\x65nviroment_variables\x18\x01 \x03(\x0b\x32..celaut.Configuration.EnviromentVariablesEntry\x12\x11\n\tspec_slot\x18\x02 \x03(\x05\x1a:\n\x18\x45nviromentVariablesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x0c:\x02\x38\x01\"\xb5\x01\n\x11\x43onfigurationFile\x12!\n\x07gateway\x18\x01 \x01(\x0b\x32\x10.celaut.Instance\x12%\n\x06\x63onfig\x18\x02 \x01(\x0b\x32\x15.celaut.Configuration\x12*\n\x10tensor_instances\x18\x03 \x03(\x0b\x32\x10.celaut.Instance\x12*\n\x10ledger_instances\x18\x04 \x03(\x0b\x32\x10.celaut.Instanceb\x06proto3'
 )
 
 
@@ -779,6 +779,44 @@ _SERVICE_API = _descriptor.Descriptor(
   serialized_end=1742,
 )
 
+_SERVICE_CONTAINER_FILESYSTEM_ITEMBRANCH_LINK = _descriptor.Descriptor(
+  name='Link',
+  full_name='celaut.Service.Container.Filesystem.ItemBranch.Link',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='src', full_name='celaut.Service.Container.Filesystem.ItemBranch.Link.src', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='dst', full_name='celaut.Service.Container.Filesystem.ItemBranch.Link.dst', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2157,
+  serialized_end=2189,
+)
+
 _SERVICE_CONTAINER_FILESYSTEM_ITEMBRANCH = _descriptor.Descriptor(
   name='ItemBranch',
   full_name='celaut.Service.Container.Filesystem.ItemBranch',
@@ -803,8 +841,8 @@ _SERVICE_CONTAINER_FILESYSTEM_ITEMBRANCH = _descriptor.Descriptor(
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
       name='link', full_name='celaut.Service.Container.Filesystem.ItemBranch.link', index=2,
-      number=3, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -818,7 +856,7 @@ _SERVICE_CONTAINER_FILESYSTEM_ITEMBRANCH = _descriptor.Descriptor(
   ],
   extensions=[
   ],
-  nested_types=[],
+  nested_types=[_SERVICE_CONTAINER_FILESYSTEM_ITEMBRANCH_LINK, ],
   enum_types=[
   ],
   serialized_options=None,
@@ -832,8 +870,8 @@ _SERVICE_CONTAINER_FILESYSTEM_ITEMBRANCH = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=1982,
-  serialized_end=2108,
+  serialized_start=1983,
+  serialized_end=2197,
 )
 
 _SERVICE_CONTAINER_FILESYSTEM = _descriptor.Descriptor(
@@ -864,7 +902,7 @@ _SERVICE_CONTAINER_FILESYSTEM = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=1903,
-  serialized_end=2108,
+  serialized_end=2197,
 )
 
 _SERVICE_CONTAINER_ENVIROMENTVARIABLESENTRY = _descriptor.Descriptor(
@@ -901,8 +939,8 @@ _SERVICE_CONTAINER_ENVIROMENTVARIABLESENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2110,
-  serialized_end=2186,
+  serialized_start=2199,
+  serialized_end=2275,
 )
 
 _SERVICE_CONTAINER = _descriptor.Descriptor(
@@ -954,7 +992,7 @@ _SERVICE_CONTAINER = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=1745,
-  serialized_end=2186,
+  serialized_end=2275,
 )
 
 _SERVICE_TENSOR_INDEXENTRY = _descriptor.Descriptor(
@@ -991,8 +1029,8 @@ _SERVICE_TENSOR_INDEXENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2263,
-  serialized_end=2325,
+  serialized_start=2352,
+  serialized_end=2414,
 )
 
 _SERVICE_TENSOR = _descriptor.Descriptor(
@@ -1029,8 +1067,8 @@ _SERVICE_TENSOR = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2189,
-  serialized_end=2325,
+  serialized_start=2278,
+  serialized_end=2414,
 )
 
 _SERVICE_LEDGER_CLASSDIAGRAM_RELATIONDEF = _descriptor.Descriptor(
@@ -1067,8 +1105,8 @@ _SERVICE_LEDGER_CLASSDIAGRAM_RELATIONDEF = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2513,
-  serialized_end=2577,
+  serialized_start=2602,
+  serialized_end=2666,
 )
 
 _SERVICE_LEDGER_CLASSDIAGRAM_CLASESENTRY = _descriptor.Descriptor(
@@ -1105,8 +1143,8 @@ _SERVICE_LEDGER_CLASSDIAGRAM_CLASESENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2579,
-  serialized_end=2673,
+  serialized_start=2668,
+  serialized_end=2762,
 )
 
 _SERVICE_LEDGER_CLASSDIAGRAM = _descriptor.Descriptor(
@@ -1136,8 +1174,8 @@ _SERVICE_LEDGER_CLASSDIAGRAM = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2432,
-  serialized_end=2673,
+  serialized_start=2521,
+  serialized_end=2762,
 )
 
 _SERVICE_LEDGER = _descriptor.Descriptor(
@@ -1179,8 +1217,8 @@ _SERVICE_LEDGER = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=2328,
-  serialized_end=2696,
+  serialized_start=2417,
+  serialized_end=2785,
 )
 
 _SERVICE = _descriptor.Descriptor(
@@ -1232,7 +1270,7 @@ _SERVICE = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=1091,
-  serialized_end=2696,
+  serialized_end=2785,
 )
 
 
@@ -1270,8 +1308,8 @@ _INSTANCE_URI = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2790,
-  serialized_end=2821,
+  serialized_start=2879,
+  serialized_end=2910,
 )
 
 _INSTANCE_URI_SLOT = _descriptor.Descriptor(
@@ -1308,8 +1346,8 @@ _INSTANCE_URI_SLOT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2823,
-  serialized_end=2891,
+  serialized_start=2912,
+  serialized_end=2980,
 )
 
 _INSTANCE = _descriptor.Descriptor(
@@ -1346,8 +1384,8 @@ _INSTANCE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2699,
-  serialized_end=2891,
+  serialized_start=2788,
+  serialized_end=2980,
 )
 
 
@@ -1385,8 +1423,8 @@ _CONFIGURATION_ENVIROMENTVARIABLESENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3008,
-  serialized_end=3066,
+  serialized_start=3097,
+  serialized_end=3155,
 )
 
 _CONFIGURATION = _descriptor.Descriptor(
@@ -1423,8 +1461,8 @@ _CONFIGURATION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2894,
-  serialized_end=3066,
+  serialized_start=2983,
+  serialized_end=3155,
 )
 
 
@@ -1476,8 +1514,8 @@ _CONFIGURATIONFILE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3069,
-  serialized_end=3250,
+  serialized_start=3158,
+  serialized_end=3339,
 )
 
 _FIELDDEF_PRIMITIVEDEF.containing_type = _FIELDDEF
@@ -1542,6 +1580,8 @@ _SERVICE_API.fields_by_name['app_protocol'].message_type = _SERVICE_API_APPDEF
 _SERVICE_API.fields_by_name['slot'].message_type = _SERVICE_API_SLOT
 _SERVICE_API.fields_by_name['config'].message_type = _SERVICE_API_CONFIG
 _SERVICE_API.containing_type = _SERVICE
+_SERVICE_CONTAINER_FILESYSTEM_ITEMBRANCH_LINK.containing_type = _SERVICE_CONTAINER_FILESYSTEM_ITEMBRANCH
+_SERVICE_CONTAINER_FILESYSTEM_ITEMBRANCH.fields_by_name['link'].message_type = _SERVICE_CONTAINER_FILESYSTEM_ITEMBRANCH_LINK
 _SERVICE_CONTAINER_FILESYSTEM_ITEMBRANCH.fields_by_name['filesystem'].message_type = _SERVICE_CONTAINER_FILESYSTEM
 _SERVICE_CONTAINER_FILESYSTEM_ITEMBRANCH.containing_type = _SERVICE_CONTAINER_FILESYSTEM
 _SERVICE_CONTAINER_FILESYSTEM_ITEMBRANCH.oneofs_by_name['item'].fields.append(
@@ -1748,6 +1788,13 @@ Service = _reflection.GeneratedProtocolMessageType('Service', (_message.Message,
     'Filesystem' : _reflection.GeneratedProtocolMessageType('Filesystem', (_message.Message,), {
 
       'ItemBranch' : _reflection.GeneratedProtocolMessageType('ItemBranch', (_message.Message,), {
+
+        'Link' : _reflection.GeneratedProtocolMessageType('Link', (_message.Message,), {
+          'DESCRIPTOR' : _SERVICE_CONTAINER_FILESYSTEM_ITEMBRANCH_LINK,
+          '__module__' : 'celaut_pb2'
+          # @@protoc_insertion_point(class_scope:celaut.Service.Container.Filesystem.ItemBranch.Link)
+          })
+        ,
         'DESCRIPTOR' : _SERVICE_CONTAINER_FILESYSTEM_ITEMBRANCH,
         '__module__' : 'celaut_pb2'
         # @@protoc_insertion_point(class_scope:celaut.Service.Container.Filesystem.ItemBranch)
@@ -1826,6 +1873,7 @@ _sym_db.RegisterMessage(Service.Api.Config)
 _sym_db.RegisterMessage(Service.Container)
 _sym_db.RegisterMessage(Service.Container.Filesystem)
 _sym_db.RegisterMessage(Service.Container.Filesystem.ItemBranch)
+_sym_db.RegisterMessage(Service.Container.Filesystem.ItemBranch.Link)
 _sym_db.RegisterMessage(Service.Container.EnviromentVariablesEntry)
 _sym_db.RegisterMessage(Service.Tensor)
 _sym_db.RegisterMessage(Service.Tensor.IndexEntry)
