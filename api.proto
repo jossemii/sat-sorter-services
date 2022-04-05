@@ -27,10 +27,6 @@ message Cnf {
     repeated Clause clause = 1;
 }
 
-message Empty {}
-
-
-
 message File {
     string file = 1;
 }

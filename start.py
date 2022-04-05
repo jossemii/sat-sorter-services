@@ -104,7 +104,7 @@ if __name__ == "__main__":
             except Exception as e:
                 LOGGER('Wait more for it, tensor is not ready yet. ')
                 for b in grpcbf.serialize_to_buffer(
-                    indices = {1: api_pb2.Interpretation, 2: api_pb2.Empty}
+                    indices = {1: api_pb2.Interpretation, 2: buffer_pb2.Empty}
                 ): yield b
 
         def StreamLogs(self, request_iterator, context):
