@@ -22,13 +22,16 @@ message ServiceWithMeta {
 // ( celaut.Any.Metadata.HashTag.Hash=H, ServiceWithMeta=S, celaut.Configuration=C; { H v S v H^C v S^C } )
 message HashWithConfig { // H^C 
     celaut.Any.Metadata.HashTag.Hash hash = 1;
-    celaut.Configuration config = 3;  
+    celaut.Configuration config = 3;
+    optional celaut.Sysresources min_sysreq = 4;  // init system specs.
+    optional celaut.Sysresources max_sysreq = 5;  // minimun system specs that the node needs to 've for it sometime.
 }
 message ServiceWithConfig { // S^C
     ServiceWithMeta service = 2;
     celaut.Configuration config = 3;
+    optional celaut.Sysresources min_sysreq = 4;  // init system specs.
+    optional celaut.Sysresources max_sysreq = 5;  // minimun system specs that the node needs to 've for it sometime.
 }
-
 
 // GRPC.
 service Gateway {
