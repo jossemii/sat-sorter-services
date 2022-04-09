@@ -50,7 +50,7 @@ message Any {
             }
             repeated Hash hash = 1;
             repeated string tag = 2;
-            repeated bytes attr_hashtag = 3; // List of metadata fields. Ordened by indexes defined on format. NOT NEED TO PARSE ANYWHERE.
+            repeated AttrHashTag attr_hashtag = 3; // List of metadata fields. Ordened by indexes defined on format.
         }
         optional HashTag hashtag = 1;
         optional FieldDef format = 2;
@@ -85,7 +85,7 @@ message Service {
         AppDef app_protocol = 1;
         repeated Slot slot = 2;
         Config config = 3;
-        // Cost function can be applied. <- must be optional (index 3).
+        // Cost function can be applied. <- must be optional (index 4).
     }
 
     // Container:  Specifies the container where the service runs, microarchitecture, entry point and filesystem (DAG?), and environment variables.
@@ -110,6 +110,7 @@ message Service {
         map<string, FieldDef> enviroment_variables = 3;
         string entrypoint = 4;
     }
+
     // Tensor:  Defines the “intelligence” that the service can provide, I think it would be a description of a polynomial (without coefficients and describing the variables).
     message Tensor {
         map<string, FieldDef> index = 1;
@@ -167,9 +168,16 @@ message Configuration {
 message ConfigurationFile {
     Instance gateway = 1;
     Configuration config = 2;
-    // Un servicio puede solicitar instancias de servicios con un ledger o un tensor aunque este no los ofrezca, y por tanto no aparezcan estos en su especificacion.
-    // Pero para los tensores y ledgers que si se especifican en la descripcion del servicio se puede concluir que van a ser requeridas instancias de los mismos al nodo,
-    // por lo tanto, el nodo tiene la opcion de añadir estas instancias de manera opcional en la configuracion de arranque del servicio.
-    repeated Instance tensor_instances = 3;
-    repeated Instance ledger_instances = 4;
+    Sysresources initial_sysresources = 3;
+}
+
+//  ------------------------
+//  System resources.
+//  ------------------------
+message Sysresources {                           //  https://docker-py.readthedocs.io/en/stable/containers.html#docker.models.containers.Container.update
+    optional int32 blkio_weight = 1;
+    optional int32 cpu_period = 2;
+    optional int32 cpu_quota = 3;  // https://wbhegedus.me/understanding-kubernetes-cpu-limits/
+    optional int32 mem_limit = 4;
+    optional int32 disk_space = 5;
 }

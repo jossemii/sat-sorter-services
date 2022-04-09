@@ -49,7 +49,10 @@ class Session(metaclass = Singleton):
                 config = False
                 yield gateway_pb2.HashWithConfig(
                     hash = hash,
-                    config = self.config
+                    config = self.config,
+                    min_sysreq = gateway_pb2.celaut__pb2.Sysparams(
+                        mem_limit = 120*pow(10, 6)
+                    )
                 )
             yield hash
         yield (gateway_pb2.ServiceWithMeta, Dir(DIR + 'regresion.service'))
