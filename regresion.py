@@ -51,7 +51,7 @@ class Session(metaclass = Singleton):
                     hash = hash,
                     config = self.config,
                     min_sysreq = gateway_pb2.celaut__pb2.Sysresources(
-                        mem_limit = 120*pow(10, 6)
+                        mem_limit = 80*pow(10, 6)
                     )
                 )
             yield hash
