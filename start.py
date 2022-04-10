@@ -1,6 +1,10 @@
 import logging, celaut_pb2, os, buffer_pb2
 from iterators import TimeoutIterator
 
+from gas_manager import GasManager
+from iobigdata import IOBigData, mem_manager
+from utils import read_file
+
 logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s')
 LOGGER = lambda message: print(message + '\n') # logging.getLogger().debug(message + '\n')
 DIR = os.path.abspath(os.curdir) + '/'  #'/satsorter/'
@@ -45,19 +49,20 @@ if __name__ == "__main__":
     from threading import get_ident
     import grpc, api_pb2, api_pb2_grpc, solvers_dataset_pb2
     from concurrent import futures
-    import grpcbigbuffer as grpcbf, iobigdata
+    import grpcbigbuffer as grpcbf
     from api_pb2_grpcbf import UploadService_input_partitions
 
-    """
-        # Read __config__ file.
-        config = api_pb2.celaut__pb2.ConfigurationFile()
-        config.ParseFromString(
-            read_file('/__config__')
-        )    
+    
+    # Read __config__ file.
+    config = api_pb2.celaut__pb2.ConfigurationFile()
+    config.ParseFromString(
+        read_file('/__config__')
+    )    
 
     gateway_uri = get_grpc_uri(config.gateway)
     ENVS['GATEWAY_MAIN_DIR'] = gateway_uri.ip+':'+str(gateway_uri.port)
-
+    
+    """
     for env_var in config.config.enviroment_variables:
         ENVS[env_var] = type(ENVS[env_var])(
             config.config.enviroment_variables[env_var].value
@@ -65,7 +70,15 @@ if __name__ == "__main__":
     """
 
     LOGGER('INIT START THREAD ' + str(get_ident()))
-    grpcbf.modify_env(mem_manager=iobigdata.mem_manager) # TODO set the ram that node says.
+
+    GasManager().put_initial_ram_pool(
+        mem_limit = config.initial_sysresources.mem_limit
+    )
+
+    IOBigData().set_log(log = LOGGER)
+
+    grpcbf.modify_env(mem_manager=mem_manager)
+
     _regresion = regresion.Session(ENVS=ENVS)
     trainer = train.Session(ENVS=ENVS)
     _solver = _solve.Session(ENVS=ENVS)

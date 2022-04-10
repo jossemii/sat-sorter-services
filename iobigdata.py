@@ -1,33 +1,12 @@
 # I/O Big Data utils.
-import psutil, gc
+import gc
 from time import sleep
 from threading import Lock
+import gas_manager as gm
 
-# Thread-sage Singleton
-import threading
-class Singleton(type):
-  _instances = {}
-  _lock = threading.Lock()
-
-  def __call__(cls, *args, **kwargs):
-    if cls not in cls._instances:
-      with cls._lock:
-        # another thread could have created the instance
-        # before we acquired the lock. So check that the
-        # instance is still nonexistent.
-        if cls not in cls._instances:
-          cls._instances[cls] = super().__call__(*args, **kwargs)
-    return cls._instances[cls]
+from utils import Singleton
 
 mem_manager = lambda len: IOBigData().lock(len=len)
-
-def read_file(filename) -> bytes:
-    def generator(filename):
-        with open(filename, 'rb') as entry:
-            for chunk in iter(lambda: entry.read(1024 * 1024), b''):
-                    yield chunk
-    return b''.join([b for b in generator(filename)])
-
 class IOBigData(metaclass=Singleton):
 
     class RamLocker(object):
@@ -47,9 +26,12 @@ class IOBigData(metaclass=Singleton):
             self.iobd.unlock_ram(ram_amount = self.len)
             gc.collect()
 
-    def __init__(self, log = lambda message: print(message)) -> None:
+    def __init__(self, 
+            log = lambda message: print(message),
+            ram_pool_method = lambda : gm.GasManager().get_ram_pool()
+        ) -> None:
         self.log = log
-        self.ram_pool = lambda: psutil.virtual_memory().available
+        self.ram_pool = ram_pool_method
         self.ram_locked = 0
         self.get_ram_avaliable = lambda: self.ram_pool() - self.ram_locked
         self.amount_lock = Lock()
@@ -57,30 +39,30 @@ class IOBigData(metaclass=Singleton):
     def set_log(self, log = lambda message: print(message)) -> None:
         self.log = log
 
-    def stats(self, message: str):
+    @staticmethod
+    def convert_size(size_bytes):
         import math
+        if size_bytes == 0:
+            return "0B"
+        size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
+        i = int(math.floor(math.log(size_bytes, 1024)))
+        p = math.pow(1024, i)
+        s = round(size_bytes / p, 2)
+        return "%s %s" % (s, size_name[i])
 
-        def convert_size(size_bytes):
-            if size_bytes == 0:
-                return "0B"
-            size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
-            i = int(math.floor(math.log(size_bytes, 1024)))
-            p = math.pow(1024, i)
-            s = round(size_bytes / p, 2)
-            return "%s %s" % (s, size_name[i])
-
+    def stats(self, message: str):
         with self.amount_lock:
             self.log('\n--------- '+message+' -------------')
-            self.log('RAM POOL      -> '+ convert_size(self.ram_pool()))
-            self.log('RAM LOCKED    -> '+ convert_size(self.ram_locked))
-            self.log('RAM AVALIABLE -> '+ convert_size(self.get_ram_avaliable()))
+            self.log('RAM POOL      -> '+ IOBigData.convert_size(self.ram_pool()))
+            self.log('RAM LOCKED    -> '+ IOBigData.convert_size(self.ram_locked))
+            self.log('RAM AVALIABLE -> '+ IOBigData.convert_size(self.get_ram_avaliable()))
             self.log('-----------------------------------------\n')
 
     def lock(self, len):
         return self.RamLocker(len = len, iobd = self)
 
     def lock_ram(self, ram_amount: int, wait: bool = True):
-        self.stats('go to lock ' + str(ram_amount))
+        self.stats('go to lock ' + IOBigData.convert_size(ram_amount))
         if wait:
             self.wait_to_prevent_kill(len = ram_amount)
         elif not self.prevent_kill(len = ram_amount):
