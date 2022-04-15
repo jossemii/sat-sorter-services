@@ -1,7 +1,6 @@
 import logging, celaut_pb2, os, buffer_pb2
 from iterators import TimeoutIterator
 
-from gas_manager import GasManager
 from iobigdata import IOBigData, mem_manager
 from utils import read_file
 
@@ -52,7 +51,7 @@ if __name__ == "__main__":
     import grpcbigbuffer as grpcbf
     from api_pb2_grpcbf import UploadService_input_partitions
 
-    
+    """
     # Read __config__ file.
     config = api_pb2.celaut__pb2.ConfigurationFile()
     config.ParseFromString(
@@ -62,7 +61,7 @@ if __name__ == "__main__":
     gateway_uri = get_grpc_uri(config.gateway)
     ENVS['GATEWAY_MAIN_DIR'] = gateway_uri.ip+':'+str(gateway_uri.port)
     
-    """
+    
     for env_var in config.config.enviroment_variables:
         ENVS[env_var] = type(ENVS[env_var])(
             config.config.enviroment_variables[env_var].value
@@ -71,11 +70,10 @@ if __name__ == "__main__":
 
     LOGGER('INIT START THREAD ' + str(get_ident()))
 
-    GasManager().put_initial_ram_pool(
-        mem_limit = config.initial_sysresources.mem_limit
-    )
-
-    IOBigData().set_log(log = LOGGER)
+    IOBigData(
+        log = LOGGER,
+        ram_pool_method = lambda: 50*pow(10, 6) # config.initial_sysresources.mem_limit
+    ).set_log(log = LOGGER)
 
     grpcbf.modify_env(mem_manager=mem_manager)
 
@@ -248,7 +246,7 @@ if __name__ == "__main__":
         os.mkdir('__solvers__')
 
     # listen on port 8080
-    LOGGER('Starting server. Listening on port 8081.')
-    server.add_insecure_port('[::]:8081')
+    LOGGER('Starting server. Listening on port 8080.')
+    server.add_insecure_port('[::]:8080')
     server.start()
     server.wait_for_termination()
