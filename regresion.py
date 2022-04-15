@@ -19,7 +19,7 @@ class Session(metaclass = Singleton):
         self.hashes=[
             gateway_pb2.celaut__pb2.Any.Metadata.HashTag.Hash(
                 type = bytes.fromhex("a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a"),
-                value = bytes.fromhex("5638617436764bfd22e1f2634eac88230e4c51359314791924c33faea8af092d")
+                value = bytes.fromhex("a7498e948d4033d34064b41a3c06afffe483fe81cbdae0a70924c300421061b5")
             )
         ]
         self.config = gateway_pb2.celaut__pb2.Configuration()  

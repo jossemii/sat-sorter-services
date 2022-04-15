@@ -1,5 +1,6 @@
-import logging, celaut_pb2, os, buffer_pb2
+import logging, celaut_pb2, os, buffer_pb2, gateway_pb2, gateway_pb2_grpc
 from iterators import TimeoutIterator
+from grpcbigbuffer import client_grpc
 
 from iobigdata import IOBigData, mem_manager
 from utils import read_file
@@ -51,7 +52,7 @@ if __name__ == "__main__":
     import grpcbigbuffer as grpcbf
     from api_pb2_grpcbf import UploadService_input_partitions
 
-    """
+   
     # Read __config__ file.
     config = api_pb2.celaut__pb2.ConfigurationFile()
     config.ParseFromString(
@@ -61,7 +62,7 @@ if __name__ == "__main__":
     gateway_uri = get_grpc_uri(config.gateway)
     ENVS['GATEWAY_MAIN_DIR'] = gateway_uri.ip+':'+str(gateway_uri.port)
     
-    
+    """
     for env_var in config.config.enviroment_variables:
         ENVS[env_var] = type(ENVS[env_var])(
             config.config.enviroment_variables[env_var].value
@@ -70,10 +71,31 @@ if __name__ == "__main__":
 
     LOGGER('INIT START THREAD ' + str(get_ident()))
 
+    def modify_resources_grpcbb(i: dict) -> api_pb2.celaut__pb2.Sysresources:
+        return next(
+            client_grpc(
+                method = gateway_pb2_grpc.GatewayStub(
+                            grpc.insecure_channel(ENVS['GATEWAY_MAIN_DIR'])
+                        ).ModifyServiceSystemResources,
+                input = gateway_pb2.ModifyServiceSystemResourcesInput(
+                    min_sysreq = celaut_pb2.Sysresources(
+                        mem_limit = i['min']
+                    ),
+                    max_sysreq = celaut_pb2.Sysresources(
+                        mem_limit = i['max']
+                    ),
+                ),
+                indices_parser = gateway_pb2.ModifyServiceSystemResourcesInput,
+                partitions_message_mode_parser=True,
+                indices_serializer = api_pb2.celaut__pb2.Sysresources,
+            )
+        )
+
     IOBigData(
         log = LOGGER,
-        ram_pool_method = lambda: 50*pow(10, 6) # config.initial_sysresources.mem_limit
-    ).set_log(log = LOGGER)
+        ram_pool_method = lambda: config.initial_sysresources.mem_limit,
+        modify_resources = lambda d: modify_resources_grpcbb(i=d) 
+    )
 
     grpcbf.modify_env(mem_manager=mem_manager)
 
@@ -246,7 +268,7 @@ if __name__ == "__main__":
         os.mkdir('__solvers__')
 
     # listen on port 8080
-    LOGGER('Starting server. Listening on port 8080.')
-    server.add_insecure_port('[::]:8080')
+    LOGGER('Starting server. Listening on port 8081.')
+    server.add_insecure_port('[::]:8081')
     server.start()
     server.wait_for_termination()
