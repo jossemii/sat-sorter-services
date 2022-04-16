@@ -52,7 +52,7 @@ if __name__ == "__main__":
     import grpcbigbuffer as grpcbf
     from api_pb2_grpcbf import UploadService_input_partitions
 
-   
+    
     # Read __config__ file.
     config = api_pb2.celaut__pb2.ConfigurationFile()
     config.ParseFromString(
