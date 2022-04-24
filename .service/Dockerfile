@@ -1,7 +1,5 @@
-FROM ubuntu
+FROM python:3.8
 RUN apt-get update --fix-missing && \
-  apt-get -y install python3.6 python3-pip && \
-  apt-get clean && \
   pip3 install grpcio protobuf onnxruntime iterators
 
 RUN mkdir /satsorter && cd /satsorter && \
