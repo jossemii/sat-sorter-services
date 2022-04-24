@@ -8,9 +8,6 @@ __cache__/*
 protodot
 config.json
 templates/
-random.service
-regresion.service
-
 ### Flask ###
 instance/*
 !instance/.gitignore
