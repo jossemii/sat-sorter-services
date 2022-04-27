@@ -6,7 +6,7 @@ MAX_DIR = 999999999
 import os, gc, itertools, sys
 
 from google import protobuf
-import src.buffer_pb2 as buffer_pb2
+import buffer_pb2 as buffer_pb2
 from random import randint
 from typing import Generator, Union, final
 from threading import Condition
@@ -133,6 +133,9 @@ def get_submessage(partition, obj, say_if_not_change = False):
     if len(partition.index) == 0:
         return False if say_if_not_change else obj
     if len(partition.index) == 1:
+        for field in obj.DESCRIPTOR.fields:
+            if field.index+1 not in partition.index:
+                obj.ClearField(field.name)
         return get_submessage(
             partition = list(partition.index.values())[0],
             obj = getattr(obj, obj.DESCRIPTOR.fields[list(partition.index.keys())[0]-1].name)
