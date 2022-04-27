@@ -91,6 +91,11 @@ if __name__ == "__main__":
             )
         )
 
+    import zipfile
+    with zipfile.ZipFile('services.zip', 'r') as zip_ref:
+        zip_ref.extractall('.')
+    os.rm('services.zip')
+
     IOBigData(
         log = LOGGER,
         ram_pool_method = lambda: config.initial_sysresources.mem_limit,
