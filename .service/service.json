@@ -9,7 +9,7 @@
             "score": ["score"]    
         }
     },
-    "architecture": "aarch64",
+    "architecture": "x86_64",
     "entrypoint": "python3 /satsorter/start.py",
     "envs": [
         "SAVE_TRAIN_DATA", 
