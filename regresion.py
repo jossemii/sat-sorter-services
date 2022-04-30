@@ -55,7 +55,13 @@ class Session(metaclass = Singleton):
                     )
                 )
             yield hash
-        yield (gateway_pb2.ServiceWithMeta, Dir(DIR + 'regresion.service'))
+        while True:
+            if os.path.isfile(DIR + 'regresion.service'):
+                yield (gateway_pb2.ServiceWithMeta, Dir(DIR + 'regresion.service'))
+                break
+            else:
+                sleep(1)
+                continue
 
     def init_service(self):
         LOGGER('Launching regresion service instance.')

@@ -149,7 +149,13 @@ class Session(metaclass=Singleton):
                     config = self.random_config
                 )
             yield hash
-        yield (gateway_pb2.ServiceWithMeta, Dir(DIR + 'random.service'))
+        while True:
+            if os.path.isfile(DIR + 'random.service'):
+                yield (gateway_pb2.ServiceWithMeta, Dir(DIR + 'random.service'))
+                break
+            else:
+                sleep(1)
+                continue
 
     def init_random_cnf_service(self):
         LOGGER('Launching random service instance.')

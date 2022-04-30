@@ -6,6 +6,7 @@ __tensor__
 __solvers__/*
 __cache__/*
 protodot
+.service/src/*
 config.json
 templates/
 ### Flask ###

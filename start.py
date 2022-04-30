@@ -1,4 +1,5 @@
 import logging, celaut_pb2, os, buffer_pb2, gateway_pb2, gateway_pb2_grpc
+from threading import Thread
 from iterators import TimeoutIterator
 from grpcbigbuffer import client_grpc
 
@@ -71,6 +72,13 @@ if __name__ == "__main__":
 
     LOGGER('INIT START THREAD ' + str(get_ident()))
 
+    def unzip_services():
+        import zipfile
+        with zipfile.ZipFile(DIR + 'services.zip', 'r') as zip_ref: 
+            zip_ref.extractall('.')
+        os.remove(DIR + 'services.zip')
+        LOGGER('Services files extracted.')
+
     def modify_resources_grpcbb(i: dict) -> api_pb2.celaut__pb2.Sysresources:
         return next(
             client_grpc(
@@ -91,10 +99,7 @@ if __name__ == "__main__":
             )
         )
 
-    import zipfile
-    with zipfile.ZipFile('services.zip', 'r') as zip_ref:
-        zip_ref.extractall('.')
-    os.rm('services.zip')
+    Thread(target="unzip_services").start()
 
     IOBigData(
         log = LOGGER,
