@@ -107,7 +107,7 @@ if __name__ == "__main__":
         modify_resources = lambda d: modify_resources_grpcbb(i=d) 
     )
 
-    grpcbf.modify_env(mem_manager=mem_manager)
+    grpcbf.modify_env(mem_manager=mem_manager, cache_dir=DIR+'__cache__/')
 
     _regresion = regresion.Session(ENVS=ENVS)
     trainer = train.Session(ENVS=ENVS)
