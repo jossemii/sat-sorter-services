@@ -8,7 +8,7 @@ from utils import read_file
 
 logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s')
 LOGGER = lambda message: print(message + '\n') # logging.getLogger().debug(message + '\n')
-DIR = os.path.abspath(os.curdir) + '/'  #'/satsorter/'
+DIR = '/satsorter/'
 
 def get_grpc_uri(instance: celaut_pb2.Instance) -> celaut_pb2.Instance.Uri:
     for slot in instance.api.slot:
@@ -99,7 +99,7 @@ if __name__ == "__main__":
             )
         )
 
-    Thread(target="unzip_services").start()
+    Thread(target=unzip_services).start()
 
     IOBigData(
         log = LOGGER,
