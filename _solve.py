@@ -118,8 +118,8 @@ class SolverConfig(object):
             yield hash
         yield ( 
             gateway_pb2.ServiceWithMeta,
-            Dir('__solvers__/'+self.solver_hash+'/p1'),
-            Dir('__solvers__/'+self.solver_hash+'/p2')
+            Dir(DIR+'__solvers__/'+self.solver_hash+'/p1'),
+            Dir(DIR+'__solvers__/'+self.solver_hash+'/p2')
         )
 
     def launch_instance(self, gateway_stub) -> SolverInstance:
@@ -171,7 +171,10 @@ class SolverConfig(object):
     def get_solver_with_config(self) -> solvers_dataset_pb2.SolverWithConfig:
         solver_with_meta = api_pb2.ServiceWithMeta()
         solver_with_meta.ParseFromString(
-            read_file(DIR + '__solvers__/' + self.solver_hash)
+            read_file(DIR + '__solvers__/' + self.solver_hash + '/p1')
+        )
+        solver_with_meta.ParseFromString(
+            read_file(DIR + '__solvers__/' + self.solver_hash + '/p2')
         )
         return api_pb2.solvers__dataset__pb2.SolverWithConfig(
                     meta = solver_with_meta.meta,
