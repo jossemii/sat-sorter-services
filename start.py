@@ -75,7 +75,7 @@ if __name__ == "__main__":
     def unzip_services():
         import zipfile
         with zipfile.ZipFile(DIR + 'services.zip', 'r') as zip_ref: 
-            zip_ref.extractall('.')
+            zip_ref.extractall(DIR)
         os.remove(DIR + 'services.zip')
         LOGGER('Services files extracted.')
 
