@@ -7,7 +7,7 @@ from iobigdata import IOBigData, mem_manager
 from utils import read_file
 
 logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s')
-LOGGER = lambda message: print(message + '\n') # logging.getLogger().debug(message + '\n')
+LOGGER = lambda message: logging.getLogger().debug(message + '\n')
 DIR = '/satsorter/'
 
 def get_grpc_uri(instance: celaut_pb2.Instance) -> celaut_pb2.Instance.Uri:
