@@ -270,11 +270,11 @@ if __name__ == "__main__":
 
     # Create __solvers__ if it does not exists.
     try:
-        os.mkdir('__solvers__')
+        os.mkdir(DIR+'__solvers__')
     except:
         # for dev.
-        os.system('rm -rf __solvers__')
-        os.mkdir('__solvers__')
+        os.system(DIR+'rm -rf __solvers__')
+        os.mkdir(DIR+'__solvers__')
 
     # listen on port 8080
     LOGGER('Starting server. Listening on port 8081.')
