@@ -93,9 +93,8 @@ if __name__ == "__main__":
                         mem_limit = i['max']
                     ),
                 ),
-                indices_parser = gateway_pb2.ModifyServiceSystemResourcesInput,
                 partitions_message_mode_parser=True,
-                indices_serializer = api_pb2.celaut__pb2.Sysresources,
+                indices_parser = api_pb2.celaut__pb2.Sysresources,
             )
         )
 
