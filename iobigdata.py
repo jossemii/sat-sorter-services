@@ -66,7 +66,7 @@ class IOBigData(metaclass=Singleton):
         self.log = log
 
     @staticmethod
-    def convert_size(size_bytes):
+    def convert_size(size_bytes: int): # TODO entro Sysresources como size_bytes.
         import math
         if size_bytes == 0:
             return "0B"
@@ -114,7 +114,7 @@ class IOBigData(metaclass=Singleton):
                     "max": modify_formula(sum)   # max resources.
                 }
             )
-            self.ram_pool = lambda: v
+            self.ram_pool = lambda: v.mem_limit
 
     def __push_wait_list(self, l: int):
         with self.wait_lock:
