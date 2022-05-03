@@ -262,22 +262,23 @@ if __name__ == "__main__":
             for b in grpcbf.serialize_to_buffer(): yield b
 
 
-    # create a gRPC server
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=ENVS['MAX_WORKERS']))
+    with mem_manager(len = config.initial_sysresources.mem_limit*0.25):
+        # create a gRPC server
+        server = grpc.server(futures.ThreadPoolExecutor(max_workers=ENVS['MAX_WORKERS']))
 
-    api_pb2_grpc.add_SolverServicer_to_server(
-        SolverServicer(), server)
+        api_pb2_grpc.add_SolverServicer_to_server(
+            SolverServicer(), server)
 
-    # Create __solvers__ if it does not exists.
-    try:
-        os.mkdir(DIR+'__solvers__')
-    except:
-        # for dev.
-        os.system(DIR+'rm -rf __solvers__')
-        os.mkdir(DIR+'__solvers__')
+        # Create __solvers__ if it does not exists.
+        try:
+            os.mkdir(DIR+'__solvers__')
+        except:
+            # for dev.
+            os.system(DIR+'rm -rf __solvers__')
+            os.mkdir(DIR+'__solvers__')
 
-    # listen on port 8080
-    LOGGER('Starting server. Listening on port 8081.')
-    server.add_insecure_port('[::]:8081')
-    server.start()
-    server.wait_for_termination()
+        # listen on port 8080
+        LOGGER('Starting server. Listening on port 8081.')
+        server.add_insecure_port('[::]:8081')
+        server.start()
+        server.wait_for_termination()
