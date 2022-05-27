@@ -10,7 +10,7 @@
         }
     },
     "architecture": "aarch64",
-    "entrypoint": "python3 /satsorter/start.py",
+    "entrypoint": "/satsorter/start.sh",
     "envs": [
         "SAVE_TRAIN_DATA", 
         "MAINTENANCE_SLEEP_TIME", 
