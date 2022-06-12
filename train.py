@@ -31,7 +31,7 @@ class Session(metaclass=Singleton):
         self.random_hashes=[
             gateway_pb2.celaut__pb2.Any.Metadata.HashTag.Hash(
                 type = bytes.fromhex("a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a"),
-                value = bytes.fromhex("f4fcda807f35eb2671c731a831e38af4697befbda626d3e7ac900497598b7e4d")
+                value = bytes.fromhex("f11d3bfbb14c61690bea0e323c9fdd0e50b06e29de4ec89cf42934224e1c3073")
             )
         ]
         self.random_stub = None
