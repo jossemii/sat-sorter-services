@@ -9,7 +9,7 @@ from time import sleep
 import api_pb2, api_pb2_grpc, solvers_dataset_pb2, gateway_pb2, gateway_pb2_grpc, celaut_pb2 as celaut
 from singleton import Singleton
 import _solve
-from start import LOGGER, DIR, SHA3_256, SHA3_256_ID, get_grpc_uri
+from start import LOGGER, DIR, RANDOM_SHA256, SHA3_256, SHA3_256_ID, get_grpc_uri
 from utils import read_file
 from grpcbigbuffer import Dir, client_grpc
 
@@ -30,8 +30,8 @@ class Session(metaclass=Singleton):
         
         self.random_hashes=[
             gateway_pb2.celaut__pb2.Any.Metadata.HashTag.Hash(
-                type = bytes.fromhex("a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a"),
-                value = bytes.fromhex("f11d3bfbb14c61690bea0e323c9fdd0e50b06e29de4ec89cf42934224e1c3073")
+                type = SHA3_256_ID,
+                value = bytes.fromhex(RANDOM_SHA256)
             )
         ]
         self.random_stub = None

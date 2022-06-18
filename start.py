@@ -10,6 +10,9 @@ logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s
 LOGGER = lambda message: logging.getLogger().debug(message + '\n')
 DIR = '/satsorter/'
 
+REGRESSION_SHA256 = 'fbb4081320fa31de62987b3f82d1f00a490e87e1c7fa497cbf160a94621ab46c'
+RANDOM_SHA256 = 'b0fc076a49adb3d5e03b76996cfe82c81efba9f2115d343a39ee46883c5fdc35'
+
 def get_grpc_uri(instance: celaut_pb2.Instance) -> celaut_pb2.Instance.Uri:
     for slot in instance.api.slot:
         #if 'grpc' in slot.transport_protocol.metadata.tag and 'http2' in slot.transport_protocol.metadata.tag:

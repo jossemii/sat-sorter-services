@@ -6,7 +6,7 @@ from time import sleep
 from typing import Generator
 from gateway_pb2_grpcbf import StartService_input
 from singleton import Singleton
-from start import LOGGER, SHA3_256, get_grpc_uri, DIR
+from start import LOGGER, SHA3_256, SHA3_256_ID, get_grpc_uri, DIR, REGRESSION_SHA256
 import grpc, solvers_dataset_pb2, api_pb2, gateway_pb2_grpc, regresion_pb2_grpc, gateway_pb2, regresion_pb2, os
 from utils import read_file
 from grpcbigbuffer import client_grpc, Dir
@@ -18,8 +18,8 @@ class Session(metaclass = Singleton):
         
         self.hashes=[
             gateway_pb2.celaut__pb2.Any.Metadata.HashTag.Hash(
-                type = bytes.fromhex("a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a"),
-                value = bytes.fromhex("ff1fb8277b0747878b2fd239b9a7687bb626344a9a2c77e3fed45c097e11ba42")
+                type = SHA3_256_ID,
+                value = bytes.fromhex(REGRESSION_SHA256)
             )
         ]
         self.config = gateway_pb2.celaut__pb2.Configuration()  
