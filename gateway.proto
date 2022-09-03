@@ -33,6 +33,15 @@ message ServiceWithConfig { // S^C
     optional celaut.Sysresources max_sysreq = 5;  // minimun system specs that the node needs to 've for it sometime.
 }
 
+message GasAmount {
+    string n = 1;
+}
+
+message ModifyServiceSystemResourcesOutput {
+    celaut.Sysresources sysreq = 1;
+    GasAmount gas = 2;
+}
+
 message ModifyServiceSystemResourcesInput {
     celaut.Sysresources min_sysreq = 1;
     celaut.Sysresources max_sysreq = 2;

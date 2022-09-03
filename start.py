@@ -1,4 +1,5 @@
 import logging, celaut_pb2, os, buffer_pb2, gateway_pb2, gateway_pb2_grpc
+from typing import Tuple
 from threading import Thread
 from iterators import TimeoutIterator
 from grpcbigbuffer import client_grpc
@@ -48,7 +49,8 @@ SHA3_256 = lambda value: "" if value is None else hashlib.sha3_256(value).digest
 
 if __name__ == "__main__":
 
-    from time import sleep    
+    from time import sleep  
+    from utils import to_gas_amount  
     import train, _get, _solve, regresion
     from threading import get_ident
     import grpc, api_pb2, api_pb2_grpc, solvers_dataset_pb2
@@ -82,8 +84,8 @@ if __name__ == "__main__":
         os.remove(DIR + 'services.zip')
         LOGGER('Services files extracted.')
 
-    def modify_resources_grpcbb(i: dict) -> api_pb2.celaut__pb2.Sysresources:
-        return next(
+    def modify_resources_grpcbb(i: dict) -> Tuple[api_pb2.celaut__pb2.Sysresources, int]:
+        output: gateway_pb2.ModifyServiceSystemResourcesOutput = next(
             client_grpc(
                 method = gateway_pb2_grpc.GatewayStub(
                             grpc.insecure_channel(ENVS['GATEWAY_MAIN_DIR'])
@@ -97,9 +99,10 @@ if __name__ == "__main__":
                     ),
                 ),
                 partitions_message_mode_parser=True,
-                indices_parser = api_pb2.celaut__pb2.Sysresources,
+                indices_parser = gateway_pb2.ModifyServiceSystemResourcesOutput,
             )
         )
+        return output.sysreq, to_gas_amount(output.gas)
 
     Thread(target=unzip_services).start()
 
