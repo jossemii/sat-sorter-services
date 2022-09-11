@@ -150,7 +150,7 @@ class Session(metaclass=Singleton):
                 )
             yield hash
         while True:
-            if os.path.isfile(DIR + 'random.service'):
+            if os.path.isfile(DIR + 'services.zip'):
                 yield (gateway_pb2.ServiceWithMeta, Dir(DIR + 'random.service'))
                 break
             else:
