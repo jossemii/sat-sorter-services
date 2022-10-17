@@ -1,51 +1,12 @@
-import logging, os
+import os, hashlib
 from typing import Tuple
 from threading import Thread
 from iterators import TimeoutIterator
 from grpcbigbuffer import client_grpc
 
 from iobigdata import IOBigData, mem_manager
-from src.utils.utils import read_file
-
-logging.basicConfig(filename='../app.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s')
-LOGGER = lambda message: logging.getLogger().debug(message + '\n')
-DIR = '/satsorter/'
-
-REGRESSION_SHA256 = 'fbb4081320fa31de62987b3f82d1f00a490e87e1c7fa497cbf160a94621ab46c'
-RANDOM_SHA256 = 'b0fc076a49adb3d5e03b76996cfe82c81efba9f2115d343a39ee46883c5fdc35'
-
-def get_grpc_uri(instance: celaut_pb2.Instance) -> celaut_pb2.Instance.Uri:
-    for slot in instance.api.slot:
-        #if 'grpc' in slot.transport_protocol.metadata.tag and 'http2' in slot.transport_protocol.metadata.tag:
-            # If the protobuf lib. supported map for this message it could be O(n).
-        for uri_slot in instance.uri_slot:
-            if uri_slot.internal_port == slot.port:
-                return uri_slot.uri[0]
-    raise Exception('Grpc over Http/2 not supported on this service ' + str(instance))
-
-ENVS = {
-    'GATEWAY_MAIN_DIR': '192.168.43.146:8090',
-    'SAVE_TRAIN_DATA': 10,
-    'MAINTENANCE_SLEEP_TIME': 60,
-    'SOLVER_PASS_TIMEOUT_TIMES': 5,
-    'SOLVER_FAILED_ATTEMPTS': 5,
-    'TRAIN_SOLVERS_TIMEOUT': 30,
-    'MAX_REGRESSION_DEGREE': 100,
-    'TIME_FOR_EACH_REGRESSION_LOOP': 900,
-    'CONNECTION_ERRORS': 20,
-    'START_AVR_TIMEOUT': 30,
-    'MAX_WORKERS': 20,
-    'MAX_REGRESION_WORKERS': 5,
-    'MAX_DISUSE_TIME_FACTOR': 1,
-    'TIME_SLEEP_WHEN_SOLVER_ERROR_OCCURS': 1,
-    'MAX_ERRORS_FOR_SOLVER': 5,
-}
-
-import hashlib
-# -- The service use sha3-256 for identify internal objects. --
-SHA3_256_ID = bytes.fromhex("a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a")
-SHA3_256 = lambda value: "" if value is None else hashlib.sha3_256(value).digest()
-
+from src.envs import ENVS, LOGGER, DIR
+from src.utils.utils import read_file, get_grpc_uri
 
 if __name__ == "__main__":
 
@@ -55,23 +16,22 @@ if __name__ == "__main__":
     from src.train import train
     from threading import get_ident
     import grpc
-    from proto import api_pb2, api_pb2_grpc, buffer_pb2, gateway_pb2_grpc, solvers_dataset_pb2
+    from proto import api_pb2, api_pb2_grpc, buffer_pb2, gateway_pb2_grpc, solvers_dataset_pb2, celaut_pb2
     from src.regresion import regresion
     from proto import celaut_pb2, gateway_pb2
     from concurrent import futures
     import grpcbigbuffer as grpcbf
     from proto.api_pb2_grpcbf import UploadService_input_partitions
 
-    
     # Read __config__ file.
     config = api_pb2.celaut__pb2.ConfigurationFile()
     config.ParseFromString(
         read_file('/__config__')
-    )    
+    )
 
     gateway_uri = get_grpc_uri(config.gateway)
     ENVS['GATEWAY_MAIN_DIR'] = gateway_uri.ip+':'+str(gateway_uri.port)
-    
+
     """
     for env_var in config.config.enviroment_variables:
         ENVS[env_var] = type(ENVS[env_var])(

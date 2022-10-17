@@ -57,7 +57,7 @@ class Session(metaclass = Singleton):
             yield hash
         while True:
             if not os.path.isfile(DIR + 'services.zip'):
-                yield (gateway_pb2.ServiceWithMeta, Dir(DIR + 'regresion.service'))
+                yield gateway_pb2.ServiceWithMeta, Dir(DIR + 'regresion.service')
                 break
             else:
                 sleep(1)
