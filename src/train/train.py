@@ -6,12 +6,14 @@ import grpcbigbuffer as grpcbf
 import grpc
 from time import sleep
 from proto import api_pb2, api_pb2_grpc, gateway_pb2_grpc, solvers_dataset_pb2
+from src.envs import SHA3_256_ID, LOGGER, SHA3_256, DIR, RANDOM_SHA256
 from src.regresion import regresion
 from proto import celaut_pb2 as celaut, gateway_pb2
 from src.utils.singleton import Singleton
 from src.solve import _solve
-from start import LOGGER, DIR, RANDOM_SHA256, SHA3_256, SHA3_256_ID, get_grpc_uri
 from grpcbigbuffer import Dir, client_grpc
+
+from src.utils.utils import get_grpc_uri
 
 
 class Session(metaclass=Singleton):
