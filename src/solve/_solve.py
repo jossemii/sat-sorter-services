@@ -2,14 +2,15 @@ from time import sleep, time as time_now
 from datetime import datetime, timedelta
 from threading import Thread, Lock
 from proto.gateway_pb2_grpcbf import StartService_input_partitions, StartService_input
-from src.utils.utils import read_file
+from src.envs import LOGGER, SHA3_256_ID, DIR, SHA3_256
+from src.utils.utils import read_file, get_grpc_uri
 from grpcbigbuffer import Dir, client_grpc
 import grpc
 
 from proto import api_pb2, api_pb2_grpc, gateway_pb2_grpc, solvers_dataset_pb2
 from proto import celaut_pb2 as celaut, gateway_pb2
 from src.utils.singleton import Singleton
-from start import DIR, LOGGER, SHA3_256, SHA3_256_ID, get_grpc_uri
+
 
 # Si se toma una instancia, se debe de asegurar que, o bien se agrega a su cola
 #  correspondiente, o bien se para. No asegurar esto ocasiona un bug importante
@@ -328,7 +329,7 @@ class Session(metaclass = Singleton):
         if solver_config_id != SHA3_256(
             value = solver_with_config.SerializeToString() # This service not touch metadata, so it can use the hash for id.
         ).hex():
-            LOGGER('Solver config not valid ', solver_with_config, solver_config_id)
+            LOGGER('Solver config not  valid ', solver_with_config, solver_config_id)
             raise Exception('Solver config not valid ', solver_with_config, solver_config_id)
 
         self.lock.acquire()

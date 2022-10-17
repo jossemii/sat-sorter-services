@@ -3,12 +3,12 @@ import threading
 from time import sleep
 from typing import Generator
 from proto.gateway_pb2_grpcbf import StartService_input
+from src.envs import SHA3_256_ID, REGRESSION_SHA256, DIR, LOGGER, SHA3_256
 from src.utils.singleton import Singleton
-from start import LOGGER, SHA3_256, SHA3_256_ID, get_grpc_uri, DIR, REGRESSION_SHA256
 import grpc, solvers_dataset_pb2, regresion_pb2_grpc, regresion_pb2, os
 from proto import api_pb2, gateway_pb2_grpc
 from proto import gateway_pb2
-from src.utils.utils import read_file
+from src.utils.utils import read_file, get_grpc_uri
 from grpcbigbuffer import client_grpc, Dir
 
 class Session(metaclass = Singleton):
