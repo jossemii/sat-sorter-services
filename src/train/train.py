@@ -10,7 +10,7 @@ from src.regresion import regresion
 from proto import celaut_pb2 as celaut, gateway_pb2
 from src.utils.singleton import Singleton
 from src.solve import _solve
-from src.start import LOGGER, DIR, RANDOM_SHA256, SHA3_256, SHA3_256_ID, get_grpc_uri
+from start import LOGGER, DIR, RANDOM_SHA256, SHA3_256, SHA3_256_ID, get_grpc_uri
 from grpcbigbuffer import Dir, client_grpc
 
 

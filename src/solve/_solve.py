@@ -9,7 +9,7 @@ import grpc
 from proto import api_pb2, api_pb2_grpc, gateway_pb2_grpc, solvers_dataset_pb2
 from proto import celaut_pb2 as celaut, gateway_pb2
 from src.utils.singleton import Singleton
-from src.start import DIR, LOGGER, SHA3_256, SHA3_256_ID, get_grpc_uri
+from start import DIR, LOGGER, SHA3_256, SHA3_256_ID, get_grpc_uri
 
 # Si se toma una instancia, se debe de asegurar que, o bien se agrega a su cola
 #  correspondiente, o bien se para. No asegurar esto ocasiona un bug importante
