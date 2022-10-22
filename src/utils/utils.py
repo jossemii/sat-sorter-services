@@ -1,4 +1,5 @@
-from proto import gateway_pb2, celaut_pb2
+from protos import gateway_pb2, celaut_pb2
+from src.envs import DEV_MODE, DEV_ENVS
 
 
 def get_grpc_uri(instance: celaut_pb2.Instance) -> celaut_pb2.Instance.Uri:
@@ -22,3 +23,8 @@ def to_gas_amount(gas_amount: int) -> gateway_pb2.GasAmount:
 
 def from_gas_amount(gas_amount: gateway_pb2.GasAmount) -> int:
     return int(gas_amount.n)
+
+
+# Should be on the Framework.
+def get_client_id() -> str:
+    return DEV_ENVS['CLIENT_ID'] if DEV_MODE else ''

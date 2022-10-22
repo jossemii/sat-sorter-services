@@ -1,8 +1,8 @@
 import numpy
 import onnxruntime as rt
 
-from proto import api_pb2, onnx_pb2
-from proto import regresion_pb2
+from protos import api_pb2, onnx_pb2
+from protos import regresion_pb2
 from start import LOGGER
 
 

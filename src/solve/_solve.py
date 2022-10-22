@@ -1,14 +1,14 @@
 from time import sleep, time as time_now
 from datetime import datetime, timedelta
 from threading import Thread, Lock
-from proto.gateway_pb2_grpcbf import StartService_input_partitions, StartService_input
-from src.envs import LOGGER, SHA3_256_ID, DIR, SHA3_256
-from src.utils.utils import read_file, get_grpc_uri
+from protos.gateway_pb2_grpcbf import StartService_input_partitions, StartService_input
+from src.envs import LOGGER, SHA3_256_ID, DIR, SHA3_256, DEV_MODE
+from src.utils.utils import read_file, get_grpc_uri, get_client_id
 from grpcbigbuffer import Dir, client_grpc
 import grpc
 
-from proto import api_pb2, api_pb2_grpc, gateway_pb2_grpc, solvers_dataset_pb2
-from proto import celaut_pb2 as celaut, gateway_pb2
+from protos import api_pb2, api_pb2_grpc, gateway_pb2_grpc, solvers_dataset_pb2
+from protos import celaut_pb2 as celaut, gateway_pb2
 from src.utils.singleton import Singleton
 
 
@@ -113,6 +113,7 @@ class SolverConfig(object):
         for hash in self.hashes:
             if config:  # Solo hace falta enviar la configuracion en el primer paquete.
                 config = False
+                if DEV_MODE: yield gateway_pb2.Client(client_id=get_client_id())
                 yield gateway_pb2.HashWithConfig(
                     hash = hash,
                     config = self.config

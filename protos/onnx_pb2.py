@@ -11,7 +11,9 @@ from google.protobuf import symbol_database as _symbol_database
 
 _sym_db = _symbol_database.Default()
 
-from proto import celaut_pb2 as celaut__pb2
+
+from protos import celaut_pb2 as celaut__pb2
+
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='onnx.proto',

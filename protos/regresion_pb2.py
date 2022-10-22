@@ -10,7 +10,10 @@ from google.protobuf import symbol_database as _symbol_database
 
 _sym_db = _symbol_database.Default()
 
-from proto import buffer_pb2 as buffer__pb2, onnx_pb2 as onnx__pb2
+
+from protos import onnx_pb2 as onnx__pb2
+from protos import buffer_pb2 as buffer__pb2
+
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='regresion.proto',

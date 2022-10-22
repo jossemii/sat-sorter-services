@@ -1,19 +1,19 @@
 import os
 import shutil
-from proto.gateway_pb2_grpcbf import StartService_input, StartService_input_partitions
+from protos.gateway_pb2_grpcbf import StartService_input, StartService_input_partitions
 from threading import get_ident, Thread, Lock
 import grpcbigbuffer as grpcbf
 import grpc
 from time import sleep
-from proto import api_pb2, api_pb2_grpc, gateway_pb2_grpc, solvers_dataset_pb2
-from src.envs import SHA3_256_ID, LOGGER, SHA3_256, DIR, RANDOM_SHA256
+from protos import api_pb2, api_pb2_grpc, gateway_pb2_grpc, solvers_dataset_pb2
+from src.envs import SHA3_256_ID, LOGGER, SHA3_256, DIR, RANDOM_SHA256, DEV_MODE
 from src.regresion import regresion
-from proto import celaut_pb2 as celaut, gateway_pb2
+from protos import celaut_pb2 as celaut, gateway_pb2
 from src.utils.singleton import Singleton
 from src.solve import _solve
 from grpcbigbuffer import Dir, client_grpc
 
-from src.utils.utils import get_grpc_uri
+from src.utils.utils import get_grpc_uri, get_client_id
 
 
 class Session(metaclass=Singleton):
@@ -146,6 +146,7 @@ class Session(metaclass=Singleton):
         for hash in self.random_hashes:
             if config:  # Solo hace falta enviar la configuracion en el primer paquete.
                 config = False
+                if DEV_MODE: yield gateway_pb2.Client(client_id=get_client_id())
                 yield gateway_pb2.HashWithConfig(
                     hash = hash,
                     config = self.random_config

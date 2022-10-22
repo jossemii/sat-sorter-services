@@ -11,10 +11,10 @@ from google.protobuf import symbol_database as _symbol_database
 _sym_db = _symbol_database.Default()
 
 
-import proto.onnx_pb2 as onnx__pb2
-import proto.celaut_pb2 as celaut__pb2
-import proto.solvers_dataset_pb2 as solvers__dataset__pb2
-import proto.buffer_pb2 as buffer__pb2
+from protos import onnx_pb2 as onnx__pb2
+from protos import celaut_pb2 as celaut__pb2
+from protos import solvers_dataset_pb2 as solvers__dataset__pb2
+from protos import buffer_pb2 as buffer__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(

@@ -1,8 +1,14 @@
 import hashlib, logging
 
+DEV_MODE = True
+DEV_ENVS = {
+    'GATEWAY_MAIN_DIR': '192.168.1.65:8090',
+    'MEM_LIMIT': 50*pow(10, 6),
+    'CLIENT_ID': 'dev'
+}
 
 ENVS = {
-    'GATEWAY_MAIN_DIR': '192.168.43.146:8090',
+    'GATEWAY_MAIN_DIR': None,
     'SAVE_TRAIN_DATA': 10,
     'MAINTENANCE_SLEEP_TIME': 60,
     'SOLVER_PASS_TIMEOUT_TIMES': 5,
@@ -25,8 +31,8 @@ SHA3_256 = lambda value: "" if value is None else hashlib.sha3_256(value).digest
 
 
 logging.basicConfig(filename='../app.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s')
-LOGGER = lambda message: logging.getLogger().debug(message + '\n')
-DIR = '/satsorter/'
+LOGGER = lambda message: logging.getLogger().debug(message + '\n') if not DEV_MODE else print(message + '\n')
+DIR = '/satsorter/' if not DEV_MODE else ''
 
 REGRESSION_SHA256 = 'fbb4081320fa31de62987b3f82d1f00a490e87e1c7fa497cbf160a94621ab46c'
 RANDOM_SHA256 = 'b0fc076a49adb3d5e03b76996cfe82c81efba9f2115d343a39ee46883c5fdc35'

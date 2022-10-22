@@ -1,43 +1,48 @@
-import os, hashlib
-from typing import Tuple
+import hashlib
+import os
 from threading import Thread
+
 from iterators import TimeoutIterator
-from grpcbigbuffer import client_grpc
 
 from iobigdata import IOBigData, mem_manager
-from src.envs import ENVS, LOGGER, DIR
+from src.envs import ENVS, LOGGER, DIR, DEV_ENVS, DEV_MODE
+from src.utils.modify_resources import MODIFY_SYSTEM_RESOURCES_LAMBDA
 from src.utils.utils import read_file, get_grpc_uri
 
 if __name__ == "__main__":
 
-    from time import sleep  
-    from src.utils.utils import to_gas_amount
+    from time import sleep
     from src.solve import _solve, _get
     from src.train import train
     from threading import get_ident
     import grpc
-    from proto import api_pb2, api_pb2_grpc, buffer_pb2, gateway_pb2_grpc, solvers_dataset_pb2, celaut_pb2
+    from protos import api_pb2, api_pb2_grpc, buffer_pb2, solvers_dataset_pb2
     from src.regresion import regresion
-    from proto import celaut_pb2, gateway_pb2
     from concurrent import futures
     import grpcbigbuffer as grpcbf
-    from proto.api_pb2_grpcbf import UploadService_input_partitions
+    from protos.api_pb2_grpcbf import UploadService_input_partitions
 
     # Read __config__ file.
-    config = api_pb2.celaut__pb2.ConfigurationFile()
-    config.ParseFromString(
-        read_file('/__config__')
-    )
+    if not DEV_MODE:
+        config = api_pb2.celaut__pb2.ConfigurationFile()
+        config.ParseFromString(
+            read_file('/__config__')
+        )
 
-    gateway_uri = get_grpc_uri(config.gateway)
-    ENVS['GATEWAY_MAIN_DIR'] = gateway_uri.ip+':'+str(gateway_uri.port)
+        gateway_uri = get_grpc_uri(config.gateway)
+        ENVS['GATEWAY_MAIN_DIR'] = gateway_uri.ip+':'+str(gateway_uri.port)
+        mem_limit: int = config.initial_sysresources.mem_limit
 
-    """
-    for env_var in config.config.enviroment_variables:
-        ENVS[env_var] = type(ENVS[env_var])(
-            config.config.enviroment_variables[env_var].value
-            )
-    """
+        """
+        for env_var in config.config.enviroment_variables:
+            ENVS[env_var] = type(ENVS[env_var])(
+                config.config.enviroment_variables[env_var].value
+                )
+        """
+
+    else:
+        ENVS['GATEWAY_MAIN_DIR'] = DEV_ENVS['GATEWAY_MAIN_DIR']
+        mem_limit: int = DEV_ENVS['MEM_LIMIT']
 
     LOGGER('INIT START THREAD ' + str(get_ident()))
 
@@ -48,32 +53,12 @@ if __name__ == "__main__":
         os.remove(DIR + 'services.zip')
         LOGGER('Services files extracted.')
 
-    def modify_resources_grpcbb(i: dict) -> Tuple[api_pb2.celaut__pb2.Sysresources, int]:
-        output: gateway_pb2.ModifyServiceSystemResourcesOutput = next(
-            client_grpc(
-                method = gateway_pb2_grpc.GatewayStub(
-                            grpc.insecure_channel(ENVS['GATEWAY_MAIN_DIR'])
-                        ).ModifyServiceSystemResources,
-                input = gateway_pb2.ModifyServiceSystemResourcesInput(
-                    min_sysreq = celaut_pb2.Sysresources(
-                        mem_limit = i['min']
-                    ),
-                    max_sysreq = celaut_pb2.Sysresources(
-                        mem_limit = i['max']
-                    ),
-                ),
-                partitions_message_mode_parser=True,
-                indices_parser = gateway_pb2.ModifyServiceSystemResourcesOutput,
-            )
-        )
-        return output.sysreq, to_gas_amount(output.gas)
-
-    Thread(target=unzip_services).start()
+    if not DEV_MODE: Thread(target=unzip_services).start()
 
     IOBigData(
         log = LOGGER,
-        ram_pool_method = lambda: config.initial_sysresources.mem_limit,
-        modify_resources = lambda d: modify_resources_grpcbb(i=d) 
+        ram_pool_method = lambda: mem_limit,
+        modify_resources = MODIFY_SYSTEM_RESOURCES_LAMBDA
     )
 
     grpcbf.modify_env(mem_manager=mem_manager, cache_dir=DIR)
@@ -232,7 +217,7 @@ if __name__ == "__main__":
             for b in grpcbf.serialize_to_buffer(): yield b
 
 
-    with mem_manager(len = config.initial_sysresources.mem_limit*0.25):
+    with mem_manager(len = mem_limit*0.25):
         # create a gRPC server
         server = grpc.server(futures.ThreadPoolExecutor(max_workers=ENVS['MAX_WORKERS']))
 

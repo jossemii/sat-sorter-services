@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-from proto import buffer_pb2 as buffer__pb2
+from protos import buffer_pb2 as buffer__pb2
 
 
 class RegresionStub(object):
