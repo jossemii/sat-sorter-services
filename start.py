@@ -2,9 +2,11 @@ import hashlib
 import os
 from threading import Thread
 
+from dependency_manager.dependency_manager import DependencyManager
 from iterators import TimeoutIterator
 
-from iobigdata import IOBigData, mem_manager
+
+from celaut_framework.resource_manager import ResourceManager, mem_manager
 from src.envs import ENVS, LOGGER, DIR, DEV_ENVS, DEV_MODE
 from src.utils.modify_resources import MODIFY_SYSTEM_RESOURCES_LAMBDA
 from src.utils.utils import read_file, get_grpc_uri
@@ -55,10 +57,21 @@ if __name__ == "__main__":
 
     if not DEV_MODE: Thread(target=unzip_services).start()
 
-    IOBigData(
+    ResourceManager(
         log = LOGGER,
         ram_pool_method = lambda: mem_limit,
         modify_resources = MODIFY_SYSTEM_RESOURCES_LAMBDA
+    )
+
+    DependencyManager(
+        gateway_main_dir = ENVS['GATEWAY_MAIN_DIR'],
+        maintenance_sleep_time = ENVS['MAINTENANCE_SLEEP_TIME'],
+        timeout = ENVS['TRAIN_SOLVERS_TIMEOUT'],
+        failed_attempts = ENVS['SOLVER_FAILED_ATTEMPTS'],
+        pass_timeout_times = ENVS['SOLVER_PASS_TIMEOUT_TIMES'],
+        dev_client = DEV_ENVS['CLIENT_ID'] if DEV_MODE else None,
+        static_service_directory = DIR,
+        dynamic_service_directory = DIR+'__services__/'
     )
 
     grpcbf.modify_env(mem_manager=mem_manager, cache_dir=DIR)

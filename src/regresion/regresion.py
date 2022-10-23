@@ -1,6 +1,8 @@
 import shutil
 import threading
 from time import sleep
+
+from dependency_manager.dependency_manager import DependencyManager
 from typing import Generator
 from protos.gateway_pb2_grpcbf import StartService_input
 from src.envs import SHA3_256_ID, REGRESSION_SHA256, DIR, LOGGER, SHA3_256, DEV_MODE
@@ -15,115 +17,24 @@ class Session(metaclass = Singleton):
 
     def __init__(self, ENVS) -> None:
         self.data_set = None
-        
-        self.hashes=[
-            gateway_pb2.celaut__pb2.Any.Metadata.HashTag.Hash(
-                type = SHA3_256_ID,
-                value = bytes.fromhex(REGRESSION_SHA256)
-            )
-        ]
-        self.config = gateway_pb2.celaut__pb2.Configuration()  
 
-        # set used envs on variables.       
-        self.GATEWAY_MAIN_DIR = ENVS['GATEWAY_MAIN_DIR']
-        self.CONNECTION_ERRORS = ENVS['CONNECTION_ERRORS']
-        self.START_AVR_TIMEOUT = ENVS['START_AVR_TIMEOUT']
+        # set used envs on variables.
         self.TIME_FOR_EACH_LOOP = ENVS['TIME_FOR_EACH_REGRESSION_LOOP']
-        
-        self.gateway_stub = gateway_pb2_grpc.GatewayStub(
-            grpc.insecure_channel(self.GATEWAY_MAIN_DIR)
-            )
-        self.stub = None
-        self.token = None
+
         self.dataset_lock = threading.Lock()
-        self.connection_errors = 0
+
+        self.service = DependencyManager().add_service(
+            service_hash = REGRESSION_SHA256,
+            stub_class = regresion_pb2_grpc.RegresionStub,
+            dynamic = False
+        )
 
         # for maintain.
         self.data_set_hash = ""
         threading.Thread(target = self.maintenance, name = 'Regresion').start()
-    
-    def service_extended(self):
-        config = True
-        for hash in self.hashes:
-            if config:  # Solo hace falta enviar la configuracion en el primer paquete.
-                config = False
-                if DEV_MODE: yield gateway_pb2.Client(client_id=get_client_id())
-                yield gateway_pb2.HashWithConfig(
-                    hash = hash,
-                    config = self.config,
-                    min_sysreq = gateway_pb2.celaut__pb2.Sysresources(
-                        mem_limit = 80*pow(10, 6)
-                    )
-                )
-            yield hash
-        while True:
-            if not os.path.isfile(DIR + 'services.zip'):
-                yield gateway_pb2.ServiceWithMeta, Dir(DIR + 'regresion.service')
-                break
-            else:
-                sleep(1)
-                continue
-
-    def init_service(self):
-        LOGGER('Launching regresion service instance.')
-        while True:
-            try:
-                instance  = None
-                for i in client_grpc(
-                    method = self.gateway_stub.StartService,
-                    input = self.service_extended(),
-                    indices_parser = gateway_pb2.Instance,
-                    partitions_message_mode_parser=True,
-                    indices_serializer = StartService_input,
-                    # timeout = self.START_AVR_TIMEOUT
-                ): instance = i
-                break
-            except grpc.RpcError as e:
-                LOGGER('GRPC ERROR.' + str(e))
-                sleep(10)
-        uri = get_grpc_uri(instance.instance)        
-
-        self.stub = regresion_pb2_grpc.RegresionStub(
-            grpc.insecure_channel(
-                uri.ip + ':' + str(uri.port)
-            )
-        )
-        self.token = instance.token
-        LOGGER('Regression service instance was recived.')
-
-    def stop(self):
-        LOGGER('Stopping regresion service instance.')
-        while True:
-            try:
-                next(client_grpc(
-                    method = self.gateway_stub.StopService,
-                    input = gateway_pb2.TokenMessage(
-                            token = self.token
-                        ),
-                    indices_serializer = gateway_pb2.TokenMessage,
-                ))
-                break
-            except grpc.RpcError as e:
-                LOGGER('Grpc Error stopping regresion ' + str(e))
-                sleep(1)        
-
-    def error_control(self, e):
-        # Si se acaba de lanzar otra instancia los que quedaron esperando no deberían 
-        # marcar el error, pues si hay mas de CONNECTION_ERRORS originaria un bucle al renovar
-        # Regresion todo el tiempo.
-        if self.connection_errors < self.CONNECTION_ERRORS:
-            self.connection_errors = self.connection_errors + 1
-            sleep(1)  # Evita condiciones de carrera si lo ejecuta tras recibir la instancia.
-        else:
-            self.connection_errors = 0
-            LOGGER('Errors occurs on regresion method --> ' + str(e))
-            LOGGER('Vamos a cambiar el servicio de regresion')
-            self.stop()
-            self.init_service()
-            LOGGER('listo. ahora vamos a probar otra vez.')  
 
     def maintenance(self):
-        self.init_service()
+
         while True:
             sleep(self.TIME_FOR_EACH_LOOP)
             # Obtiene una hash del dataset para saber si se han añadido datos.
@@ -200,7 +111,7 @@ class Session(metaclass = Singleton):
                     partitions_message_mode_parser = True,
                     timeout = self.START_AVR_TIMEOUT
                 ): yield file
-                
+
             except (grpc.RpcError, TimeoutError) as e:
                 self.error_control(e)
         

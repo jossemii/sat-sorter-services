@@ -80,14 +80,6 @@ class Session(metaclass=Singleton):
             self.thread = None
 
     def load_solver(self, partition1: api_pb2.solvers__dataset__pb2.SolverWithConfig, partition2: str) -> str:
-        # Se puede cargar un solver sin estar completo, 
-        #  pero debe de contener si o si la sha3-256
-        #  ya que el servicio no la calculará (ni comprobará).
-
-        # En caso de no estar completo ni poseer la SHA3_256 identificará el servicio mediante la hash de su version incompleta. 
-        # Si más tarde se vuelve a subir el servicio incompleto, no se podrá detectar que es el mismo y se entrenarán ambos por separado.
-        # Esto podría crear duplicaciones en el tensor, pero no debería suponer ningun tipo de error, solo ineficiencia.
-
         solver_hash = None
         metadata =partition1.meta
         solver = partition1.service
@@ -115,7 +107,7 @@ class Session(metaclass=Singleton):
                 file.write(partition1.SerializeToString())
 
             # En este punto se pueden crear varias versiones del mismo solver, 
-            # con distintas variables de entorno.
+            #  con distintas variables de entorno.
             self.solvers_dataset_lock.acquire()
             p = solvers_dataset_pb2.SolverWithConfig()
             p.definition.CopyFrom(solver)
