@@ -1,5 +1,8 @@
 import os
 import shutil
+
+from dependency_manager.dependency_manager import DependencyManager
+
 from protos.gateway_pb2_grpcbf import StartService_input, StartService_input_partitions
 from threading import get_ident, Thread, Lock
 import grpcbigbuffer as grpcbf
@@ -21,23 +24,12 @@ class Session(metaclass=Singleton):
     def __init__(self, ENVS):
 
         # set used envs on variables.
-        self.GATEWAY_MAIN_DIR = ENVS['GATEWAY_MAIN_DIR']
-        self.START_AVR_TIMEOUT = ENVS['START_AVR_TIMEOUT']
-        self.CONNECTION_ERRORS = ENVS['CONNECTION_ERRORS']
-        self.TRAIN_SOLVERS_TIMEOUT = ENVS['TRAIN_SOLVERS_TIMEOUT']
         self.REFRESH = ENVS['SAVE_TRAIN_DATA']
+        self.TRAIN_SOLVERS_TIMEOUT = ENVS['TRAIN_SOLVERS_TIMEOUT']
+
+        self.service = None
 
         self.thread = None
-        self.gateway_stub = gateway_pb2_grpc.GatewayStub(grpc.insecure_channel(self.GATEWAY_MAIN_DIR))
-        
-        self.random_hashes=[
-            gateway_pb2.celaut__pb2.Any.Metadata.HashTag.Hash(
-                type = SHA3_256_ID,
-                value = bytes.fromhex(RANDOM_SHA256)
-            )
-        ]
-        self.random_stub = None
-        self.random_token = None
         self.solvers_dataset = solvers_dataset_pb2.DataSet()
         self.solvers = []  # Lista de los solvers por hash.
         self.solvers_dataset_lock = Lock()  # Se usa al añadir un solver y durante cada iteracion de entrenamiento.
@@ -49,22 +41,6 @@ class Session(metaclass=Singleton):
         # Random CNF Service.
         self.random_config = celaut.Configuration()
 
-    def stop_random(self):
-        LOGGER('Stopping random service.')
-        while True:
-            try:
-                next(client_grpc(
-                    method = self.gateway_stub.StopService,
-                    input = gateway_pb2.TokenMessage(
-                                token = self.random_token
-                            ),
-                    indices_serializer = gateway_pb2.TokenMessage
-                ))
-                break
-            except grpc.RpcError as e:
-                LOGGER('GRPC ERROR STOPPING RANDOM ' + str(e))
-                sleep(1)
-
     def stop(self):
         # Para evitar que la instrucción stop mate el hilo durante un entrenamiento,
         #  y deje instancias fuera de pila y por tanto servicios zombie, el método stop 
@@ -75,7 +51,7 @@ class Session(metaclass=Singleton):
             LOGGER('Stopping train.')
             self.do_stop = True
             self.thread.join()
-            self.stop_random()
+            self.service.stop()
             self.do_stop = False
             self.thread = None
 
@@ -132,49 +108,6 @@ class Session(metaclass=Singleton):
         for solver in self.solvers_dataset.data.values():
             solver.ClearField('data')
         self.solvers_dataset_lock.release()
-
-    def random_service_extended(self):
-        config = True
-        for hash in self.random_hashes:
-            if config:  # Solo hace falta enviar la configuracion en el primer paquete.
-                config = False
-                if DEV_MODE: yield gateway_pb2.Client(client_id=get_client_id())
-                yield gateway_pb2.HashWithConfig(
-                    hash = hash,
-                    config = self.random_config
-                )
-            yield hash
-        while True:
-            if not os.path.isfile(DIR + 'services.zip'):
-                yield gateway_pb2.ServiceWithMeta, Dir(DIR + 'random.service')
-                break
-            else:
-                sleep(1)
-                continue
-
-    def init_random_cnf_service(self):
-        LOGGER('Launching random service instance.')
-        while True:
-            try:
-                instance = next(client_grpc(
-                    method = self.gateway_stub.StartService,
-                    input = self.random_service_extended(),
-                    indices_parser = gateway_pb2.Instance,
-                    partitions_message_mode_parser=True,
-                    indices_serializer = StartService_input
-                ))
-                break
-            except grpc.RpcError as e:
-                LOGGER('GRPC ERROR.' + str(e))
-                sleep(1)
-                
-        uri = get_grpc_uri(instance.instance)
-        self.random_stub = api_pb2_grpc.RandomStub(
-            grpc.insecure_channel(
-                uri.ip + ':' + str(uri.port)
-            )
-        )
-        self.random_token = instance.token
 
     def random_cnf(self) -> api_pb2.Cnf:
         connection_errors = 0
@@ -241,13 +174,19 @@ class Session(metaclass=Singleton):
             LOGGER('Error: train thread was started and have an error.')
 
     def init(self):
-        LOGGER('INICIANDO TRAINER, THREAD IS ' + str(get_ident()))
+        LOGGER('Init trainer, THREAD IS ' + str(get_ident()))
         refresh = 0
         timeout = self.TRAIN_SOLVERS_TIMEOUT
-        LOGGER('INICIANDO SERVICIO DE RANDOM CNF')
-        self.init_random_cnf_service()
-        LOGGER('hecho.')
-        # Si se emite una solicitud para detener el entrenamiento el hilo 
+
+        LOGGER('Starting random cnf service')
+        self.service = DependencyManager().add_service(
+            service_hash=RANDOM_SHA256,
+            stub_class=api_pb2_grpc.RandomStub,
+            dynamic=False
+        )
+        LOGGER('do it.')
+
+        # Si se emite una solicitud para detener el entrenamiento el hilo
         #  finalizará en la siguiente iteración.
         while not self.do_stop:
             if refresh < self.REFRESH:
