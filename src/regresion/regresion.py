@@ -2,16 +2,20 @@ import shutil
 import threading
 from time import sleep
 
+import grpc
+import os
+
+from dependency_manager.ServiceInterface import ServiceInterface
 from dependency_manager.dependency_manager import DependencyManager
+from dependency_manager.service_instance import ServiceInstance
+from grpcbigbuffer import client_grpc
 from typing import Generator
-from protos.gateway_pb2_grpcbf import StartService_input
-from src.envs import SHA3_256_ID, REGRESSION_SHA256, DIR, LOGGER, SHA3_256, DEV_MODE
+
+from protos import api_pb2, regresion_pb2_grpc, solvers_dataset_pb2, regresion_pb2
+from src.envs import REGRESSION_SHA256, LOGGER, SHA3_256
 from src.utils.singleton import Singleton
-import grpc, os
-from protos import api_pb2, gateway_pb2_grpc, regresion_pb2_grpc, solvers_dataset_pb2, regresion_pb2
-from protos import gateway_pb2
-from src.utils.utils import read_file, get_grpc_uri, get_client_id
-from grpcbigbuffer import client_grpc, Dir
+from src.utils.utils import read_file
+
 
 class Session(metaclass = Singleton):
 
@@ -23,7 +27,7 @@ class Session(metaclass = Singleton):
 
         self.dataset_lock = threading.Lock()
 
-        self.service = DependencyManager().add_service(
+        self.service: ServiceInterface = DependencyManager().add_service(
             service_hash = REGRESSION_SHA256,
             stub_class = regresion_pb2_grpc.RegresionStub,
             dynamic = False
@@ -97,34 +101,45 @@ class Session(metaclass = Singleton):
         self.dataset_lock.release()
         LOGGER('Dataset updated. ')
 
+
     # Hasta que se implemente AddTensor en el clasificador.
     def get_data_set(self) -> solvers_dataset_pb2.DataSet:
         return self.data_set
 
-    # Stream logs Grpc method.
+
+    # Stream logs Grpc method. TODO CHECK
     def stream_logs(self) -> Generator[api_pb2.File, None, None]:
+
+        instance: ServiceInstance = self.service.get_instance()
         while True:
             try:
-                for file in client_grpc(
-                    method = self.stub.StreamLogs,
-                    indices_parser = regresion_pb2.File,
-                    partitions_message_mode_parser = True,
-                    timeout = self.START_AVR_TIMEOUT
-                ): yield file
+                for i in range(1):
+                    try:
+                        for file in client_grpc(
+                            method = instance.stub.StreamLogs,
+                            indices_parser = regresion_pb2.File,
+                            partitions_message_mode_parser = True,
+                            timeout = self.service.sc.timeout
+                        ): yield file
 
-            except (grpc.RpcError, TimeoutError) as e:
-                self.error_control(e)
+                    except Exception as e:
+                        instance.compute_exception(e=e)
+            finally:
+                self.service.push_instance(instance)
+
         
     # Make regresion Grpc method. Return the Tensor buffer.
     def iterate_regression(self, data_set: solvers_dataset_pb2.DataSet) -> str:
+        instance: ServiceInstance = self.service.get_instance()
         try:
             return next(client_grpc(
-                method= self.stub.MakeRegresion,
+                method= instance.stub.MakeRegresion,
                 input = data_set,
                 indices_serializer = solvers_dataset_pb2.DataSet,
                 indices_parser = regresion_pb2.Tensor,
                 partitions_message_mode_parser = False,
             ))
-        except (grpc.RpcError, TimeoutError) as e:
-            self.error_control(e)
-            raise e
+        except Exception as e:
+            instance.compute_exception(e)
+
+        self.service.push_instance(instance)
