@@ -43,7 +43,7 @@ class Session(metaclass = Singleton):
             ))
             time = time_now() - start_time
             LOGGER(str(time) + '    resolved cnf on ' + str(solver_config_id))
-            # Si hemos obtenido una respuesta, en caso de que nos comunique que hay una interpretacion,
+            # Si hemos o caso de que nos comunique que hay una interpretacion,
             # será satisfactible. Si no nos da interpretacion asumimos que lo identifica como insatisfactible.
             # Si ocurre un error (menos por superar el timeout) se deja la interpretación vacia (None) para,
             # tras asegurar la instancia, lanzar una excepción.
