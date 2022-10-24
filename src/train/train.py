@@ -2,6 +2,8 @@ import os
 import shutil
 
 from dependency_manager.dependency_manager import DependencyManager
+from dependency_manager.service_instance import ServiceInstance
+from dependency_manager.service_interface import ServiceInterface
 
 from protos.gateway_pb2_grpcbf import StartService_input, StartService_input_partitions
 from threading import get_ident, Thread, Lock
@@ -27,7 +29,12 @@ class Session(metaclass=Singleton):
         self.REFRESH = ENVS['SAVE_TRAIN_DATA']
         self.TRAIN_SOLVERS_TIMEOUT = ENVS['TRAIN_SOLVERS_TIMEOUT']
 
-        self.service = None
+        self.service: ServiceInterface = DependencyManager().add_service(
+            service_hash=RANDOM_SHA256,
+            stub_class=api_pb2_grpc.RandomStub,
+            dynamic=False
+        )
+        self.instance: ServiceInstance = None
 
         self.thread = None
         self.solvers_dataset = solvers_dataset_pb2.DataSet()
@@ -51,7 +58,9 @@ class Session(metaclass=Singleton):
             LOGGER('Stopping train.')
             self.do_stop = True
             self.thread.join()
-            self.service.stop()
+            if self.instance:
+                self.service.push_instance(self.instance)
+                self.instance = None
             self.do_stop = False
             self.thread = None
 
@@ -115,24 +124,13 @@ class Session(metaclass=Singleton):
             try:
                 LOGGER('OBTENIENDO RANDON CNF')
                 return next(client_grpc(
-                    method = self.random_stub.RandomCnf,
+                    method = self.instance.stub.RandomCnf,
                     indices_parser = api_pb2.Cnf,
                     partitions_message_mode_parser = True,
-                    timeout = self.START_AVR_TIMEOUT
+                    timeout = self.service.sc.timeout
                 ))
-            except (grpc.RpcError, TimeoutError, grpc.FutureTimeoutError, Exception) as e:
-                if connection_errors < self.CONNECTION_ERRORS:
-                    connection_errors = connection_errors + 1
-                    sleep(1)  # Evita condiciones de carrera si lo ejecuta tras recibir la instancia.
-                    continue
-                else:
-                    connection_errors = 0
-                    LOGGER('  ERROR OCCURS OBTAINING THE CNF --> ' + str(e))
-                    LOGGER('VAMOS A CAMBIAR EL SERVICIO DE OBTENCION DE CNFs RANDOM')
-                    self.stop_random()
-                    self.init_random_cnf_service()
-                    LOGGER('listo. ahora vamos a probar otra vez.')
-                    continue
+            except Exception as e:
+                self.instance.compute_exception(e)
 
     @staticmethod
     def is_good(cnf, interpretation):
@@ -179,11 +177,7 @@ class Session(metaclass=Singleton):
         timeout = self.TRAIN_SOLVERS_TIMEOUT
 
         LOGGER('Starting random cnf service')
-        self.service = DependencyManager().add_service(
-            service_hash=RANDOM_SHA256,
-            stub_class=api_pb2_grpc.RandomStub,
-            dynamic=False
-        )
+        self.instance = self.service.get_instance()
         LOGGER('do it.')
 
         # Si se emite una solicitud para detener el entrenamiento el hilo
