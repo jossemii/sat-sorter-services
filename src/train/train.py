@@ -27,6 +27,7 @@ class Session(metaclass=Singleton):
 
         self.service: ServiceInterface = DependencyManager().add_service(
             service_hash=RANDOM_SHA256,
+            config = celaut.Configuration(),
             stub_class=api_pb2_grpc.RandomStub,
             dynamic=False
         )

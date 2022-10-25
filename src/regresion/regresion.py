@@ -2,9 +2,9 @@ import shutil
 import threading
 from time import sleep
 
-import grpc
 import os
 
+import celaut_framework.protos.celaut_pb2
 from celaut_framework.dependency_manager.service_interface import ServiceInterface
 from celaut_framework.dependency_manager.dependency_manager import DependencyManager
 from celaut_framework.dependency_manager.service_instance import ServiceInstance
@@ -29,6 +29,7 @@ class Session(metaclass = Singleton):
 
         self.service: ServiceInterface = DependencyManager().add_service(
             service_hash = REGRESSION_SHA256,
+            config = celaut_framework.protos.celaut_pb2.Configuration(),
             stub_class = regresion_pb2_grpc.RegresionStub,
             dynamic = False
         )
