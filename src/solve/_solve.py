@@ -1,19 +1,14 @@
-from time import sleep, time as time_now
-from datetime import datetime, timedelta
-from threading import Thread, Lock
+from threading import Lock
+from time import time as time_now
 
-from dependency_manager.dependency_manager import DependencyManager
-from dependency_manager.service_interface import ServiceInterface
+from celaut_framework.dependency_manager.dependency_manager import DependencyManager
+from grpcbigbuffer import client_grpc
 
-from protos.gateway_pb2_grpcbf import StartService_input_partitions, StartService_input
-from src.envs import LOGGER, SHA3_256_ID, DIR, SHA3_256, DEV_MODE
-from src.utils.utils import read_file, get_grpc_uri, get_client_id
-from grpcbigbuffer import Dir, client_grpc
-import grpc
-
-from protos import api_pb2, api_pb2_grpc, gateway_pb2_grpc, solvers_dataset_pb2
-from protos import celaut_pb2 as celaut, gateway_pb2
+from protos import api_pb2, api_pb2_grpc, solvers_dataset_pb2
+from protos import celaut_pb2 as celaut
+from src.envs import LOGGER, SHA3_256
 from src.utils.singleton import Singleton
+
 
 class Session(metaclass = Singleton):
 

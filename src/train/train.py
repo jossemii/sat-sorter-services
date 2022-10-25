@@ -1,24 +1,20 @@
 import os
 import shutil
-
-from dependency_manager.dependency_manager import DependencyManager
-from dependency_manager.service_instance import ServiceInstance
-from dependency_manager.service_interface import ServiceInterface
-
-from protos.gateway_pb2_grpcbf import StartService_input, StartService_input_partitions
 from threading import get_ident, Thread, Lock
-import grpcbigbuffer as grpcbf
-import grpc
-from time import sleep
-from protos import api_pb2, api_pb2_grpc, gateway_pb2_grpc, solvers_dataset_pb2
-from src.envs import SHA3_256_ID, LOGGER, SHA3_256, DIR, RANDOM_SHA256, DEV_MODE
-from src.regresion import regresion
-from protos import celaut_pb2 as celaut, gateway_pb2
-from src.utils.singleton import Singleton
-from src.solve import _solve
-from grpcbigbuffer import Dir, client_grpc
 
-from src.utils.utils import get_grpc_uri, get_client_id
+import grpcbigbuffer as grpcbf
+from celaut_framework.dependency_manager.dependency_manager import DependencyManager
+from celaut_framework.dependency_manager.service_instance import ServiceInstance
+from celaut_framework.dependency_manager.service_interface import ServiceInterface
+from grpcbigbuffer import client_grpc
+
+from protos import api_pb2, api_pb2_grpc, solvers_dataset_pb2
+from protos import celaut_pb2 as celaut
+from protos.gateway_pb2_grpcbf import StartService_input_partitions
+from src.envs import SHA3_256_ID, LOGGER, SHA3_256, DIR, RANDOM_SHA256
+from src.regresion import regresion
+from src.solve import _solve
+from src.utils.singleton import Singleton
 
 
 class Session(metaclass=Singleton):

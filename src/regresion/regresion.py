@@ -5,9 +5,9 @@ from time import sleep
 import grpc
 import os
 
-from dependency_manager.ServiceInterface import ServiceInterface
-from dependency_manager.dependency_manager import DependencyManager
-from dependency_manager.service_instance import ServiceInstance
+from celaut_framework.dependency_manager.service_interface import ServiceInterface
+from celaut_framework.dependency_manager.dependency_manager import DependencyManager
+from celaut_framework.dependency_manager.service_instance import ServiceInstance
 from grpcbigbuffer import client_grpc
 from typing import Generator
 

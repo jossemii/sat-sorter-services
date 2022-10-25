@@ -2,11 +2,11 @@ import hashlib
 import os
 from threading import Thread
 
-from dependency_manager.dependency_manager import DependencyManager
+from celaut_framework.dependency_manager.dependency_manager import DependencyManager
 from iterators import TimeoutIterator
 
 
-from celaut_framework.resource_manager import ResourceManager, mem_manager
+from celaut_framework.resource_manager.resourcemanager import ResourceManager, mem_manager
 from src.envs import ENVS, LOGGER, DIR, DEV_ENVS, DEV_MODE
 from src.utils.modify_resources import MODIFY_SYSTEM_RESOURCES_LAMBDA
 from src.utils.utils import read_file, get_grpc_uri
