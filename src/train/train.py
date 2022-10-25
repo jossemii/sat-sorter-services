@@ -39,7 +39,7 @@ class Session(metaclass=Singleton):
         self.solvers_dataset_lock = Lock()  # Se usa al añadir un solver y durante cada iteracion de entrenamiento.
         self.solvers_lock = Lock()  # Se uso al añadir un solver ya que podrían añadirse varios concurrentemente.
         self.do_stop = False
-        self._solver = _solve.Session(ENVS=ENVS)  # Using singleton pattern.
+        self._solver = _solve.Session()  # Using singleton pattern.
         self._regresion = regresion.Session(ENVS=ENVS)  # Using singleton pattern.
 
         # Random CNF Service.
