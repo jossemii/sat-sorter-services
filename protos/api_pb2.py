@@ -12,9 +12,9 @@ _sym_db = _symbol_database.Default()
 
 
 from protos import onnx_pb2 as onnx__pb2
-from protos import celaut_pb2 as celaut__pb2
+from celaut_framework.protos import celaut_pb2 as celaut__pb2
 from protos import solvers_dataset_pb2 as solvers__dataset__pb2
-from protos import buffer_pb2 as buffer__pb2
+from celaut_framework.gateway.protos import buffer_pb2 as buffer__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(

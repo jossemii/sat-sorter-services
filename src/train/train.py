@@ -9,8 +9,8 @@ from celaut_framework.dependency_manager.service_interface import ServiceInterfa
 from grpcbigbuffer import client_grpc
 
 from protos import api_pb2, api_pb2_grpc, solvers_dataset_pb2
-from protos import celaut_pb2 as celaut
-from protos.gateway_pb2_grpcbf import StartService_input_partitions
+from celaut_framework.protos import celaut_pb2 as celaut
+from celaut_framework.gateway.protos.gateway_pb2_grpcbf import StartService_input_partitions
 from src.envs import SHA3_256_ID, LOGGER, SHA3_256, DIR, RANDOM_SHA256
 from src.regresion import regresion
 from src.solve import _solve

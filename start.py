@@ -18,7 +18,8 @@ if __name__ == "__main__":
     from src.train import train
     from threading import get_ident
     import grpc
-    from protos import api_pb2, api_pb2_grpc, buffer_pb2, solvers_dataset_pb2
+    from protos import api_pb2, api_pb2_grpc, solvers_dataset_pb2
+    from celaut_framework.gateway.protos import buffer_pb2
     from src.regresion import regresion
     from concurrent import futures
     import grpcbigbuffer as grpcbf
