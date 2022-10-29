@@ -35,7 +35,6 @@ class Session(metaclass=Singleton):
             stub_class=api_pb2_grpc.RandomStub,
             dynamic=False
         )
-        self.instance: ServiceInstance = None
 
         self.thread = None
         self.solvers_dataset = solvers_dataset_pb2.DataSet()
@@ -61,9 +60,6 @@ class Session(metaclass=Singleton):
             LOGGER('Stopping train.')
             self.do_stop = True
             self.thread.join()
-            if self.instance:
-                self.service.push_instance(self.instance)
-                self.instance = None
             self.do_stop = False
             self.thread = None
 
@@ -125,17 +121,23 @@ class Session(metaclass=Singleton):
 
     def random_cnf(self) -> api_pb2.Cnf:
         while True:
+            instance = self.service.get_instance()
+
             try:
                 print('OBTENIENDO RANDON CNF')
                 return next(client_grpc(
-                    method = self.instance.stub.RandomCnf,
+                    method = instance.stub.RandomCnf,
                     indices_parser = api_pb2.Cnf,
                     partitions_message_mode_parser = True,
                     timeout = self.service.sc.timeout
                 ))
+
             except Exception as e:
                 print('e -> ', e)
-                self.instance.compute_exception(e)
+                instance.compute_exception(e)
+
+            finally:
+                self.service.push_instance(instance)
 
     @staticmethod
     def is_good(cnf, interpretation):
@@ -183,10 +185,6 @@ class Session(metaclass=Singleton):
         LOGGER('Init trainer, THREAD IS ' + str(get_ident()))
         refresh = 0
         timeout = self.TRAIN_SOLVERS_TIMEOUT
-
-        LOGGER('Starting random cnf service')
-        self.instance = self.service.get_instance()
-        LOGGER('do it.')
 
         # Si se emite una solicitud para detener el entrenamiento el hilo
         #  finalizará en la siguiente iteración.
