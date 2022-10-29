@@ -1,4 +1,4 @@
-import celaut_framework.gateway.protos.buffer_pb2 as buffer_pb2
+import grpcbigbuffer.buffer_pb2 as buffer_pb2
 
 # This is part of the transport protocol (slot) data.
 UploadService_input_partitions = [

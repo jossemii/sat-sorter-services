@@ -19,10 +19,9 @@ if __name__ == "__main__":
     from threading import get_ident
     import grpc
     from protos import api_pb2, api_pb2_grpc, solvers_dataset_pb2
-    from celaut_framework.gateway.protos import buffer_pb2
     from src.regresion import regresion
     from concurrent import futures
-    import grpcbigbuffer.grpcbigbuffer as grpcbf
+    from grpcbigbuffer import grpcbigbuffer as grpcbf, buffer_pb2
     from protos.api_pb2_grpcbf import UploadService_input_partitions
 
     # Read __config__ file.
