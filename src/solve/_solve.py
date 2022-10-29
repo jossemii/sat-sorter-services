@@ -2,7 +2,7 @@ from threading import Lock
 from time import time as time_now
 
 from celaut_framework.dependency_manager.dependency_manager import DependencyManager
-from grpcbigbuffer import client_grpc
+from grpcbigbuffer.grpcbigbuffer import client_grpc
 
 from protos import api_pb2, api_pb2_grpc, solvers_dataset_pb2
 from celaut_framework.protos import celaut_pb2 as celaut

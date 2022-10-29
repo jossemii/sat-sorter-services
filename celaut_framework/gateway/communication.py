@@ -30,47 +30,36 @@ def service_extended(
         dynamic: bool,
         dev_client: str
 ):
-    try:
-        use_config = True
-        for hash in hashes:
-            if use_config:  # Solo hace falta enviar la configuration en el primer paquete.
-                use_config = False
-                if dev_client:
-                    print('send client')
-                    yield gateway_pb2.Client(client_id = dev_client)
-                print('send hash with config')
-                yield gateway_pb2.HashWithConfig(
-                    hash = hash,
-                    config = config,
-                    min_sysreq=celaut_pb2.Sysresources(
-                        mem_limit=80 * pow(10, 6)
-                    )
+    use_config = True
+    for hash in hashes:
+        if use_config:  # Solo hace falta enviar la configuration en el primer paquete.
+            use_config = False
+            if dev_client: yield gateway_pb2.Client(client_id = dev_client)
+            yield gateway_pb2.HashWithConfig(
+                hash = hash,
+                config = config,
+                min_sysreq=celaut_pb2.Sysresources(
+                    mem_limit=80 * pow(10, 6)
                 )
-            print('send hash')
-            yield hash
-        print('send service dynamic ', dynamic)
-        if dynamic:
-            print('send service with meta partitionated ',service_directory, service_hash )
-            if os.path.isfile(service_directory+service_hash+'/p1') and \
-                    os.path.isfile(service_directory + service_hash + '/p2'):
-                yield (
-                    gateway_pb2.ServiceWithMeta,
-                    Dir(service_directory + service_hash+'/p1'),
-                    Dir(service_directory + service_hash+'/p2')
-                )
-        else:
-            while True:
-                if not os.path.isfile(service_directory + 'services.zip'):
-                    print('send service with meta complete ',service_directory, service_hash )
-                    if os.path.isfile(service_directory+service_hash):
-                        yield gateway_pb2.ServiceWithMeta, Dir(service_directory + service_hash)
-                    break
-                else:
-                    print('sleep 1')
-                    sleep(1)
-                    continue
-    except Exception as e:
-        print('e on se -> ', str(e))
+            )
+        yield hash
+    if dynamic:
+        if os.path.isfile(service_directory + service_hash + '/p1') and \
+                os.path.isfile(service_directory + service_hash + '/p2'):
+            yield (
+                gateway_pb2.ServiceWithMeta,
+                Dir(service_directory + service_hash + '/p1'),
+                Dir(service_directory + service_hash + '/p2')
+            )
+    else:
+        while True:
+            if not os.path.isfile(service_directory + 'services.zip'):
+                if os.path.isfile(service_directory + service_hash):
+                    yield gateway_pb2.ServiceWithMeta, Dir(service_directory + service_hash)
+                break
+            else:
+                sleep(1)
+                continue
 
 def launch_instance(gateway_stub,
                     hashes, config, service_hash,
@@ -88,16 +77,15 @@ def launch_instance(gateway_stub,
                     hashes = hashes,
                     config = config,
                     service_hash = service_hash,
-                    service_directory = dynamic_service_directory \
-                        if dynamic else static_service_directory,
+                    service_directory = dynamic_service_directory if dynamic else static_service_directory,
                     dynamic = dynamic,
                     dev_client = dev_client
                 ),
                 indices_parser=gateway_pb2.Instance,
                 partitions_message_mode_parser=True,
                 indices_serializer=StartService_input,
-                partitions_serializer = StartService_input_partitions \
-                    if dynamic else StartService_input_single_partition
+                partitions_serializer = StartService_input_partitions if dynamic \
+                    else StartService_input_single_partition
             ))
             break
         except grpc.RpcError as e:

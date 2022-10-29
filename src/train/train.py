@@ -4,9 +4,8 @@ from threading import get_ident, Thread, Lock
 
 import grpcbigbuffer as grpcbf
 from celaut_framework.dependency_manager.dependency_manager import DependencyManager
-from celaut_framework.dependency_manager.service_instance import ServiceInstance
 from celaut_framework.dependency_manager.service_interface import ServiceInterface
-from grpcbigbuffer import client_grpc
+from grpcbigbuffer.grpcbigbuffer import client_grpc
 
 from protos import api_pb2, api_pb2_grpc, solvers_dataset_pb2
 from celaut_framework.protos import celaut_pb2 as celaut

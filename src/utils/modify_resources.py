@@ -1,5 +1,5 @@
 from typing import Tuple
-from grpcbigbuffer import client_grpc
+from grpcbigbuffer.grpcbigbuffer import client_grpc
 import grpc
 
 from protos import api_pb2

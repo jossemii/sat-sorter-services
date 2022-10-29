@@ -22,7 +22,7 @@ if __name__ == "__main__":
     from celaut_framework.gateway.protos import buffer_pb2
     from src.regresion import regresion
     from concurrent import futures
-    import grpcbigbuffer as grpcbf
+    import grpcbigbuffer.grpcbigbuffer as grpcbf
     from protos.api_pb2_grpcbf import UploadService_input_partitions
 
     # Read __config__ file.
