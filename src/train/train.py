@@ -124,7 +124,7 @@ class Session(metaclass=Singleton):
             instance = self.service.get_instance()
 
             try:
-                LOGGER('OBTENIENDO RANDON CNF')
+                LOGGER('Generate new random CNF.')
                 return next(client_grpc(
                     method = instance.stub.RandomCnf,
                     indices_parser = api_pb2.Cnf,
@@ -133,7 +133,6 @@ class Session(metaclass=Singleton):
                 ))
 
             except Exception as e:
-                print('e -> ', e)
                 instance.compute_exception(e)
 
             finally:
