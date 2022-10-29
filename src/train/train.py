@@ -124,10 +124,9 @@ class Session(metaclass=Singleton):
         self.solvers_dataset_lock.release()
 
     def random_cnf(self) -> api_pb2.Cnf:
-        connection_errors = 0
         while True:
             try:
-                LOGGER('OBTENIENDO RANDON CNF')
+                print('OBTENIENDO RANDON CNF')
                 return next(client_grpc(
                     method = self.instance.stub.RandomCnf,
                     indices_parser = api_pb2.Cnf,
@@ -135,6 +134,7 @@ class Session(metaclass=Singleton):
                     timeout = self.service.sc.timeout
                 ))
             except Exception as e:
+                print('e -> ', e)
                 self.instance.compute_exception(e)
 
     @staticmethod
