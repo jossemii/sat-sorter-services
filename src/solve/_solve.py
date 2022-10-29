@@ -46,7 +46,6 @@ class Session(metaclass = Singleton):
             LOGGER('INTERPRETACION --> ' + str(interpretation.variable))
 
         except Exception as e:
-            print('e -> ', e)
             response: str = instance.compute_exception(e)
             if response == 'timeout':
                 interpretation, time = api_pb2.Interpretation(), timeout
