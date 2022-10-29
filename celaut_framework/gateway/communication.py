@@ -33,7 +33,10 @@ def service_extended(
     for hash in hashes:
         if use_config:  # Solo hace falta enviar la configuration en el primer paquete.
             use_config = False
-            if dev_client: yield gateway_pb2.Client(client_id = dev_client)
+            if dev_client:
+                print('send client')
+                yield gateway_pb2.Client(client_id = dev_client)
+            print('send hash with config')
             yield gateway_pb2.HashWithConfig(
                 hash = hash,
                 config = config,
@@ -41,8 +44,11 @@ def service_extended(
                     mem_limit=80 * pow(10, 6)
                 )
             )
+        print('send hash')
         yield hash
+    print('send service dynamic ', dynamic)
     if dynamic:
+        print('send')
         yield (
             gateway_pb2.ServiceWithMeta,
             Dir(service_directory + service_hash+'/p1'),
@@ -51,9 +57,11 @@ def service_extended(
     else:
         while True:
             if not os.path.isfile(service_directory + 'services.zip'):
+                print('send service with meta complete')
                 yield gateway_pb2.ServiceWithMeta, Dir(service_directory + service_hash)
                 break
             else:
+                print('sleep 1')
                 sleep(1)
                 continue
 
