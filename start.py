@@ -77,9 +77,15 @@ if __name__ == "__main__":
 
     grpcbf.modify_env(mem_manager=mem_manager, cache_dir=DIR)
 
-    _regresion = regresion.Session(ENVS=ENVS)
-    trainer = train.Session(ENVS=ENVS)
-    _solver = _solve.Session(ENVS=ENVS)
+    _regresion = regresion.Session(
+        time_for_each_regression_loop = ENVS['TIME_FOR_EACH_REGRESSION_LOOP']
+    )
+    trainer = train.Session(
+        save_train_data = ENVS['SAVE_TRAIN_DATA'],
+        train_solvers_timeout = ENVS['TRAIN_SOLVERS_TIMEOUT'],
+        time_for_each_regression_loop=ENVS['TIME_FOR_EACH_REGRESSION_LOOP']
+    )
+    _solver = _solve.Session()
 
 
     class SolverServicer(api_pb2_grpc.SolverServicer):

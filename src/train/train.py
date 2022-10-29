@@ -19,11 +19,15 @@ from src.utils.singleton import Singleton
 
 class Session(metaclass=Singleton):
 
-    def __init__(self, ENVS):
+    def __init__(self,
+                 save_train_data: int,
+                 train_solvers_timeout: int,
+                 time_for_each_regression_loop: int
+                 ):
 
         # set used envs on variables.
-        self.REFRESH = ENVS['SAVE_TRAIN_DATA']
-        self.TRAIN_SOLVERS_TIMEOUT = ENVS['TRAIN_SOLVERS_TIMEOUT']
+        self.REFRESH = save_train_data
+        self.TRAIN_SOLVERS_TIMEOUT = train_solvers_timeout
 
         self.service: ServiceInterface = DependencyManager().add_service(
             service_hash=RANDOM_SHA256,
@@ -39,8 +43,10 @@ class Session(metaclass=Singleton):
         self.solvers_dataset_lock = Lock()  # Se usa al añadir un solver y durante cada iteracion de entrenamiento.
         self.solvers_lock = Lock()  # Se uso al añadir un solver ya que podrían añadirse varios concurrentemente.
         self.do_stop = False
-        self._solver = _solve.Session()  # Using singleton pattern.
-        self._regresion = regresion.Session(ENVS=ENVS)  # Using singleton pattern.
+
+        self._solver = None  # Using singleton pattern.
+        self._regression = None  # Using singleton pattern.
+        self.time_for_each_regression_loop: int = time_for_each_regression_loop
 
         # Random CNF Service.
         self.random_config = celaut.Configuration()
@@ -62,6 +68,8 @@ class Session(metaclass=Singleton):
             self.thread = None
 
     def load_solver(self, partition1: api_pb2.solvers__dataset__pb2.SolverWithConfig, partition2: str) -> str:
+        if not self._solver: self._solver = _solve.Session()
+
         solver_hash = None
         metadata =partition1.meta
         solver = partition1.service
@@ -169,6 +177,9 @@ class Session(metaclass=Singleton):
             LOGGER('Error: train thread was started and have an error.')
 
     def init(self):
+        if not self._solver: self._solver = _solve.Session()
+        if not self._regression: self._regression = regresion.Session(self.time_for_each_regression_loop)
+
         LOGGER('Init trainer, THREAD IS ' + str(get_ident()))
         refresh = 0
         timeout = self.TRAIN_SOLVERS_TIMEOUT
@@ -233,7 +244,7 @@ class Session(metaclass=Singleton):
             else:
                 LOGGER('ACTUALIZA EL DATASET')
                 refresh = 0
-                self._regresion.add_data(new_data_set = self.solvers_dataset)
+                self._regression.add_data(new_data_set = self.solvers_dataset)
                 # No formatear los datos cada vez provocaría que el regresion realizara equívocamente la media, pues 
                 # estaría contando los datos anteriores una y otra vez.
                 self.clear_dataset()

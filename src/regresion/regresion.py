@@ -19,11 +19,11 @@ from src.utils.utils import read_file
 
 class Session(metaclass = Singleton):
 
-    def __init__(self, ENVS) -> None:
+    def __init__(self, time_for_each_regression_loop: int) -> None:
         self.data_set = None
 
         # set used envs on variables.
-        self.TIME_FOR_EACH_LOOP = ENVS['TIME_FOR_EACH_REGRESSION_LOOP']
+        self.TIME_FOR_EACH_LOOP: int = time_for_each_regression_loop
 
         self.dataset_lock = threading.Lock()
 
