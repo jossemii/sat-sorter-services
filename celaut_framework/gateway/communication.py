@@ -49,7 +49,7 @@ def service_extended(
             yield hash
         print('send service dynamic ', dynamic)
         if dynamic:
-            print('send')
+            print('send service with meta partitionated ',service_directory, '.', service_hash )
             yield (
                 gateway_pb2.ServiceWithMeta,
                 Dir(service_directory + service_hash+'/p1'),

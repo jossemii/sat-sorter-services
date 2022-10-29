@@ -4,7 +4,7 @@
 random.service
 regresion.service
 __tensor__
-__solvers__/*
+__services__/*
 __cache__/*
 protodot
 .service/src/*

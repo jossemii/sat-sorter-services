@@ -87,9 +87,9 @@ class Session(metaclass=Singleton):
         self.solvers_lock.acquire()
         if solver_hash and solver_hash not in self.solvers:
             self.solvers.append(solver_hash)
-            os.mkdir(DIR+'__solvers__/'+solver_hash)
-            shutil.move(partition2, DIR+'__solvers__/'+solver_hash+'/p2')
-            with open(DIR + '__solvers__/'+solver_hash+'/p1', 'wb') as file:
+            os.mkdir(DIR+'__services__/'+solver_hash)
+            shutil.move(partition2, DIR+'__services__/'+solver_hash+'/p2')
+            with open(DIR + '__services__/'+solver_hash+'/p1', 'wb') as file:
                 file.write(partition1.SerializeToString())
 
             # En este punto se pueden crear varias versiones del mismo solver, 

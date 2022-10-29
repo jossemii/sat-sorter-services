@@ -140,7 +140,7 @@ if __name__ == "__main__":
                     except: pass
                     for b in grpcbf.serialize_to_buffer(
                             message_iterator = next(TimeoutIterator(
-                                stream_regresion_logs(),
+                                stream_regresion_logs,
                                 timeout = 0.2
                             ))
                         ): yield b
@@ -167,8 +167,8 @@ if __name__ == "__main__":
             for solver_config_id_tensor in tensor_with_ids.non_escalar.non_escalar:
                 tensor_with_defitions.non_escalar.non_escalar.append(
                     api_pb2.Tensor.NonEscalarDimension.NonEscalar(
-                        element = _solve.get_solver_with_config(
-                            solver_config_id = solver_config_id_tensor.element
+                        element = DependencyManager().get_service_with_config(
+                            service_config_id = solver_config_id_tensor.element
                         ),
                         escalar = solver_config_id_tensor.escalar
                     )
@@ -189,9 +189,9 @@ if __name__ == "__main__":
             new_data_set = solvers_dataset_pb2.DataSet()
             for solver_with_config_tensor in tensor.non_escalar.non_escalar:
                 # Si no se posee ese solver, lo añade y añade, al mismo tiempo, en _solve con una configuración que el trainer considere, 
-                #  añade despues la configuración del tensor en la sesion de solve manager (_solve).
-                # La configuración que tiene el tensor no será provada por el trainer puesto que este tiene la competencia
-                #  de provar las configuraciones que considere.
+                #  añade despues la configuración del tensor en la session de solve manager (_solve).
+                # La configuración que tiene el tensor no será probada por el trainer, puesto que este tiene la competencia
+                #  de probar las configuraciones que considere.
 
                 solver_config_id = hashlib.sha3_256(
                     solver_with_config_tensor.element.SerializeToString()
@@ -244,13 +244,13 @@ if __name__ == "__main__":
         api_pb2_grpc.add_SolverServicer_to_server(
             SolverServicer(), server)
 
-        # Create __solvers__ if it does not exists.
+        # Create __services__ if it does not exists.
         try:
-            os.mkdir(DIR+'__solvers__')
+            os.mkdir(DIR+'__services__')
         except:
             # for dev.
-            os.system(DIR+'rm -rf __solvers__')
-            os.mkdir(DIR+'__solvers__')
+            os.system(DIR+'rm -rf __services__')
+            os.mkdir(DIR+'__services__')
 
         # listen on port 8080
         LOGGER('Starting server. Listening on port 8081.')
