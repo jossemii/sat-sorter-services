@@ -3,7 +3,7 @@ import onnxruntime as rt
 
 from protos import api_pb2, onnx_pb2
 from protos import regresion_pb2
-from start import LOGGER
+from src.start import LOGGER
 
 
 def get_score(model: onnx_pb2.ModelProto, _cnf: dict) -> float:

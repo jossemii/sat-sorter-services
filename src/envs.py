@@ -1,8 +1,8 @@
 import hashlib, logging
 
-DEV_MODE = True
+DEV_MODE = False
 DEV_ENVS = {
-    'GATEWAY_MAIN_DIR': '192.168.1.65:8090',
+    'GATEWAY_MAIN_DIR': '',
     'MEM_LIMIT': 50*pow(10, 6),
     'CLIENT_ID': 'dev'
 }
