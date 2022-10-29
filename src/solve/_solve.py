@@ -46,6 +46,7 @@ class Session(metaclass = Singleton):
             LOGGER('INTERPRETACION --> ' + str(interpretation.variable))
 
         except Exception as e:
+            print('e -> ', e)
             response: str = instance.compute_exception(e)
             if response == 'timeout':
                 interpretation, time = api_pb2.Interpretation(), timeout
@@ -58,7 +59,8 @@ class Session(metaclass = Singleton):
                 LOGGER('Exception not controlled on trainer '+str(e))
                 interpretation, time = None, timeout
 
-        solver_interface.push_instance(instance)
+        finally:
+            solver_interface.push_instance(instance)
 
         if interpretation:
             return interpretation, time
