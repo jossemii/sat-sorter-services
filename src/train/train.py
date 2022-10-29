@@ -124,7 +124,7 @@ class Session(metaclass=Singleton):
             instance = self.service.get_instance()
 
             try:
-                print('OBTENIENDO RANDON CNF')
+                LOGGER('OBTENIENDO RANDON CNF')
                 return next(client_grpc(
                     method = instance.stub.RandomCnf,
                     indices_parser = api_pb2.Cnf,
