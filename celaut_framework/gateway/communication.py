@@ -49,7 +49,7 @@ def service_extended(
             yield hash
         print('send service dynamic ', dynamic)
         if dynamic:
-            print('send service with meta partitionated ',service_directory, '.', service_hash )
+            print('send service with meta partitionated ',service_directory, service_hash )
             if os.path.isfile(service_directory+service_hash+'/p1') and \
                     os.path.isfile(service_directory + service_hash + '/p2'):
                 yield (
