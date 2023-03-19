@@ -21,7 +21,7 @@ if __name__ == "__main__":
     from protos import api_pb2, api_pb2_grpc, solvers_dataset_pb2
     from src.regresion import regresion
     from concurrent import futures
-    from grpcbigbuffer import grpcbigbuffer as grpcbf, buffer_pb2
+    from grpcbigbuffer import client as grpcbf, buffer_pb2
     from protos.api_pb2_grpcbf import UploadService_input_partitions
 
     # Read __config__ file.
