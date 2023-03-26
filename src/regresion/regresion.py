@@ -8,13 +8,13 @@ import celaut_framework.protos.celaut_pb2
 from celaut_framework.dependency_manager.service_interface import ServiceInterface
 from celaut_framework.dependency_manager.dependency_manager import DependencyManager
 from celaut_framework.dependency_manager.service_instance import ServiceInstance
-from grpcbigbuffer.grpcbigbuffer import client_grpc
+from grpcbigbuffer.client import client_grpc
 from typing import Generator
 
 from protos import api_pb2, regresion_pb2_grpc, solvers_dataset_pb2, regresion_pb2
 from src.envs import REGRESSION_SHA256, LOGGER, SHA3_256
 from src.utils.singleton import Singleton
-from src.utils.utils import read_file
+from src.utils.general import read_file
 
 
 class Session(metaclass = Singleton):

@@ -1,12 +1,12 @@
 from typing import Tuple
-from grpcbigbuffer.grpcbigbuffer import client_grpc
+from grpcbigbuffer.client import client_grpc
 import grpc
 
 from protos import api_pb2
 from celaut_framework.gateway.protos import gateway_pb2, gateway_pb2_grpc
 from celaut_framework.protos import celaut_pb2
 from src.envs import ENVS, DEV_MODE
-from src.utils.utils import from_gas_amount
+from src.utils.general import from_gas_amount
 
 if DEV_MODE:
     MODIFY_SYSTEM_RESOURCES_LAMBDA = lambda d: (celaut_pb2.Sysresources(
