@@ -34,5 +34,5 @@ logging.basicConfig(filename='../app.log', level=logging.DEBUG, format='%(asctim
 LOGGER = lambda message: logging.getLogger().debug(message + '\n') if not DEV_MODE else print(message + '\n')
 DIR = '/satsorter/' if not DEV_MODE else ''
 
-REGRESSION_SHA256 = 'fbb4081320fa31de62987b3f82d1f00a490e87e1c7fa497cbf160a94621ab46c'
-RANDOM_SHA256 = 'b0fc076a49adb3d5e03b76996cfe82c81efba9f2115d343a39ee46883c5fdc35'
+REGRESSION_SHA256 = '73e886ef1ab3f241600f10ca8f1f7cfe7d3b31382f1a414d187f7c5a0d35166a'
+RANDOM_SHA256 = '19a829e198c47c06fb9641625590b08a0a5729f073250735f5f48d335e3c74bb'
