@@ -147,7 +147,7 @@ class SolverServicer(api_pb2_grpc.SolverServicer):
 
     def UploadSolver(self, request_iterator, context):
         LOGGER('New solver ...')
-        pit = next(grpcbf.parse_from_buffer(
+        pit: api_pb2.ServiceWithMeta = next(grpcbf.parse_from_buffer( # TODO gRPCbb deberia retornar tambien el directorio
             request_iterator=request_iterator,
             indices=api_pb2.ServiceWithMeta,
             partitions_message_mode=True
@@ -159,9 +159,9 @@ class SolverServicer(api_pb2_grpc.SolverServicer):
 
     def GetTensor(self, request, context):
         tensor_with_ids = _regresion.get_tensor()
-        tensor_with_defitions = api_pb2.Tensor()
+        tensor_with_definitions = api_pb2.Tensor()
         for solver_config_id_tensor in tensor_with_ids.non_escalar.non_escalar:
-            tensor_with_defitions.non_escalar.non_escalar.append(
+            tensor_with_definitions.non_escalar.non_escalar.append(
                 api_pb2.Tensor.NonEscalarDimension.NonEscalar(
                     element=DependencyManager().get_service_with_config(
                         service_config_id=solver_config_id_tensor.element
@@ -169,7 +169,7 @@ class SolverServicer(api_pb2_grpc.SolverServicer):
                     escalar=solver_config_id_tensor.escalar
                 )
             )
-        yield from grpcbf.serialize_to_buffer(message_iterator=tensor_with_defitions)
+        yield from grpcbf.serialize_to_buffer(message_iterator=tensor_with_definitions)
 
     def StartTrain(self, request, context):
         trainer.start()
