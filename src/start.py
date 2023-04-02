@@ -105,11 +105,11 @@ class SolverServicer(api_pb2_grpc.SolverServicer):
                 for i in range(ENVS['MAX_ERRORS_FOR_SOLVER']):
                     try:
                         yield from grpcbf.serialize_to_buffer(
-                                message_iterator=_solver.cnf(
-                                    cnf=cnf,
-                                    solver_config_id=solver_config_id
-                                )[0],
-                                indices=api_pb2.Interpretation
+                            message_iterator=_solver.cnf(
+                                cnf=cnf,
+                                solver_config_id=solver_config_id
+                            )[0],
+                            indices=api_pb2.Interpretation
                         )
                     except Exception as e:
                         LOGGER(str(i) + ' ERROR SOLVING A CNF ON Solve ' + str(e))
@@ -119,7 +119,7 @@ class SolverServicer(api_pb2_grpc.SolverServicer):
         except Exception as e:
             LOGGER('Wait more for it, tensor is not ready yet. ')
             yield from grpcbf.serialize_to_buffer(
-                    indices={1: api_pb2.Interpretation, 2: buffer_pb2.Empty}
+                indices={1: api_pb2.Interpretation, 2: buffer_pb2.Empty}
             )
 
     def StreamLogs(self, request_iterator, context):
@@ -147,17 +147,14 @@ class SolverServicer(api_pb2_grpc.SolverServicer):
 
     def UploadSolver(self, request_iterator, context):
         LOGGER('New solver ...')
-        pit = grpcbf.parse_from_buffer(
+        pit = next(grpcbf.parse_from_buffer(
             request_iterator=request_iterator,
             indices=api_pb2.ServiceWithMeta,
             partitions_message_mode=True
-        )
-        if next(pit) != api_pb2.ServiceWithMeta: raise Exception(
-            'UploadSolver error: this is not a ServiceWithMeta message. ' + str(pit))
-        trainer.load_solver(
-            partition1=next(pit),
-            partition2=next(pit),
-        )
+        ))
+        if pit.isinstance(api_pb2.ServiceWithMeta):
+            raise Exception('UploadSolver error: this is not a ServiceWithMeta message. ' + str(pit))
+        trainer.load_solver(service_with_meta=pit)
         yield from grpcbf.serialize_to_buffer()
 
     def GetTensor(self, request, context):

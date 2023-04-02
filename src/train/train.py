@@ -62,54 +62,43 @@ class Session(metaclass=Singleton):
             self.do_stop = False
             self.thread = None
 
-    def load_solver(self, partition1: api_pb2.solvers__dataset__pb2.SolverWithConfig, partition2: str) -> str:
-        if not self._solver: self._solver = _solve.Session()
+    def load_solver(self, service_with_meta: api_pb2.ServiceWithMeta) -> str:
+        if not self._solver:
+            self._solver = _solve.Session()
 
         solver_hash = None
-        metadata = partition1.meta
-        solver = partition1.service
+        metadata = service_with_meta.meta
+        solver = service_with_meta.service
         for h in metadata.hashtag.hash:
             if h.type == SHA3_256_ID:
                 solver_hash = h.value.hex()
 
-        solver_hash = SHA3_256(
-            value=grpcbf.partitions_to_buffer(
-                message=api_pb2.ServiceWithMeta,
-                partitions=(
-                    partition1,
-                    partition2,
-                ),
-                partitions_model=StartService_input_partitions[4]
-            )
-        ) if not solver_hash else solver_hash
+        if not solver_hash:
+            raise Exception('Error loading solver: Solver without hash.')
+            # TODO Usar método para extraer el identificador de un servicio del registro.
 
-        self.solvers_lock.acquire()
-        if solver_hash and solver_hash not in self.solvers:
-            self.solvers.append(solver_hash)
-            os.mkdir(DIR + '__services__/' + solver_hash)
-            shutil.move(partition2, DIR + '__services__/' + solver_hash + '/p2')
-            with open(DIR + '__services__/' + solver_hash + '/p1', 'wb') as file:
-                file.write(partition1.SerializeToString())
+        with self.solvers_lock:
+            if solver_hash and solver_hash not in self.solvers:
+                self.solvers.append(solver_hash)
+                # TODO mueve el mensaje a DYNAMIC_SERVICE_DIRECTORY
 
-            # En este punto se pueden crear varias versiones del mismo solver, 
-            #  con distintas variables de entorno.
-            self.solvers_dataset_lock.acquire()
-            p = solvers_dataset_pb2.SolverWithConfig()
-            p.definition.CopyFrom(solver)
-            p.meta.CopyFrom(metadata)
-            # p.enviroment_variables (Usamos las variables de entorno por defecto).
-            solver_with_config_hash = SHA3_256(
-                value=p.SerializeToString()
-            ).hex()  # This service not touch metadata, so it can use the hash for id.
-            self.solvers_dataset.data[solver_with_config_hash].CopyFrom(solvers_dataset_pb2.DataSetInstance())
-            self._solver.add_solver(
-                solver_with_config=p,
-                solver_config_id=solver_with_config_hash,
-                solver_hash=solver_hash
-            )
-            self.solvers_dataset_lock.release()
+                # En este punto se pueden crear varias versiones del mismo solver,
+                #  con distintas variables de entorno.
+                with self.solvers_dataset_lock:
+                    p = solvers_dataset_pb2.SolverWithConfig()
+                    p.definition.CopyFrom(solver)
+                    p.meta.CopyFrom(metadata)
+                    # p.enviroment_variables (Usamos las variables de entorno por defecto).
+                    solver_with_config_hash = SHA3_256(
+                        value=p.SerializeToString()
+                    ).hex()  # This service not touch metadata, so it can use the hash for id.
+                    self.solvers_dataset.data[solver_with_config_hash].CopyFrom(solvers_dataset_pb2.DataSetInstance())
+                    self._solver.add_solver(
+                        solver_with_config=p,
+                        solver_config_id=solver_with_config_hash,
+                        solver_hash=solver_hash
+                    )
 
-        self.solvers_lock.release()
         return solver_hash
 
     def clear_dataset(self) -> None:
@@ -139,9 +128,9 @@ class Session(metaclass=Singleton):
 
     @staticmethod
     def is_good(cnf, interpretation):
-        def good_clause(clause, interpretation):
-            for var in clause.literal:
-                for i in interpretation.variable:
+        def good_clause(_clause, _interpretation):
+            for var in _clause.literal:
+                for i in _interpretation.variable:
                     if var == i:
                         return True
             return False
@@ -151,7 +140,8 @@ class Session(metaclass=Singleton):
                 return False
         return True
 
-    def updateScore(self, cnf, solver: solvers_dataset_pb2.DataSetInstance, score):
+    @staticmethod
+    def updateScore(cnf, solver: solvers_dataset_pb2.DataSetInstance, score):
         num_clauses, num_literals = (
             len(cnf.clause),
             0,
@@ -177,8 +167,10 @@ class Session(metaclass=Singleton):
             LOGGER('Error: train thread was started and have an error.')
 
     def init(self):
-        if not self._solver: self._solver = _solve.Session()
-        if not self._regression: self._regression = regresion.Session(self.time_for_each_regression_loop)
+        if not self._solver: 
+            self._solver = _solve.Session()
+        if not self._regression: 
+            self._regression = regresion.Session(self.time_for_each_regression_loop)
 
         LOGGER('Init trainer, THREAD IS ' + str(get_ident()))
         refresh = 0
@@ -196,11 +188,12 @@ class Session(metaclass=Singleton):
                 insats = []  # Solvers que afirman la insatisfactibilidad junto con su respectivo tiempo.
                 LOGGER('VAMOS A PROBAR LOS SOLVERS')
                 self.solvers_dataset_lock.acquire()
-                for hash, solver_data in self.solvers_dataset.data.items():
-                    if self.do_stop: break
-                    LOGGER('SOLVER --> ' + str(hash))
+                for _hash, solver_data in self.solvers_dataset.data.items():
+                    if self.do_stop: 
+                        break
+                    LOGGER('SOLVER --> ' + str(_hash))
                     try:
-                        interpretation, time = self._solver.cnf(cnf=cnf, solver_config_id=hash, timeout=timeout)
+                        interpretation, time = self._solver.cnf(cnf=cnf, solver_config_id=_hash, timeout=timeout)
                     except Exception as e:
                         LOGGER('INTERNAL ERROR SOLVING A CNF ON TRAIN ' + str(e))
                         interpretation, time = None, timeout
