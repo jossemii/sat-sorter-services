@@ -67,8 +67,11 @@ class Session(metaclass=Singleton):
         else:
             raise Exception
 
-    def add_solver(self, solver_with_config: solvers_dataset_pb2.SolverWithConfig, solver_config_id: str,
-                   solver_hash: str):
+    def add_solver(self,
+                   solver_with_config: solvers_dataset_pb2.SolverWithConfig,
+                   solver_config_id: str,
+                   solver_hash: str
+                   ):
         if solver_config_id != SHA3_256(
                 value=solver_with_config.SerializeToString()
                 # This service not touch metadata, so it can use the hash for id.
@@ -76,18 +79,17 @@ class Session(metaclass=Singleton):
             LOGGER('Solver config not  valid ', solver_with_config, solver_config_id)
             raise Exception('Solver config not valid ', solver_with_config, solver_config_id)
 
-        self.lock.acquire()
-        self.solvers.update({
-            solver_config_id: DependencyManager().add_service(
-                service_hash=solver_hash,
-                config=celaut.Configuration(
-                    enviroment_variables=solver_with_config.enviroment_variables
-                ),
-                stub_class=api_pb2_grpc.SolverStub,
-                dynamic=True
-            )
-        })
-        self.lock.release()
+        with self.lock:
+            self.solvers.update({
+                solver_config_id: DependencyManager().add_service(
+                    service_hash=solver_hash,
+                    config=celaut.Configuration(
+                        enviroment_variables=solver_with_config.enviroment_variables
+                    ),
+                    stub_class=api_pb2_grpc.SolverStub,
+                    dynamic=True
+                )
+            })
         try:
             LOGGER('ADDED NEW SOLVER ' + str(solver_config_id) + ' \ndef_ids -> ' + str(
                 solver_with_config.meta.hashtag.hash[0].value.hex()))
