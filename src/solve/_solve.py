@@ -81,6 +81,7 @@ class Session(metaclass=Singleton):
 
         with self.lock:
             self.solvers.update({
+                # Presupone que se ha movido el servicio de caché a dynamic service directory.
                 solver_config_id: DependencyManager().add_service(
                     service_hash=solver_hash,
                     config=celaut.Configuration(

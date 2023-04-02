@@ -147,14 +147,15 @@ class SolverServicer(api_pb2_grpc.SolverServicer):
 
     def UploadSolver(self, request_iterator, context):
         LOGGER('New solver ...')
-        pit: api_pb2.ServiceWithMeta = next(grpcbf.parse_from_buffer( # TODO gRPCbb deberia retornar tambien el directorio
-            request_iterator=request_iterator,
-            indices=api_pb2.ServiceWithMeta,
-            partitions_message_mode=True
-        ))
-        if pit.isinstance(api_pb2.ServiceWithMeta):
-            raise Exception('UploadSolver error: this is not a ServiceWithMeta message. ' + str(pit))
-        trainer.load_solver(service_with_meta=pit)
+        trainer.load_solver(
+            service_with_meta_dir=next(
+                grpcbf.parse_from_buffer(
+                    request_iterator=request_iterator,
+                    indices=api_pb2.ServiceWithMeta,
+                    partitions_message_mode=False
+                )
+            )
+        )
         yield from grpcbf.serialize_to_buffer()
 
     def GetTensor(self, request, context):

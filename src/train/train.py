@@ -6,6 +6,7 @@ from grpcbigbuffer import client as grpcbf
 from grpcbigbuffer.client import client_grpc
 from celaut_framework.dependency_manager.dependency_manager import DependencyManager
 from celaut_framework.dependency_manager.service_interface import ServiceInterface
+from grpcbigbuffer.utils import WITHOUT_BLOCK_POINTERS_FILE_NAME
 
 from protos import api_pb2, api_pb2_grpc, solvers_dataset_pb2
 from celaut_framework.protos import celaut_pb2 as celaut
@@ -62,11 +63,18 @@ class Session(metaclass=Singleton):
             self.do_stop = False
             self.thread = None
 
-    def load_solver(self, service_with_meta: api_pb2.ServiceWithMeta) -> str:
+    def load_solver(self, service_with_meta_dir: str) -> str:
         if not self._solver:
             self._solver = _solve.Session()
 
-        solver_hash = None
+        service_with_meta = api_pb2.ServiceWithMeta()
+        try:
+            with open(os.path.join(service_with_meta_dir, WITHOUT_BLOCK_POINTERS_FILE_NAME), 'rb') as f:
+                service_with_meta.ParseFromString(f.read())
+        except Exception:
+            raise Exception('UploadSolver error: this is not a ServiceWithMeta message. ' + str(service_with_meta_dir))
+
+        solver_hash: str = None
         metadata = service_with_meta.meta
         solver = service_with_meta.service
         for h in metadata.hashtag.hash:
@@ -80,7 +88,9 @@ class Session(metaclass=Singleton):
         with self.solvers_lock:
             if solver_hash and solver_hash not in self.solvers:
                 self.solvers.append(solver_hash)
-                # TODO mueve el mensaje a DYNAMIC_SERVICE_DIRECTORY
+
+                shutil.move(service_with_meta_dir,
+                            os.path.join(DependencyManager().dynamic_service_directory, solver_hash))
 
                 # En este punto se pueden crear varias versiones del mismo solver,
                 #  con distintas variables de entorno.
