@@ -46,15 +46,22 @@ else:
 LOGGER('INIT START THREAD ' + str(get_ident()))
 
 
-def unzip_services():
+def unzip_registry(_name: str, _dir: str):
     import zipfile
-    with zipfile.ZipFile(DIR + 'services.zip', 'r') as zip_ref:
-        zip_ref.extractall(DIR)
-    os.remove(DIR + 'services.zip')
+    with zipfile.ZipFile(DIR + _name + '.zip', 'r') as zip_ref:
+        zip_ref.extractall(_dir)
+    os.remove(DIR + _name + '.zip')
     LOGGER('Services files extracted.')
 
 
-if not DEV_MODE: Thread(target=unzip_services).start()
+#  Services and blocks directories.
+static_service_directory: str = DIR + '__services__/'
+dynamic_service_directory: str = DIR + '__services__/'
+block_directory: str = DIR + '__block__/'
+
+if not DEV_MODE:
+    Thread(target=unzip_registry, args=('services', static_service_directory,)).start()
+    Thread(target=unzip_registry, args=('blocks', block_directory,)).start()
 
 ResourceManager(
     log=LOGGER,
@@ -69,11 +76,11 @@ DependencyManager(
     failed_attempts=ENVS['SOLVER_FAILED_ATTEMPTS'],
     pass_timeout_times=ENVS['SOLVER_PASS_TIMEOUT_TIMES'],
     dev_client=DEV_ENVS['CLIENT_ID'] if DEV_MODE else None,
-    static_service_directory=DIR,
-    dynamic_service_directory=DIR + '__services__/'
+    static_service_directory=static_service_directory,
+    dynamic_service_directory=dynamic_service_directory
 )
 
-modify_env(mem_manager=mem_manager, cache_dir=DIR)
+modify_env(mem_manager=mem_manager, cache_dir=DIR, block_dir=block_directory)
 
 _regresion = regresion.Session(
     time_for_each_regression_loop=ENVS['TIME_FOR_EACH_REGRESSION_LOOP']
