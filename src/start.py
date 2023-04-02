@@ -20,7 +20,6 @@ from src.regresion import regresion
 from concurrent import futures
 from grpcbigbuffer import client as grpcbf, buffer_pb2
 from grpcbigbuffer.utils import modify_env
-from protos.api_pb2_grpcbf import UploadService_input_partitions
 
 # Read __config__ file.
 if not DEV_MODE:
@@ -105,13 +104,13 @@ class SolverServicer(api_pb2_grpc.SolverServicer):
 
                 for i in range(ENVS['MAX_ERRORS_FOR_SOLVER']):
                     try:
-                        for b in grpcbf.serialize_to_buffer(
+                        yield from grpcbf.serialize_to_buffer(
                                 message_iterator=_solver.cnf(
                                     cnf=cnf,
                                     solver_config_id=solver_config_id
                                 )[0],
                                 indices=api_pb2.Interpretation
-                        ): yield b
+                        )
                     except Exception as e:
                         LOGGER(str(i) + ' ERROR SOLVING A CNF ON Solve ' + str(e))
                         sleep(ENVS['TIME_SLEEP_WHEN_SOLVER_ERROR_OCCURS'])
@@ -119,9 +118,9 @@ class SolverServicer(api_pb2_grpc.SolverServicer):
 
         except Exception as e:
             LOGGER('Wait more for it, tensor is not ready yet. ')
-            for b in grpcbf.serialize_to_buffer(
+            yield from grpcbf.serialize_to_buffer(
                     indices={1: api_pb2.Interpretation, 2: buffer_pb2.Empty}
-            ): yield b
+            )
 
     def StreamLogs(self, request_iterator, context):
         if hasattr(self.StreamLogs, 'has_been_called'):
@@ -138,21 +137,20 @@ class SolverServicer(api_pb2_grpc.SolverServicer):
                     for b in grpcbf.serialize_to_buffer(message_iterator=f): yield b
                 except:
                     pass
-                for b in grpcbf.serialize_to_buffer(
-                        message_iterator=next(TimeoutIterator(
-                            stream_regresion_logs,
-                            timeout=0.2
-                        ))
-                ): yield b
+                yield from grpcbf.serialize_to_buffer(
+                    message_iterator=next(TimeoutIterator(
+                        stream_regresion_logs,
+                        timeout=0.2
+                    ))
+                )
                 # TODO Could be async. (needs the async grpc lib.)
 
     def UploadSolver(self, request_iterator, context):
         LOGGER('New solver ...')
         pit = grpcbf.parse_from_buffer(
             request_iterator=request_iterator,
-            partitions_model=UploadService_input_partitions,
             indices=api_pb2.ServiceWithMeta,
-            partitions_message_mode=[True, False]
+            partitions_message_mode=True
         )
         if next(pit) != api_pb2.ServiceWithMeta: raise Exception(
             'UploadSolver error: this is not a ServiceWithMeta message. ' + str(pit))
@@ -160,7 +158,7 @@ class SolverServicer(api_pb2_grpc.SolverServicer):
             partition1=next(pit),
             partition2=next(pit),
         )
-        for b in grpcbf.serialize_to_buffer(): yield b
+        yield from grpcbf.serialize_to_buffer()
 
     def GetTensor(self, request, context):
         tensor_with_ids = _regresion.get_tensor()
@@ -174,15 +172,15 @@ class SolverServicer(api_pb2_grpc.SolverServicer):
                     escalar=solver_config_id_tensor.escalar
                 )
             )
-        for b in grpcbf.serialize_to_buffer(message_iterator=tensor_with_defitions): yield b
+        yield from grpcbf.serialize_to_buffer(message_iterator=tensor_with_defitions)
 
     def StartTrain(self, request, context):
         trainer.start()
-        for b in grpcbf.serialize_to_buffer(): yield b
+        yield from grpcbf.serialize_to_buffer()
 
     def StopTrain(self, request, context):
         trainer.stop()
-        for b in grpcbf.serialize_to_buffer(): yield b
+        yield from grpcbf.serialize_to_buffer()
 
     # Integrate other tensor
     def AddTensor(self, request_iterator, context):
@@ -223,9 +221,9 @@ class SolverServicer(api_pb2_grpc.SolverServicer):
         for b in grpcbf.serialize_to_buffer(): yield b
 
     def GetDataSet(self, request_iterator, context):
-        for b in grpcbf.serialize_to_buffer(
-                message_iterator=_regresion.get_data_set()
-        ): yield b
+        yield from grpcbf.serialize_to_buffer(
+            message_iterator=_regresion.get_data_set()
+        )
 
     # Hasta que se implemente AddTensor.
     def AddDataSet(self, request_iterator, context):
@@ -236,7 +234,7 @@ class SolverServicer(api_pb2_grpc.SolverServicer):
                 partitions_message_mode=True
             ))
         )
-        for b in grpcbf.serialize_to_buffer(): yield b
+        yield from grpcbf.serialize_to_buffer()
 
 
 with mem_manager(len=mem_limit * 0.25):

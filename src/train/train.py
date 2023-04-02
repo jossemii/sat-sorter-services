@@ -30,7 +30,7 @@ class Session(metaclass=Singleton):
 
         self.service: ServiceInterface = DependencyManager().add_service(
             service_hash=RANDOM_SHA256,
-            config = celaut.Configuration(),
+            config=celaut.Configuration(),
             stub_class=api_pb2_grpc.RandomStub,
             dynamic=False
         )
@@ -66,29 +66,29 @@ class Session(metaclass=Singleton):
         if not self._solver: self._solver = _solve.Session()
 
         solver_hash = None
-        metadata =partition1.meta
+        metadata = partition1.meta
         solver = partition1.service
         for h in metadata.hashtag.hash:
             if h.type == SHA3_256_ID:
-                solver_hash = h.value.hex()   
+                solver_hash = h.value.hex()
 
         solver_hash = SHA3_256(
-            value = grpcbf.partitions_to_buffer(
-                message = api_pb2.ServiceWithMeta,
-                partitions = (
+            value=grpcbf.partitions_to_buffer(
+                message=api_pb2.ServiceWithMeta,
+                partitions=(
                     partition1,
                     partition2,
                 ),
-                partitions_model = StartService_input_partitions[4]
+                partitions_model=StartService_input_partitions[4]
             )
         ) if not solver_hash else solver_hash
 
         self.solvers_lock.acquire()
         if solver_hash and solver_hash not in self.solvers:
             self.solvers.append(solver_hash)
-            os.mkdir(DIR+'__services__/'+solver_hash)
-            shutil.move(partition2, DIR+'__services__/'+solver_hash+'/p2')
-            with open(DIR + '__services__/'+solver_hash+'/p1', 'wb') as file:
+            os.mkdir(DIR + '__services__/' + solver_hash)
+            shutil.move(partition2, DIR + '__services__/' + solver_hash + '/p2')
+            with open(DIR + '__services__/' + solver_hash + '/p1', 'wb') as file:
                 file.write(partition1.SerializeToString())
 
             # En este punto se pueden crear varias versiones del mismo solver, 
@@ -99,16 +99,16 @@ class Session(metaclass=Singleton):
             p.meta.CopyFrom(metadata)
             # p.enviroment_variables (Usamos las variables de entorno por defecto).
             solver_with_config_hash = SHA3_256(
-                    value = p.SerializeToString()
-                ).hex() # This service not touch metadata, so it can use the hash for id.
+                value=p.SerializeToString()
+            ).hex()  # This service not touch metadata, so it can use the hash for id.
             self.solvers_dataset.data[solver_with_config_hash].CopyFrom(solvers_dataset_pb2.DataSetInstance())
             self._solver.add_solver(
-                solver_with_config = p, 
-                solver_config_id = solver_with_config_hash,
-                solver_hash = solver_hash
+                solver_with_config=p,
+                solver_config_id=solver_with_config_hash,
+                solver_hash=solver_hash
             )
             self.solvers_dataset_lock.release()
-            
+
         self.solvers_lock.release()
         return solver_hash
 
@@ -125,10 +125,10 @@ class Session(metaclass=Singleton):
             try:
                 LOGGER('Generate new random CNF.')
                 return next(client_grpc(
-                    method = instance.stub.RandomCnf,
-                    indices_parser = api_pb2.Cnf,
-                    partitions_message_mode_parser = True,
-                    timeout = self.service.sc.timeout
+                    method=instance.stub.RandomCnf,
+                    indices_parser=api_pb2.Cnf,
+                    partitions_message_mode_parser=True,
+                    timeout=self.service.sc.timeout
                 ))
 
             except Exception as e:
@@ -165,13 +165,13 @@ class Session(metaclass=Singleton):
             solver.data[type_of_cnf].index = 1
             solver.data[type_of_cnf].score = 0
         solver.data[type_of_cnf].score = (solver.data[type_of_cnf].score * solver.data[type_of_cnf].index + score) / (
-                    solver.data[type_of_cnf].index + 1)
+                solver.data[type_of_cnf].index + 1)
         solver.data[type_of_cnf].index = solver.data[type_of_cnf].index + 1
 
     def start(self):
         if self.thread or self.do_stop: return None
         try:
-            self.thread = Thread(target = self.init, name = 'Trainer')
+            self.thread = Thread(target=self.init, name='Trainer')
             self.thread.start()
         except RuntimeError:
             LOGGER('Error: train thread was started and have an error.')
@@ -240,7 +240,7 @@ class Session(metaclass=Singleton):
             else:
                 LOGGER('ACTUALIZA EL DATASET')
                 refresh = 0
-                self._regression.add_data(new_data_set = self.solvers_dataset)
+                self._regression.add_data(new_data_set=self.solvers_dataset)
                 # No formatear los datos cada vez provocaría que el regresion realizara equívocamente la media, pues 
                 # estaría contando los datos anteriores una y otra vez.
                 self.clear_dataset()
