@@ -45,23 +45,10 @@ else:
 
 LOGGER('INIT START THREAD ' + str(get_ident()))
 
-
-def unzip_registry(_name: str, _dir: str):
-    import zipfile
-    with zipfile.ZipFile(DIR + _name + '.zip', 'r') as zip_ref:
-        zip_ref.extractall(_dir)
-    os.remove(DIR + _name + '.zip')
-    LOGGER('Services files extracted.')
-
-
 #  Services and blocks directories.
 static_service_directory: str = DIR + '__services__/'
 dynamic_service_directory: str = DIR + '__services__/'
 block_directory: str = DIR + '__block__/'
-
-if not DEV_MODE:
-    Thread(target=unzip_registry, args=('services', static_service_directory,)).start()
-    Thread(target=unzip_registry, args=('blocks', block_directory,)).start()
 
 ResourceManager(
     log=LOGGER,
