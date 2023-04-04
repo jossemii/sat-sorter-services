@@ -3,7 +3,7 @@ import hashlib, logging
 DEV_MODE = True
 DEV_ENVS = {
     'GATEWAY_MAIN_DIR': '',
-    'MEM_LIMIT': 50*pow(10, 6),
+    'MEM_LIMIT': 50 * pow(10, 6),
     'CLIENT_ID': 'dev'
 }
 
@@ -28,7 +28,6 @@ ENVS = {
 # -- The service use sha3-256 for identify internal objects. --
 SHA3_256_ID = bytes.fromhex("a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a")
 SHA3_256 = lambda value: "" if value is None else hashlib.sha3_256(value).digest()
-
 
 logging.basicConfig(filename='../app.log', level=logging.DEBUG, format='%(asctime)s %(levelname)-8s %(message)s')
 LOGGER = lambda message: logging.getLogger().debug(message + '\n') if not DEV_MODE else print(message + '\n')

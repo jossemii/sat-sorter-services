@@ -1,0 +1,16 @@
+{
+  "workdir": "satsorter",
+  "dependencies_directory": "__services__",
+  "blocks_directory": "__blocks__",
+  "dependencies": [
+    "73e886ef1ab3f241600f10ca8f1f7cfe7d3b31382f1a414d187f7c5a0d35166a",
+    "19a829e198c47c06fb9641625590b08a0a5729f073250735f5f48d335e3c74bb"
+  ],
+  "ignore": [
+    ".service",
+    "Makefile",
+    ".devcontainer",
+    ".gitignore",
+    ".gitattributes"
+  ]
+}
