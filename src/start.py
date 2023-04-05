@@ -1,5 +1,6 @@
 import hashlib
 import os
+import zipfile
 from threading import Thread
 
 from celaut_framework.dependency_manager.dependency_manager import DependencyManager
@@ -46,22 +47,28 @@ else:
 LOGGER('INIT START THREAD ' + str(get_ident()))
 
 
-def unzip_registry(_name: str, _dir: str):
-    import zipfile
-    with zipfile.ZipFile(DIR + _name + '.zip', 'r') as zip_ref:
-        zip_ref.extractall(_dir)
-    os.remove(DIR + _name + '.zip')
+def unzip_registry():
+    services_zip_folder: str = "services_zip"
+    with zipfile.ZipFile(os.path.join(DIR, 'services.zip'), 'r') as zip_ref:
+        zip_ref.extractall(os.path.join(DIR, services_zip_folder))
+    os.remove(os.path.join(DIR, 'services.zip'))
+    for folder in os.listdir(f"{os.path.join(DIR, services_zip_folder)}"):
+        os.system(f"mv {os.path.join(DIR, services_zip_folder, folder, '*')} {folder} ")
+    os.system(f'rm -rf {os.path.join(DIR, services_zip_folder)}')
     LOGGER('Services files extracted.')
 
 
 #  Services and blocks directories.
-static_service_directory: str = DIR + '__services__/'
-dynamic_service_directory: str = DIR + '__services__/'
+static_service_directory: str = os.path.join(DIR, '__services__')
+dynamic_service_directory: str = os.path.join(DIR, '__services__')
+#
+#  De otra forma, se podrían reescribir los servicios añadidos por UploadSolver antes
+#  de descomprimir services.zip
+#
 block_directory: str = DIR + '__block__/'
 
 if not DEV_MODE:
-    Thread(target=unzip_registry, args=('services', static_service_directory,)).start()
-    Thread(target=unzip_registry, args=('blocks', block_directory,)).start()
+    Thread(target=unzip_registry).start()
 
 ResourceManager(
     log=LOGGER,
