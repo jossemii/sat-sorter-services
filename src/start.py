@@ -161,14 +161,15 @@ class SolverServicer(api_pb2_grpc.SolverServicer):
 
     def UploadSolver(self, request_iterator, context):
         LOGGER('New solver ...')
-        trainer.load_solver(
-            service_with_meta_dir=next(
-                grpcbf.parse_from_buffer(
+        it = grpcbf.parse_from_buffer(
                     request_iterator=request_iterator,
                     indices=api_pb2.ServiceWithMeta,
                     partitions_message_mode=False
                 )
-            )
+        if next(it) != api_pb2.ServiceWithMeta:
+            LOGGER('Upload solver error: incorrect message type.')
+        trainer.load_solver(
+            service_with_meta_dir=next(it)
         )
         yield from grpcbf.serialize_to_buffer()
 
