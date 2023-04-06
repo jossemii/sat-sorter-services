@@ -12,6 +12,8 @@
     "Makefile",
     ".devcontainer",
     ".gitignore",
-    ".gitattributes"
+    ".gitattributes",
+    "__services__/*",
+    "__block__/*"
   ]
 }

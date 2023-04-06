@@ -7,6 +7,7 @@ services.zip
 __tensor__
 __services__/*
 __cache__/*
+__block__/*
 protodot
 .service/src/*
 config.json
