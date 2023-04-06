@@ -53,7 +53,7 @@ def unzip_registry():
         zip_ref.extractall(os.path.join(DIR, services_zip_folder))
     os.remove(os.path.join(DIR, 'services.zip'))
     for folder in os.listdir(f"{os.path.join(DIR, services_zip_folder)}"):
-        os.system(f"mv {os.path.join(DIR, services_zip_folder, folder, '*')} {folder} ")
+        os.system(f"mv {os.path.join(DIR, services_zip_folder, folder, '*')} {os.path.join(DIR, folder)} ")
     os.system(f'rm -rf {os.path.join(DIR, services_zip_folder)}')
     LOGGER('Services files extracted.')
 
@@ -66,7 +66,6 @@ dynamic_service_directory: str = os.path.join(DIR, '__services__')
 #  de descomprimir services.zip
 #
 block_directory: str = DIR + '__block__/'
-
 
 # Create dynamic_service_directory if it does not exist.
 try:
@@ -83,7 +82,6 @@ except:
     # for dev.
     os.system(f'rm -rf {block_directory}')
     os.mkdir(block_directory)
-
 
 if not DEV_MODE:
     Thread(target=unzip_registry).start()
@@ -180,10 +178,10 @@ class SolverServicer(api_pb2_grpc.SolverServicer):
     def UploadSolver(self, request_iterator, context):
         LOGGER('New solver ...')
         it = grpcbf.parse_from_buffer(
-                    request_iterator=request_iterator,
-                    indices=api_pb2.ServiceWithMeta,
-                    partitions_message_mode=False
-                )
+            request_iterator=request_iterator,
+            indices=api_pb2.ServiceWithMeta,
+            partitions_message_mode=False
+        )
         if next(it) != api_pb2.ServiceWithMeta:
             LOGGER('Upload solver error: incorrect message type.')
         trainer.load_solver(
