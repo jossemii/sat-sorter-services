@@ -67,6 +67,24 @@ dynamic_service_directory: str = os.path.join(DIR, '__services__')
 #
 block_directory: str = DIR + '__block__/'
 
+
+# Create dynamic_service_directory if it does not exist.
+try:
+    os.mkdir(dynamic_service_directory)
+except:
+    # for dev.
+    os.system(f'rm -rf {dynamic_service_directory}')
+    os.mkdir(dynamic_service_directory)
+
+# Create block_directory if it does not exist.
+try:
+    os.mkdir(block_directory)
+except:
+    # for dev.
+    os.system(f'rm -rf {block_directory}')
+    os.mkdir(block_directory)
+
+
 if not DEV_MODE:
     Thread(target=unzip_registry).start()
 
@@ -256,22 +274,6 @@ with mem_manager(len=mem_limit * 0.25):
 
     api_pb2_grpc.add_SolverServicer_to_server(
         SolverServicer(), server)
-
-    # Create dynamic_service_directory if it does not exists.
-    try:
-        os.mkdir(dynamic_service_directory)
-    except:
-        # for dev.
-        os.system(f'rm -rf {dynamic_service_directory}')
-        os.mkdir(dynamic_service_directory)
-
-    # Create dynamic_service_directory if it does not exists.
-    try:
-        os.mkdir(block_directory)
-    except:
-        # for dev.
-        os.system(f'rm -rf {block_directory}')
-        os.mkdir(block_directory)
 
     # listen on port 8080
     LOGGER('Starting server. Listening on port 8081.')
