@@ -2,16 +2,14 @@ import os
 import shutil
 from threading import get_ident, Thread, Lock
 
-from grpcbigbuffer import client as grpcbf
-from grpcbigbuffer.client import client_grpc
 from celaut_framework.dependency_manager.dependency_manager import DependencyManager
 from celaut_framework.dependency_manager.service_interface import ServiceInterface
+from celaut_framework.protos import celaut_pb2 as celaut
+from grpcbigbuffer.client import client_grpc
 from grpcbigbuffer.utils import WITHOUT_BLOCK_POINTERS_FILE_NAME
 
 from protos import api_pb2, api_pb2_grpc, solvers_dataset_pb2
-from celaut_framework.protos import celaut_pb2 as celaut
-from celaut_framework.gateway.protos.gateway_pb2_grpcbf import StartService_input_partitions
-from src.envs import SHA3_256_ID, LOGGER, SHA3_256, DIR, RANDOM_SHA256
+from src.envs import SHA3_256_ID, LOGGER, SHA3_256, RANDOM_SHA256
 from src.regresion import regresion
 from src.solve import _solve
 from src.utils.singleton import Singleton
