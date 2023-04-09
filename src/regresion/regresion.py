@@ -133,13 +133,17 @@ class Session(metaclass = Singleton):
     def iterate_regression(self, data_set: solvers_dataset_pb2.DataSet) -> str:
         instance: ServiceInstance = self.service.get_instance()
         try:
-            return next(client_grpc(
-                method= instance.stub.MakeRegresion,
-                input = data_set,
-                indices_serializer = solvers_dataset_pb2.DataSet,
-                indices_parser = regresion_pb2.Tensor,
-                partitions_message_mode_parser = False,
-            ))
+            dataset_it = client_grpc(
+                method=instance.stub.MakeRegresion,
+                input=data_set,
+                indices_serializer=solvers_dataset_pb2.DataSet,
+                indices_parser=regresion_pb2.Tensor,
+                partitions_message_mode_parser=False,
+            )
+            dataset_obj = next(dataset_it)
+            if dataset_obj != str:
+                dataset_obj = next(dataset_it)
+            return dataset_obj
         except Exception as e:
             instance.compute_exception(e)
 
