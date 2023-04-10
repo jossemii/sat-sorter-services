@@ -67,23 +67,22 @@ dynamic_service_directory: str = os.path.join(DIR, '__services__')
 #
 block_directory: str = DIR + '__block__/'
 
-# Create dynamic_service_directory if it does not exist.
-try:
-    os.mkdir(dynamic_service_directory)
-except:
-    # for dev.
-    os.system(f'rm -rf {dynamic_service_directory}')
-    os.mkdir(dynamic_service_directory)
-
-# Create block_directory if it does not exist.
-try:
-    os.mkdir(block_directory)
-except:
-    # for dev.
-    os.system(f'rm -rf {block_directory}')
-    os.mkdir(block_directory)
-
 if not DEV_MODE:
+    # Create dynamic_service_directory if it does not exist.
+    try:
+        os.mkdir(dynamic_service_directory)
+    finally:
+        # for dev.
+        os.system(f'rm -rf {dynamic_service_directory}')
+        os.mkdir(dynamic_service_directory)
+
+    # Create block_directory if it does not exist.
+    try:
+        os.mkdir(block_directory)
+    finally:
+        # for dev.
+        os.system(f'rm -rf {block_directory}')
+        os.mkdir(block_directory)
     Thread(target=unzip_registry).start()
 
 ResourceManager(
