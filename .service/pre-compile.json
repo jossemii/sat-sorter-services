@@ -4,8 +4,8 @@
   "blocks_directory": "__block__",
   "zip": true,
   "dependencies": [
-    "704d5f51fdafd9dcfe66fcfb436973423e9297c42252d98cb88493baa5701ff5",
-    "791bfdbe874018f4080464b4f6d6e90d58e1e0207b1ab8704e0f0350677a1fac"
+    "84d568bb073fdd20e49109699a0211189a66dc16f3381759f97add320d497123",
+    "545d3cbdbfc389352259512383c85db7f69787f1a4d5743018cc9bec86a2bda1"
   ],
   "ignore": [
     ".service",

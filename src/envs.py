@@ -2,7 +2,7 @@ import hashlib, logging
 
 DEV_MODE = False
 DEV_ENVS = {
-    'GATEWAY_MAIN_DIR': '',
+    'GATEWAY_MAIN_DIR': 'localhost:8090',
     'MEM_LIMIT': 50 * pow(10, 6),
     'CLIENT_ID': 'dev'
 }
@@ -33,5 +33,5 @@ logging.basicConfig(filename='../app.log', level=logging.DEBUG, format='%(asctim
 LOGGER = lambda message: logging.getLogger().debug(message + '\n') if not DEV_MODE else print(message + '\n')
 DIR = '/satsorter/' if not DEV_MODE else ''
 
-REGRESSION_SHA256 = '791bfdbe874018f4080464b4f6d6e90d58e1e0207b1ab8704e0f0350677a1fac'
-RANDOM_SHA256 = '704d5f51fdafd9dcfe66fcfb436973423e9297c42252d98cb88493baa5701ff5'
+REGRESSION_SHA256 = '84d568bb073fdd20e49109699a0211189a66dc16f3381759f97add320d497123'
+RANDOM_SHA256 = '545d3cbdbfc389352259512383c85db7f69787f1a4d5743018cc9bec86a2bda1'
