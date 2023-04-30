@@ -14,6 +14,7 @@
     ".gitignore",
     ".gitattributes",
     "__services__/*",
-    "__block__/*"
+    "__block__/*",
+    "__tensor__"
   ]
 }
