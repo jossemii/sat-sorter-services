@@ -15,6 +15,7 @@
     ".gitattributes",
     "__services__/*",
     "__block__/*",
+    "__cache__/*",
     "__tensor__"
   ]
 }
