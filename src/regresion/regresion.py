@@ -12,7 +12,7 @@ from grpcbigbuffer.client import client_grpc
 from typing import Generator
 
 from protos import api_pb2, regresion_pb2_grpc, solvers_dataset_pb2, regresion_pb2
-from src.envs import REGRESSION_SHA256, LOGGER, SHA3_256
+from src.envs import REGRESSION_SHA3_256, LOGGER, SHA3_256
 from src.utils.singleton import Singleton
 from src.utils.general import read_file
 
@@ -28,7 +28,7 @@ class Session(metaclass = Singleton):
         self.dataset_lock = threading.Lock()
 
         self.service: ServiceInterface = DependencyManager().add_service(
-            service_hash = REGRESSION_SHA256,
+            service_hash = REGRESSION_SHA3_256,
             config = celaut_framework.protos.celaut_pb2.Configuration(),
             stub_class = regresion_pb2_grpc.RegresionStub,
             dynamic = False

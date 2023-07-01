@@ -9,7 +9,7 @@ from grpcbigbuffer.client import client_grpc
 from grpcbigbuffer.utils import WITHOUT_BLOCK_POINTERS_FILE_NAME
 
 from protos import api_pb2, api_pb2_grpc, solvers_dataset_pb2
-from src.envs import SHA3_256_ID, LOGGER, SHA3_256, RANDOM_SHA256
+from src.envs import SHA3_256_ID, LOGGER, SHA3_256, RANDOM_SHA3_256
 from src.regresion import regresion
 from src.solve import _solve
 from src.utils.singleton import Singleton
@@ -28,7 +28,7 @@ class Session(metaclass=Singleton):
         self.TRAIN_SOLVERS_TIMEOUT = train_solvers_timeout
 
         self.service: ServiceInterface = DependencyManager().add_service(
-            service_hash=RANDOM_SHA256,
+            service_hash=RANDOM_SHA3_256,
             config=celaut.Configuration(),
             stub_class=api_pb2_grpc.RandomStub,
             dynamic=False
