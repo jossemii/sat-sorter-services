@@ -1,10 +1,7 @@
 
 # Created by https://www.toptal.com/developers/gitignore/api/python,flask
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,flask
-b0fc076a49adb3d5e03b76996cfe82c81efba9f2115d343a39ee46883c5fdc35
-fbb4081320fa31de62987b3f82d1f00a490e87e1c7fa497cbf160a94621ab46c
-services.zip
-__tensor__
+venv
 __services__/*
 __cache__/*
 __block__/*
