@@ -1,7 +1,3 @@
-# celaut
-python3 -m grpc_tools.protoc -I. --python_out=proto celaut.proto --experimental_allow_proto3_optional &&
-# buffer
-python3 -m grpc_tools.protoc -I. --python_out=proto buffer.proto --experimental_allow_proto3_optional &&
 # onnx
 python3 -m grpc_tools.protoc -I. --python_out=proto onnx.proto --experimental_allow_proto3_optional &&
 # api
