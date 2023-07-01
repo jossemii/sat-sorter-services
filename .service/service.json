@@ -1,14 +1,5 @@
 {
     "api": [{"port":8081, "protocol":["http2","grpc"]}],
-    "tensor": {
-        "rank": 3,
-        "index": {
-            "literals": ["number cnf literals"],
-            "clauses": ["number cnf clauses"], 
-            "solver": ["SATsolver"],
-            "score": ["score"]    
-        }
-    },
     "architecture": "aarch64",
     "entrypoint": "/satsorter/start.sh",
     "envs": [
