@@ -8,6 +8,7 @@
     "754c007d275fd65ad41af042defcd3eb52bc50e42590d4135978664826f8e382"
   ],
   "ignore": [
+    "venv",
     ".service",
     "Makefile",
     ".devcontainer",
