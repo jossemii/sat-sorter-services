@@ -29,7 +29,7 @@ class Session(metaclass = Singleton):
 
         self.service: ServiceInterface = DependencyManager().add_service(
             service_hash = REGRESSION_SHA3_256,
-            config = celaut_framework.protos.celaut_pb2.Configuration(),
+            config = celaut_pb2.Configuration(),
             stub_class = regresion_pb2_grpc.RegresionStub,
             dynamic = False
         )
