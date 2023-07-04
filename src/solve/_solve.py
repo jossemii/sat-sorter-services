@@ -5,7 +5,7 @@ from celaut_framework.dependency_manager.dependency_manager import DependencyMan
 from grpcbigbuffer.client import client_grpc
 
 from protos import api_pb2, api_pb2_grpc, solvers_dataset_pb2
-from celaut_framework.protos import celaut_pb2 as celaut
+from celaut_framework.gateway.protos import celaut_pb2 as celaut
 from src.envs import LOGGER, SHA3_256
 from src.utils.singleton import Singleton
 

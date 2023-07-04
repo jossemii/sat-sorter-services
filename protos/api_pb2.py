@@ -11,9 +11,9 @@ from google.protobuf.internal import builder as _builder
 _sym_db = _symbol_database.Default()
 
 
-import onnx_pb2 as onnx__pb2
+from protos import onnx_pb2 as onnx__pb2
 from celaut_framework.gateway.protos import celaut_pb2 as celaut__pb2
-import solvers_dataset_pb2 as solvers__dataset__pb2
+from protos import solvers_dataset_pb2 as solvers__dataset__pb2
 from grpcbigbuffer import buffer_pb2 as buffer__pb2
 
 

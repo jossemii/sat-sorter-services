@@ -4,7 +4,7 @@ from threading import get_ident, Thread, Lock
 
 from celaut_framework.dependency_manager.dependency_manager import DependencyManager
 from celaut_framework.dependency_manager.service_interface import ServiceInterface
-from celaut_framework.protos import celaut_pb2 as celaut
+from celaut_framework.gateway.protos import celaut_pb2 as celaut
 from grpcbigbuffer.client import client_grpc
 from grpcbigbuffer.utils import WITHOUT_BLOCK_POINTERS_FILE_NAME
 

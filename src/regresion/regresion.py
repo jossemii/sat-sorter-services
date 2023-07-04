@@ -4,7 +4,7 @@ from time import sleep
 
 import os
 
-import celaut_framework.protos.celaut_pb2
+from celaut_framework.gateway.protos import celaut_pb2
 from celaut_framework.dependency_manager.service_interface import ServiceInterface
 from celaut_framework.dependency_manager.dependency_manager import DependencyManager
 from celaut_framework.dependency_manager.service_instance import ServiceInstance

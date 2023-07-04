@@ -3,8 +3,7 @@ from grpcbigbuffer.client import client_grpc
 import grpc
 
 from protos import api_pb2
-from celaut_framework.gateway.protos import gateway_pb2, gateway_pb2_grpc
-from celaut_framework.protos import celaut_pb2
+from celaut_framework.gateway.protos import gateway_pb2, gateway_pb2_grpc, celaut_pb2
 from src.envs import ENVS, DEV_MODE
 from src.utils.general import from_gas_amount
 
