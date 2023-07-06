@@ -1,4 +1,4 @@
-from celaut_framework.gateway.protos import gateway_pb2, celaut_pb2
+from node_driver.gateway.protos import gateway_pb2, celaut_pb2
 from src.envs import DEV_MODE, DEV_ENVS
 
 

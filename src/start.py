@@ -3,10 +3,10 @@ import os
 import zipfile
 from threading import Thread
 
-from celaut_framework.dependency_manager.dependency_manager import DependencyManager
+from node_driver.dependency_manager.dependency_manager import DependencyManager
 from iterators import TimeoutIterator
 
-from celaut_framework.resource_manager.resourcemanager import ResourceManager, mem_manager
+from resource_manager.resourcemanager import ResourceManager, mem_manager
 from src.envs import ENVS, LOGGER, DIR, DEV_ENVS, DEV_MODE
 from src.utils.modify_resources import MODIFY_SYSTEM_RESOURCES_LAMBDA
 from src.utils.general import read_file, get_grpc_uri

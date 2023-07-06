@@ -1,11 +1,11 @@
 from threading import Lock
 from time import time as time_now
 
-from celaut_framework.dependency_manager.dependency_manager import DependencyManager
+from node_driver.dependency_manager.dependency_manager import DependencyManager
 from grpcbigbuffer.client import client_grpc
 
 from protos import api_pb2, api_pb2_grpc, solvers_dataset_pb2
-from celaut_framework.gateway.protos import celaut_pb2 as celaut
+from node_driver.gateway.protos import celaut_pb2 as celaut
 from src.envs import LOGGER, SHA3_256
 from src.utils.singleton import Singleton
 
