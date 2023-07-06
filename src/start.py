@@ -195,7 +195,8 @@ class SolverServicer(api_pb2_grpc.SolverServicer):
             tensor_with_definitions.non_escalar.non_escalar.append(
                 api_pb2.Tensor.NonEscalarDimension.NonEscalar(
                     element=DependencyManager().get_service_with_config(
-                        service_config_id=solver_config_id_tensor.element
+                        service_config_id=solver_config_id_tensor.element,
+                        mem_manager=lambda x: mem_manager(len=x)
                     ),
                     escalar=solver_config_id_tensor.escalar
                 )
