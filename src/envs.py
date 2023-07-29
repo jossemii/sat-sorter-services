@@ -1,6 +1,6 @@
 import hashlib, logging
 
-DEV_MODE = False
+DEV_MODE = True
 DEV_ENVS = {
     'GATEWAY_MAIN_DIR': 'localhost:8090',
     'MEM_LIMIT': 50 * pow(10, 6),

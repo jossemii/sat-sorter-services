@@ -66,6 +66,7 @@ dynamic_service_directory: str = os.path.join(DIR, '__services__')
 #  de descomprimir services.zip
 #
 block_directory: str = DIR + '__block__/'
+cache_directory: str = DIR + '__cache__/'
 
 if not DEV_MODE:
     # Create dynamic_service_directory if it does not exist.
@@ -79,10 +80,13 @@ if not DEV_MODE:
     # Create block_directory if it does not exist.
     try:
         os.mkdir(block_directory)
-    finally:
-        # for dev.
-        os.system(f'rm -rf {block_directory}')
-        os.mkdir(block_directory)
+    except: pass
+
+    # Create cache_directory if it does not exist.
+    try:
+        os.mkdir(cache_directory)
+    except: pass
+
     Thread(target=unzip_registry).start()
 
 ResourceManager(
@@ -102,7 +106,7 @@ DependencyManager(
     dynamic_service_directory=dynamic_service_directory
 )
 
-modify_env(mem_manager=mem_manager, cache_dir=DIR, block_dir=block_directory)
+modify_env(mem_manager=mem_manager, cache_dir=cache_directory, block_dir=block_directory)
 
 _regresion = regresion.Session(
     time_for_each_regression_loop=ENVS['TIME_FOR_EACH_REGRESSION_LOOP']
