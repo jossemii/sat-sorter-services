@@ -1,6 +1,7 @@
 import os
 import shutil
 from threading import get_ident, Thread, Lock
+from typing import Optional
 
 from node_driver.dependency_manager.dependency_manager import DependencyManager
 from node_driver.dependency_manager.service_interface import ServiceInterface
@@ -61,20 +62,18 @@ class Session(metaclass=Singleton):
             self.do_stop = False
             self.thread = None
 
-    def load_solver(self, service_with_meta_dir: str) -> str:
+    def load_solver(self, metadata: Optional[celaut.Any.Metadata], service_dir: str) -> str:
         if not self._solver:
             self._solver = _solve.Session()
 
-        service_with_meta = api_pb2.ServiceWithMeta()
+        solver = celaut.Service()
         try:
-            with open(os.path.join(service_with_meta_dir, WITHOUT_BLOCK_POINTERS_FILE_NAME), 'rb') as f:
-                service_with_meta.ParseFromString(f.read())
+            with open(os.path.join(service_dir, WITHOUT_BLOCK_POINTERS_FILE_NAME), 'rb') as f:
+                solver.ParseFromString(f.read())
         except Exception:
-            raise Exception('UploadSolver error: this is not a ServiceWithMeta message. ' + str(service_with_meta_dir))
+            raise Exception('UploadSolver error: this is not a ServiceWithMeta message. ' + str(service_dir))
 
         solver_hash: str = None
-        metadata = service_with_meta.meta
-        solver = service_with_meta.service
         for h in metadata.hashtag.hash:
             if h.type == SHA3_256_ID:
                 solver_hash = h.value.hex()
@@ -87,7 +86,7 @@ class Session(metaclass=Singleton):
             if solver_hash and solver_hash not in self.solvers:
                 self.solvers.append(solver_hash)
 
-                shutil.move(service_with_meta_dir,
+                shutil.move(service_dir,
                             os.path.join(DependencyManager().dynamic_service_directory, solver_hash))
 
                 # En este punto se pueden crear varias versiones del mismo solver,

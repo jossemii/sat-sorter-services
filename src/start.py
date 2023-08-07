@@ -1,7 +1,7 @@
-import hashlib
 import os
 import zipfile
 from threading import Thread
+from typing import Optional
 
 from node_driver.dependency_manager.dependency_manager import DependencyManager
 from iterators import TimeoutIterator
@@ -16,7 +16,7 @@ from src.solve import _solve, _get
 from src.train import train
 from threading import get_ident
 import grpc
-from protos import api_pb2, api_pb2_grpc, solvers_dataset_pb2
+from protos import api_pb2, api_pb2_grpc, api_pb2_grpcbf
 from src.regresion import regresion
 from concurrent import futures
 from grpcbigbuffer import client as grpcbf, buffer_pb2
@@ -180,15 +180,22 @@ class SolverServicer(api_pb2_grpc.SolverServicer):
 
     def UploadSolver(self, request_iterator, context):
         LOGGER('New solver ...')
-        service_with_meta: grpcbf.Dir = next(grpcbf.parse_from_buffer(
+        metadata: Optional[api_pb2_grpcbf.celaut.Any.Metadata] = None
+        service_dir: Optional[str] = None
+        for _e in grpcbf.parse_from_buffer(
             request_iterator=request_iterator,
-            indices=api_pb2.ServiceWithMeta,
-            partitions_message_mode=False
-        ))
-        if service_with_meta.type != api_pb2.ServiceWithMeta:
-            LOGGER('Upload solver error: incorrect message type.')
+            indices=api_pb2_grpcbf.UploadSolver_input_indices,
+            partitions_message_mode=api_pb2_grpcbf.UploadSolver_input_message_mode
+        ):
+            if type(_e) is api_pb2_grpcbf.celaut.Any.Metadata:
+                metadata = _e
+            elif type(_e) is grpcbf.Dir and _e.type == api_pb2_grpcbf.celaut.Service:
+                service_dir = _e.dir
+            else:
+                LOGGER('Upload solver error: incorrect message type.')
         trainer.load_solver(
-            service_with_meta_dir=service_with_meta.dir
+            metadata=metadata,
+            service_dir=service_dir
         )
         yield from grpcbf.serialize_to_buffer()
 

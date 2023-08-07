@@ -31,11 +31,6 @@ message File {
     string file = 1;
 }
 
-message ServiceWithMeta {
-    celaut.Any.Metadata meta = 1;
-    celaut.Service service = 2;
-}
-
 message Tensor { // Like Onxx but with only SolverWithConfig'field elements.
     message NonEscalarDimension {    
         message NonEscalar {
@@ -58,7 +53,7 @@ service Solver {
     rpc StartTrain ( stream buffer.Buffer) returns (stream buffer.Buffer) {}  // Empty -> Empty
     rpc StopTrain ( stream buffer.Buffer) returns (stream buffer.Buffer) {}  // Empty -> Empty
     rpc GetTensor ( stream buffer.Buffer) returns (stream buffer.Buffer) {}  // Empty -> Tensor
-    rpc UploadSolver ( stream buffer.Buffer) returns (stream buffer.Buffer) {}  // ServiceWithMeta -> Empty
+    rpc UploadSolver ( stream buffer.Buffer) returns (stream buffer.Buffer) {}  // Serivce | Metadata -> Empty
     rpc StreamLogs ( stream buffer.Buffer) returns (stream buffer.Buffer) {}  // Empty -> File
     rpc Solve ( stream buffer.Buffer) returns (stream buffer.Buffer) {}  // Cnf -> 1: Interpretation, 2: Empty
     rpc AddTensor( stream buffer.Buffer) returns (stream buffer.Buffer) {}  // Tensor -> Empty
