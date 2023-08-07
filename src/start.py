@@ -195,19 +195,21 @@ class SolverServicer(api_pb2_grpc.SolverServicer):
     def GetTensor(self, request, context):
         raise Exception("Not implemented.")
         # TODO hay que reimplementar el get_service_with_config de NodeDriver
-        tensor_with_ids = _regresion.get_tensor()
-        tensor_with_definitions = api_pb2.Tensor()
-        for solver_config_id_tensor in tensor_with_ids.non_escalar.non_escalar:
-            tensor_with_definitions.non_escalar.non_escalar.append(
-                api_pb2.Tensor.NonEscalarDimension.NonEscalar(
-                    element=DependencyManager().get_service_with_config(
-                        service_config_id=solver_config_id_tensor.element,
-                        mem_manager=lambda x: mem_manager(len=x)
-                    ),
-                    escalar=solver_config_id_tensor.escalar
-                )
-            )
-        yield from grpcbf.serialize_to_buffer(message_iterator=tensor_with_definitions)
+        """
+                tensor_with_ids = _regresion.get_tensor()
+                tensor_with_definitions = api_pb2.Tensor()
+                for solver_config_id_tensor in tensor_with_ids.non_escalar.non_escalar:
+                    tensor_with_definitions.non_escalar.non_escalar.append(
+                        api_pb2.Tensor.NonEscalarDimension.NonEscalar(
+                            element=DependencyManager().get_service_with_config(
+                                service_config_id=solver_config_id_tensor.element,
+                                mem_manager=lambda x: mem_manager(len=x)
+                            ),
+                            escalar=solver_config_id_tensor.escalar
+                        )
+                    )
+                yield from grpcbf.serialize_to_buffer(message_iterator=tensor_with_definitions)
+        """
 
     def StartTrain(self, request, context):
         trainer.start()
@@ -221,41 +223,44 @@ class SolverServicer(api_pb2_grpc.SolverServicer):
     def AddTensor(self, request_iterator, context):
         raise Exception("Not implemented.")
         # TODO hay que repasar el funcionamiento de este método.
-        tensor = next(grpcbf.parse_from_buffer(request_iterator=request_iterator, indices=api_pb2.Tensor))
-        new_data_set = solvers_dataset_pb2.DataSet()
-        for solver_with_config_tensor in tensor.non_escalar.non_escalar:
-            # Si no se posee ese solver, lo añade y añade, al mismo tiempo, en _solve con una configuración que el trainer considere,
-            #  añade despues la configuración del tensor en la session de solve manager (_solve).
-            # La configuración que tiene el tensor no será probada por el trainer, puesto que este tiene la competencia
-            #  de probar las configuraciones que considere.
-
-            solver_config_id = hashlib.sha3_256(
-                solver_with_config_tensor.element.SerializeToString()
-            ).hexdigest()
-
-            _solver.add_solver(
-                solver_with_config=solver_with_config_tensor.element,
-                solver_config_id=solver_config_id,
-                solver_hash=trainer.load_solver(
-                    solver=solver_with_config_tensor.element.definition,
-                    metadata=solver_with_config_tensor.element.meta
+        """
+                tensor = next(grpcbf.parse_from_buffer(request_iterator=request_iterator, indices=api_pb2.Tensor))
+                new_data_set = solvers_dataset_pb2.DataSet()
+                for solver_with_config_tensor in tensor.non_escalar.non_escalar:
+                    # Si no se posee ese solver, lo añade y añade, al mismo tiempo, en _solve con una configuración que el trainer considere,
+                    #  añade despues la configuración del tensor en la session de solve manager (_solve).
+                    # La configuración que tiene el tensor no será probada por el trainer, puesto que este tiene la competencia
+                    #  de probar las configuraciones que considere.
+        
+                    solver_config_id = hashlib.sha3_256(
+                        solver_with_config_tensor.element.SerializeToString()
+                    ).hexdigest()
+        
+                    _solver.add_solver(
+                        solver_with_config=solver_with_config_tensor.element,
+                        solver_config_id=solver_config_id,
+                        solver_hash=trainer.load_solver(
+                            solver=solver_with_config_tensor.element.definition,
+                            metadata=solver_with_config_tensor.element.meta
+                        )
+                    )
+        
+                    # Se extraen datos del tensor.
+                    # Debe de probar el nivel de ajuste que tiene en un punto determinado
+                    #  para obtener un indice.
+                    # data.data.update({})
+                    # TODO
+                    new_data_set.data.update({
+                        solver_config_id: solvers_dataset_pb2.DataSetInstance()
+                        # generate_data(solver_with_config_tensor.escalar)
+                    })
+        
+                _regresion.add_data(
+                    new_data_set=new_data_set
                 )
-            )
+                for b in grpcbf.serialize_to_buffer(): yield b        
+        """
 
-            # Se extraen datos del tensor.
-            # Debe de probar el nivel de ajuste que tiene en un punto determinado
-            #  para obtener un indice.
-            # data.data.update({})
-            # TODO
-            new_data_set.data.update({
-                solver_config_id: solvers_dataset_pb2.DataSetInstance()
-                # generate_data(solver_with_config_tensor.escalar)
-            })
-
-        _regresion.add_data(
-            new_data_set=new_data_set
-        )
-        for b in grpcbf.serialize_to_buffer(): yield b
 
     def GetDataSet(self, request_iterator, context):
         yield from grpcbf.serialize_to_buffer(
