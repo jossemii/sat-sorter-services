@@ -193,6 +193,8 @@ class SolverServicer(api_pb2_grpc.SolverServicer):
         yield from grpcbf.serialize_to_buffer()
 
     def GetTensor(self, request, context):
+        raise Exception("Not implemented.")
+        # TODO hay que reimplementar el get_service_with_config de NodeDriver
         tensor_with_ids = _regresion.get_tensor()
         tensor_with_definitions = api_pb2.Tensor()
         for solver_config_id_tensor in tensor_with_ids.non_escalar.non_escalar:
