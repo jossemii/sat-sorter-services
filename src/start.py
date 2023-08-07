@@ -219,6 +219,8 @@ class SolverServicer(api_pb2_grpc.SolverServicer):
 
     # Integrate other tensor
     def AddTensor(self, request_iterator, context):
+        raise Exception("Not implemented.")
+        # TODO hay que repasar el funcionamiento de este método.
         tensor = next(grpcbf.parse_from_buffer(request_iterator=request_iterator, indices=api_pb2.Tensor))
         new_data_set = solvers_dataset_pb2.DataSet()
         for solver_with_config_tensor in tensor.non_escalar.non_escalar:
