@@ -7,7 +7,8 @@ from node_driver.dependency_manager.dependency_manager import DependencyManager
 from iterators import TimeoutIterator
 
 from resource_manager.resourcemanager import ResourceManager, mem_manager
-from src.envs import ENVS, LOGGER, DIR, DEV_ENVS, DEV_MODE
+from src.envs import ENVS, LOGGER, DIR, DEV_ENVS, DEV_MODE, BLOCK_DIRECTORY, SERVICE_DIRECTORY, METADATA_DIRECTORY, \
+    CACHE_DIRECTORY
 from src.utils.modify_resources import MODIFY_SYSTEM_RESOURCES_LAMBDA
 from src.utils.general import read_file, get_grpc_uri
 
@@ -47,26 +48,15 @@ else:
 LOGGER('INIT START THREAD ' + str(get_ident()))
 
 
-def unzip_registry():
-    services_zip_folder: str = "services_zip"
-    with zipfile.ZipFile(os.path.join(DIR, 'services.zip'), 'r') as zip_ref:
-        zip_ref.extractall(os.path.join(DIR, services_zip_folder))
-    os.remove(os.path.join(DIR, 'services.zip'))
-    for folder in os.listdir(f"{os.path.join(DIR, services_zip_folder)}"):
-        os.system(f"mv {os.path.join(DIR, services_zip_folder, folder, '*')} {os.path.join(DIR, folder)} ")
-    os.system(f'rm -rf {os.path.join(DIR, services_zip_folder)}')
-    LOGGER('Services files extracted.')
-
-
 #  Services and blocks directories.
-static_service_directory: str = os.path.join(DIR, '__services__')
-dynamic_service_directory: str = os.path.join(DIR, '__services__')
-#
-#  De otra forma, se podrían reescribir los servicios añadidos por UploadSolver antes
-#  de descomprimir services.zip
-#
-block_directory: str = DIR + '__block__/'
-cache_directory: str = DIR + '__cache__/'
+static_service_directory: str = os.path.join(DIR, SERVICE_DIRECTORY)
+static_metadata_directory: str = os.path.join(DIR, METADATA_DIRECTORY)
+
+dynamic_service_directory: str = os.path.join(DIR, SERVICE_DIRECTORY)
+dynamic_metadata_directory: str = os.path.join(DIR, METADATA_DIRECTORY)
+
+block_directory: str = os.path.join(DIR, BLOCK_DIRECTORY)
+cache_directory: str = os.path.join(DIR, CACHE_DIRECTORY)
 
 if not DEV_MODE:
     # Create dynamic_service_directory if it does not exist.
@@ -78,14 +68,31 @@ if not DEV_MODE:
         os.mkdir(dynamic_service_directory)
 
     # Create block_directory if it does not exist.
-    try:
-        os.mkdir(block_directory)
-    except: pass
+    os.makedirs(block_directory, exist_ok=True)
+    os.makedirs(cache_directory, exist_ok=True)
 
-    # Create cache_directory if it does not exist.
-    try:
-        os.mkdir(cache_directory)
-    except: pass
+    def unzip_registry():
+        # Without the service_zip_folder, the services added by UploadSolver could not be rewritten before
+        #  decompressing services.zip
+        # Create a folder to store the extracted services from the zip file
+        services_zip_folder: str = "services_zip"
+
+        # Extract services.zip to the services_zip_folder
+        with zipfile.ZipFile(os.path.join(DIR, 'services.zip'), 'r') as zip_ref:
+            zip_ref.extractall(os.path.join(DIR, services_zip_folder))
+
+        # Remove the original services.zip file
+        os.remove(os.path.join(DIR, 'services.zip'))
+
+        # Move extracted service folders to the main directory
+        for folder in os.listdir(f"{os.path.join(DIR, services_zip_folder)}"):
+            os.system(f"mv {os.path.join(DIR, services_zip_folder, folder, '*')} {os.path.join(DIR, folder)} ")
+
+        # Remove the temporary services_zip_folder
+        os.system(f'rm -rf {os.path.join(DIR, services_zip_folder)}')
+
+        # Log that the services files have been extracted
+        LOGGER('Services files extracted.')
 
     Thread(target=unzip_registry).start()
 
@@ -103,7 +110,9 @@ DependencyManager(
     pass_timeout_times=ENVS['SOLVER_PASS_TIMEOUT_TIMES'],
     dev_client=DEV_ENVS['CLIENT_ID'] if DEV_MODE else None,
     static_service_directory=static_service_directory,
-    dynamic_service_directory=dynamic_service_directory
+    static_metadata_directory=static_metadata_directory,
+    dynamic_service_directory=dynamic_service_directory,
+    dynamic_metadata_directory=dynamic_metadata_directory
 )
 
 modify_env(mem_manager=mem_manager, cache_dir=cache_directory, block_dir=block_directory)

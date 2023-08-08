@@ -1,4 +1,6 @@
 import hashlib, logging
+import json
+from typing import Dict
 
 DEV_MODE = False
 DEV_ENVS = {
@@ -33,5 +35,13 @@ logging.basicConfig(filename='../app.log', level=logging.DEBUG, format='%(asctim
 LOGGER = lambda message: logging.getLogger().debug(message + '\n') if not DEV_MODE else print(message + '\n')
 DIR = '/satsorter/' if not DEV_MODE else ''
 
-REGRESSION_SHA3_256 = '754c007d275fd65ad41af042defcd3eb52bc50e42590d4135978664826f8e382'
-RANDOM_SHA3_256 = 'cdb42c2fa50f3374e7d324a4b91e003a238ab39a8fd57c08d4e33da8359218c7'
+with open("../.service/pre-compile.json") as pre_compile:
+    _js = json.load(pre_compile)
+
+REGRESSION_SHA3_256 = _js['dependencies']['REGRESSION']
+RANDOM_SHA3_256 = _js['dependencies']['RANDOM']
+
+BLOCK_DIRECTORY = _js["blocks_directory"]
+SERVICE_DIRECTORY = _js["service_dependencies_directory"]
+METADATA_DIRECTORY = _js["metadata_dependencies_directory"]
+CACHE_DIRECTORY = "__cache__"

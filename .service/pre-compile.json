@@ -1,20 +1,22 @@
 {
   "workdir": "satsorter",
-  "dependencies_directory": "__services__",
+  "service_dependencies_directory": "__services__",
+  "metadata_dependencies_directory": "__metadata__",
   "blocks_directory": "__block__",
   "zip": true,
-  "dependencies": [
-    "b9121eb90b1f74543ded21f70d3a1d8f9f3e2e6fb624adf0087ab8b405d3fb92",
-    "6f332226caa2fd444d99e72856019687bcbee392ec497e27d162a2f52c5b4239"
-  ],
+  "dependencies": {
+    "REGRESSION": "b9121eb90b1f74543ded21f70d3a1d8f9f3e2e6fb624adf0087ab8b405d3fb92",
+    "RANDOM":    "6f332226caa2fd444d99e72856019687bcbee392ec497e27d162a2f52c5b4239"
+  },
   "ignore": [
     "venv",
-    ".service",
+    ".service/Dockerfile",
     "Makefile",
     ".devcontainer",
     ".gitignore",
     ".gitattributes",
     "__services__/*",
+    "__metadata__/*",
     "__block__/*",
     "__cache__/*",
     "__tensor__"
