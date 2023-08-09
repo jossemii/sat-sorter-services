@@ -20,7 +20,6 @@
     "__services__/*",
     "__metadata__/*",
     "__block__/*",
-    "__cache__/*",
-    "__tensor__"
+    "__cache__/*"
   ]
 }
