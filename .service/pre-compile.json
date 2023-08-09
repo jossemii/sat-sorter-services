@@ -9,6 +9,7 @@
     "RANDOM":    "6f332226caa2fd444d99e72856019687bcbee392ec497e27d162a2f52c5b4239"
   },
   "ignore": [
+    ".git",
     ".idea",
     "venv",
     ".service/Dockerfile",
