@@ -86,8 +86,14 @@ class Session(metaclass=Singleton):
             if solver_hash and solver_hash not in self.solvers:
                 self.solvers.append(solver_hash)
 
+                # Move service to the services' directory.
                 shutil.move(service_dir,
                             os.path.join(DependencyManager().dynamic_service_directory, solver_hash))
+
+                # Write Metadata to the metadata directory.
+                with open(os.path.join(DependencyManager().dynamic_metadata_directory, solver_hash)) as f:
+                    f.write(metadata.SerializeToString())
+
 
                 # En este punto se pueden crear varias versiones del mismo solver,
                 #  con distintas variables de entorno.
