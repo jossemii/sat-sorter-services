@@ -1,7 +1,7 @@
-import hashlib, logging
+import hashlib
+import logging
 import json
 import os.path
-from typing import Dict
 
 DEV_MODE = False
 DEV_ENVS = {

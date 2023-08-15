@@ -91,7 +91,7 @@ class Session(metaclass=Singleton):
                             os.path.join(DependencyManager().dynamic_service_directory, solver_hash))
 
                 # Write Metadata to the metadata directory.
-                with open(os.path.join(DependencyManager().dynamic_metadata_directory, solver_hash)) as f:
+                with open(os.path.join(DependencyManager().dynamic_metadata_directory, solver_hash), "wb") as f:
                     f.write(metadata.SerializeToString())
 
 
