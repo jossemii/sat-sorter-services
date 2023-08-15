@@ -36,7 +36,7 @@ logging.basicConfig(filename='../app.log', level=logging.DEBUG, format='%(asctim
 LOGGER = lambda message: logging.getLogger().debug(message + '\n') if not DEV_MODE else print(message + '\n')
 DIR = '/satsorter/' if not DEV_MODE else ''
 
-with open(os.path.join(DIR, "/.service/pre-compile.json")) as pre_compile:
+with open(os.path.join(DIR, ".service/pre-compile.json")) as pre_compile:
     _js = json.load(pre_compile)
 
 REGRESSION_SHA3_256 = _js['dependencies']['REGRESSION']
