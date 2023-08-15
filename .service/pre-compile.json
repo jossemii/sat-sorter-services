@@ -8,19 +8,16 @@
     "REGRESSION": "b9121eb90b1f74543ded21f70d3a1d8f9f3e2e6fb624adf0087ab8b405d3fb92",
     "RANDOM":    "6f332226caa2fd444d99e72856019687bcbee392ec497e27d162a2f52c5b4239"
   },
+  "include": [
+    "protos",
+    "src",
+    "__init__.py",
+    "start.sh",
+    ".service"
+  ],
   "ignore": [
-    ".git",
-    ".idea",
-    "venv",
     ".service/Dockerfile",
     ".service/service.json",
-    "Makefile",
-    ".devcontainer",
-    ".gitignore",
-    ".gitattributes",
-    "__services__/*",
-    "__metadata__/*",
-    "__block__/*",
-    "__cache__/*"
+    ".service/src"
   ]
 }
