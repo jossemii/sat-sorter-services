@@ -59,15 +59,8 @@ block_directory: str = os.path.join(DIR, BLOCK_DIRECTORY)
 cache_directory: str = os.path.join(DIR, CACHE_DIRECTORY)
 
 if not DEV_MODE:
-    # Create dynamic_service_directory if it does not exist.
-    try:
-        os.mkdir(dynamic_service_directory)
-    finally:
-        # for dev.
-        os.system(f'rm -rf {dynamic_service_directory}')
-        os.mkdir(dynamic_service_directory)
-
-    # Create block_directory if it does not exist.
+    os.makedirs(dynamic_service_directory, exist_ok=True)
+    os.makedirs(dynamic_metadata_directory, exist_ok=True)
     os.makedirs(block_directory, exist_ok=True)
     os.makedirs(cache_directory, exist_ok=True)
 
@@ -115,7 +108,7 @@ DependencyManager(
     dynamic_metadata_directory=dynamic_metadata_directory
 )
 
-modify_env(mem_manager=mem_manager, cache_dir=cache_directory, block_dir=block_directory)
+modify_env(mem_manager=mem_manager, cache_dir=cache_directory+"/", block_dir=block_directory+"/")
 
 _regresion = regresion.Session(
     time_for_each_regression_loop=ENVS['TIME_FOR_EACH_REGRESSION_LOOP']
