@@ -1,4 +1,5 @@
-from node_driver.gateway.protos import gateway_pb2, celaut_pb2
+from node_driver.gateway.protos import celaut_pb2
+
 from src.envs import DEV_MODE, DEV_ENVS
 
 
@@ -21,14 +22,6 @@ def read_file(filename) -> bytes:
     return b''.join([b for b in generator(filename)])
 
 
-def to_gas_amount(gas_amount: int) -> gateway_pb2.GasAmount:
-    return gateway_pb2.GasAmount(n=str(gas_amount))
-
-
-def from_gas_amount(gas_amount: gateway_pb2.GasAmount) -> int:
-    return int(gas_amount.n)
-
-
-# Should be on the Framework.
+# Should be on the Dev lib.
 def get_client_id() -> str:
     return DEV_ENVS['CLIENT_ID'] if DEV_MODE else ''
