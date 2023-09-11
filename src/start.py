@@ -87,7 +87,7 @@ if not DEV_MODE:
         # Log that the services files have been extracted
         LOGGER('Services files extracted.')
 
-    Thread(target=unzip_registry).start()
+    # Thread(target=unzip_registry).start()  # Only use if .service/pre-compile.json["zip"] is True
 
 ResourceManager(
     log=LOGGER,
