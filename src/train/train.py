@@ -73,7 +73,7 @@ class Session(metaclass=Singleton):
         except Exception:
             raise Exception('UploadSolver error: this is not a ServiceWithMeta message. ' + str(service_dir))
 
-        solver_hash: str = None
+        solver_hash: Optional[str] = None
         for h in metadata.hashtag.hash:
             if h.type == SHA3_256_ID:
                 solver_hash = h.value.hex()
