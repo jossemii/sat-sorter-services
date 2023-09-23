@@ -154,7 +154,7 @@ class Session(metaclass=Singleton):
         return True
 
     @staticmethod
-    def updateScore(cnf, solver: solvers_dataset_pb2.DataSetInstance, score):
+    def update_score(cnf, solver: solvers_dataset_pb2.DataSetInstance, score):
         num_clauses, num_literals = (
             len(cnf.clause),
             0,
@@ -227,7 +227,7 @@ class Session(metaclass=Singleton):
                             score = +1
                         else:
                             score = float(-1 / time)
-                        self.updateScore(
+                        self.update_score(
                             cnf=cnf,
                             solver=solver_data,
                             score=score
@@ -236,7 +236,7 @@ class Session(metaclass=Singleton):
                 # Registra los solvers que afirmaron la insatisfactibilidad en caso en que ninguno
                 #  haya demostrado lo contrario.
                 for d in insats:
-                    self.updateScore(
+                    self.update_score(
                         cnf=cnf,
                         solver=d['solver'],
                         score=(float(+1 / d['time']) if d['time'] != 0 else 1) if is_insat
