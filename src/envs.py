@@ -36,8 +36,18 @@ logging.basicConfig(filename='../app.log', level=logging.DEBUG, format='%(asctim
 LOGGER = lambda message: logging.getLogger().debug(message + '\n') if not DEV_MODE else print(message + '\n')
 DIR = '/satsorter/' if not DEV_MODE else ''
 
-with open(os.path.join(DIR, ".service/pre-compile.json")) as pre_compile:
-    _js = json.load(pre_compile)
+# with open(os.path.join(DIR, ".service/pre-compile.json")) as pre_compile:
+#    _js = json.load(pre_compile)
+
+_js = {
+    "service_dependencies_directory": "__services__",
+    "metadata_dependencies_directory": "__metadata__",
+    "blocks_directory": "__block__",
+    "dependencies": {
+        "REGRESSION": "e32b788d8848ef74c1c3a7ce076492b4fe811b579ccab5ec33d1c07566956177",
+        "RANDOM":    "6f332226caa2fd444d99e72856019687bcbee392ec497e27d162a2f52c5b4239"
+      },
+}
 
 REGRESSION_SHA3_256 = _js['dependencies']['REGRESSION']
 RANDOM_SHA3_256 = _js['dependencies']['RANDOM']

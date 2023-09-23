@@ -12,12 +12,6 @@
     "protos",
     "src",
     "__init__.py",
-    "start.sh",
-    ".service"
-  ],
-  "ignore": [
-    ".service/Dockerfile",
-    ".service/service.json",
-    ".service/src"
+    "start.sh"
   ]
 }
