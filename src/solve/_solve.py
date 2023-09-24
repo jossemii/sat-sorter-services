@@ -1,7 +1,9 @@
 from threading import Lock
 from time import time as time_now
+from typing import Optional, Dict
 
 from node_driver.dependency_manager.dependency_manager import DependencyManager
+from node_driver.dependency_manager.service_interface import ServiceInterface
 from grpcbigbuffer.client import client_grpc
 
 from protos import api_pb2, api_pb2_grpc, solvers_dataset_pb2
@@ -15,7 +17,7 @@ class Session(metaclass=Singleton):
     def __init__(self):
 
         LOGGER('INIT SOLVE SESSION ....')
-        self.solvers = {}
+        self.solvers: Dict[str, ServiceInterface] = {}
         self.lock = Lock()
 
     def cnf(self, cnf: api_pb2.Cnf, solver_config_id: str, timeout=None):
@@ -25,7 +27,7 @@ class Session(metaclass=Singleton):
         instance = solver_interface.get_instance()
 
         try:
-            # Tiene en cuenta el tiempo de respuesta y deserializacion del buffer.
+            # Takes into account the response time and deserialization of the buffer.
             start_time = time_now()
             LOGGER('    resolving cnf on ' + str(solver_config_id))
             interpretation = next(client_grpc(
@@ -38,12 +40,12 @@ class Session(metaclass=Singleton):
             ))
             time = time_now() - start_time
             LOGGER(str(time) + '    resolved cnf on ' + str(solver_config_id))
-            # Si hemos o caso de que nos comunique que hay una interpretacion,
-            # será satisfactible. Si no nos da interpretacion asumimos que lo identifica como insatisfactible.
-            # Si ocurre un error (menos por superar el timeout) se deja la interpretación vacia (None) para,
-            # tras asegurar la instancia, lanzar una excepción.
+            # If we receive communication indicating an interpretation, it will be considered satisfactory.
+            # If no interpretation is provided, we assume it is identified as unsatisfactory.
+            # If an error occurs (except for exceeding the timeout), the interpretation is left empty (None) to,
+            # after ensuring the instance, raise an exception.
             instance.reset_timers()
-            LOGGER('INTERPRETACION --> ' + str(interpretation.variable))
+            LOGGER('INTERPRETATION --> ' + str(interpretation.variable))
 
         except Exception as e:
             response: str = instance.compute_exception(e)
@@ -68,24 +70,28 @@ class Session(metaclass=Singleton):
             raise Exception
 
     def add_solver(self,
-                   solver_with_config: solvers_dataset_pb2.SolverWithConfig,
-                   solver_config_id: str,
+                   solver_configuration: solvers_dataset_pb2.SolverConfiguration,
+                   solver_config_id: Optional[str],
                    solver_hash: str
                    ):
-        if solver_config_id != SHA3_256(
-                value=solver_with_config.SerializeToString()
+
+        if not solver_config_id:
+            solver_config_id = SHA3_256(value=solver_configuration.SerializeToString()).hex()
+
+        elif solver_config_id != SHA3_256(
+                value=solver_configuration.SerializeToString()
                 # This service not touch metadata, so it can use the hash for id.
         ).hex():
-            LOGGER('Solver config not  valid ', solver_with_config, solver_config_id)
-            raise Exception('Solver config not valid ', solver_with_config, solver_config_id)
+            LOGGER('Solver config not  valid ', solver_configuration, solver_config_id)
+            raise Exception('Solver config not valid ', solver_configuration, solver_config_id)
 
         with self.lock:
             self.solvers.update({
-                # Presupone que se ha movido el servicio de caché a dynamic service directory.
+                # It assumes that the cache service has been moved to the dynamic service directory.
                 solver_config_id: DependencyManager().add_service(
                     service_hash=solver_hash,
                     config=celaut.Configuration(
-                        enviroment_variables=solver_with_config.enviroment_variables
+                        enviroment_variables=solver_configuration.enviroment_variables
                     ),
                     stub_class=api_pb2_grpc.SolverStub,
                     dynamic=True
@@ -93,14 +99,13 @@ class Session(metaclass=Singleton):
             })
         try:
             LOGGER('ADDED NEW SOLVER ' + str(solver_config_id) + ' \ndef_ids -> ' + str(
-                solver_with_config.meta.hashtag.hash[0].value.hex()))
+                solver_configuration.meta.hashtag.hash[0].value.hex()))
         except:
             LOGGER('ADDED NEW SOLVER ' + str(solver_config_id))
 
-    def get_solver_with_config(self, solver_config_id: str) -> solvers_dataset_pb2.SolverWithConfig:
+    def get_solver_with_config(self, solver_config_id: str) -> solvers_dataset_pb2.SolverConfiguration:
         sc = self.solvers[solver_config_id].sc.get_solver_with_config()
-        return solvers_dataset_pb2.SolverWithConfig(
+        return solvers_dataset_pb2.SolverConfiguration(
             meta=sc.service.metadata,
-            definition=sc.service.service,
             enviroment_variables=sc.config.enviroment_variables
         )

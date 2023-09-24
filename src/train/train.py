@@ -70,6 +70,7 @@ class Session(metaclass=Singleton):
         try:
             with open(os.path.join(service_dir, WITHOUT_BLOCK_POINTERS_FILE_NAME), 'rb') as f:
                 solver.ParseFromString(f.read())
+                del solver
         except Exception:
             raise Exception('UploadSolver error: this is not a ServiceWithMeta message. ' + str(service_dir))
 
@@ -94,21 +95,19 @@ class Session(metaclass=Singleton):
                 with open(os.path.join(DependencyManager().dynamic_metadata_directory, solver_hash), "wb") as f:
                     f.write(metadata.SerializeToString())
 
-
-                # En este punto se pueden crear varias versiones del mismo solver,
-                #  con distintas variables de entorno.
+                # At this point, it is possible to create multiple versions of the same solver,
+                #  with different environment variables.
                 with self.solvers_dataset_lock:
-                    p = solvers_dataset_pb2.SolverWithConfig()
-                    p.definition.CopyFrom(solver)
-                    p.meta.CopyFrom(metadata)
-                    # p.enviroment_variables (Usamos las variables de entorno por defecto).
-                    solver_with_config_hash = SHA3_256(
-                        value=p.SerializeToString()
-                    ).hex()  # This service not touch metadata, so it can use the hash for id.
-                    self.solvers_dataset.data[solver_with_config_hash].CopyFrom(solvers_dataset_pb2.DataSetInstance())
+                    config = solvers_dataset_pb2.SolverConfiguration()
+                    config.meta.CopyFrom(metadata)
+                    # p.environment_variables
+                    configuration_hash = SHA3_256(
+                        value=config.SerializeToString()
+                    ).hex()
+                    self.solvers_dataset.data[configuration_hash].CopyFrom(solvers_dataset_pb2.DataSetInstance())
                     self._solver.add_solver(
-                        solver_with_config=p,
-                        solver_config_id=solver_with_config_hash,
+                        solver_configuration=config,
+                        solver_config_id=configuration_hash,
                         solver_hash=solver_hash
                     )
 
