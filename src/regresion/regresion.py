@@ -9,7 +9,7 @@ from node_driver.dependency_manager.service_interface import ServiceInterface
 from node_driver.dependency_manager.dependency_manager import DependencyManager
 from node_driver.dependency_manager.service_instance import ServiceInstance
 from grpcbigbuffer.client import client_grpc, Dir
-from typing import Generator
+from typing import Generator, Optional, Final, List, Dict
 
 from protos import api_pb2, regresion_pb2_grpc, solvers_dataset_pb2, regresion_pb2
 from src.envs import REGRESSION_SHA3_256, LOGGER, SHA3_256
@@ -20,7 +20,7 @@ from src.utils.general import read_file
 class Session(metaclass=Singleton):
 
     def __init__(self, time_for_each_regression_loop: int) -> None:
-        self.data_set = None
+        self.data_set: Optional[solvers_dataset_pb2.DataSet] = None
 
         # set used envs on variables.
         self.TIME_FOR_EACH_LOOP: int = time_for_each_regression_loop
@@ -83,23 +83,34 @@ class Session(metaclass=Singleton):
 
     # Add new data
     def add_data(self, new_data_set: solvers_dataset_pb2.DataSet) -> None:
-        self.dataset_lock.acquire()
-        if not self.data_set: self.data_set = solvers_dataset_pb2.DataSet()
-        for hash, solver_data in new_data_set.data.items():
-            if hash in self.data_set.data:
-                for cnf, data in solver_data.data.items():
-                    if cnf in self.data_set.data[hash].data:
-                        self.data_set.data[hash].data[cnf].score = sum([
-                            (self.data_set.data[hash].data[cnf].index * self.data_set.data[hash].data[cnf].score),
-                            data.index * data.score,
-                        ]) / (self.data_set.data[hash].data[cnf].index + data.index)
-                        self.data_set.data[hash].data[cnf].index = self.data_set.data[hash].data[cnf].index + data.index
+        with self.dataset_lock:
+            if not self.data_set:
+                self.data_set = solvers_dataset_pb2.DataSet()
 
-                    else:
-                        self.data_set.data[hash].data[cnf].CopyFrom(data)
-            else:
-                self.data_set.data[hash].CopyFrom(solver_data)
-        self.dataset_lock.release()
+            prev_instances: Dict[bytes: solvers_dataset_pb2.DataSetInstance] = {instance.configuration_hash: instance
+                                                                                for instance in self.data_set.data}
+
+            # Add the new data set to the dataset on regression module.
+            for new_instance in new_data_set.data:
+                if new_instance.configuration_hash in prev_instances:
+                    for cnf, new_data in new_instance.data.items():
+                        prev_data_instance: solvers_dataset_pb2.DataSetInstance = prev_instances[
+                                                                                      new_instance.configuration_hash
+                                                                                  ]
+                        if cnf in prev_data_instance.data:
+                            prev_data_instance.data[cnf].score = sum([
+                                (prev_data_instance.data[cnf].index * prev_data_instance.data[cnf].score),
+                                new_data.index * new_data.score,
+                            ]) / (prev_data_instance.data[cnf].index + new_data.index)
+                            prev_data_instance.data[cnf].index = prev_data_instance.data[cnf].index + new_data.index
+
+                        else:
+                            prev_data_instance.data[cnf].CopyFrom(new_data)
+
+                else:
+                    self.data_set.data.append(new_instance)
+                    prev_instances[new_instance.configuration_hash] = new_instance
+
         LOGGER('Dataset updated. ')
 
     # Hasta que se implemente AddTensor en el clasificador.
@@ -114,19 +125,19 @@ class Session(metaclass=Singleton):
             try:
                 for i in range(1):
                     try:
-                        for file in client_grpc(
+                        yield from client_grpc(
                                 method=instance.stub.StreamLogs,
                                 indices_parser=regresion_pb2.File,
                                 partitions_message_mode_parser=True,
                                 timeout=self.service.sc.timeout
-                        ): yield file
+                        )
 
                     except Exception as e:
                         instance.compute_exception(e=e)
             finally:
                 self.service.push_instance(instance)
 
-    # Make regresion Grpc method. Return the Tensor buffer.
+    # Make regression Grpc method. Return the Tensor buffer.
     def iterate_regression(self, data_set: solvers_dataset_pb2.DataSet) -> str:
         instance: ServiceInstance = self.service.get_instance()
         try:
