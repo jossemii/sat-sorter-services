@@ -111,7 +111,7 @@ class Session(metaclass=Singleton):
                     self.data_set.data.append(new_instance)
                     prev_instances[new_instance.configuration_hash] = new_instance
 
-        LOGGER('Dataset updated. ')
+        LOGGER(f'Dataset updated. size: {self.data_set.ByteSize()}')
 
     # Hasta que se implemente AddTensor en el clasificador.
     def get_data_set(self) -> solvers_dataset_pb2.DataSet:
