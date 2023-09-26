@@ -34,7 +34,7 @@ message File {
 message Tensor { // Like Onxx but with only SolverWithConfig'field elements.
     message NonEscalarDimension {    
         message NonEscalar {
-            dataset.SolverWithConfig element = 1;
+            dataset.SolverConfiguration element = 1;
             oneof model {
                 tensor_onnx.ModelProto escalar = 2;
                 NonEscalarDimension non_escalar = 3;
