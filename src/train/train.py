@@ -1,7 +1,7 @@
 import os
 import shutil
 from threading import get_ident, Thread, Lock
-from typing import Optional
+from typing import Optional, List
 
 from node_driver.dependency_manager.dependency_manager import DependencyManager
 from node_driver.dependency_manager.service_interface import ServiceInterface
@@ -37,7 +37,7 @@ class Session(metaclass=Singleton):
 
         self.thread = None
         self.solvers_dataset = solvers_dataset_pb2.DataSet()
-        self.solvers = []  # Lista de los solvers por hash.
+        self.solvers: List[str] = []  # Lista de los solvers por hash.
         self.solvers_dataset_lock = Lock()  # Se usa al añadir un solver y durante cada iteracion de entrenamiento.
         self.solvers_lock = Lock()  # Se uso al añadir un solver ya que podrían añadirse varios concurrentemente.
         self.do_stop = False
@@ -104,7 +104,10 @@ class Session(metaclass=Singleton):
                     configuration_hash = SHA3_256(
                         value=config.SerializeToString()
                     ).hex()
-                    self.solvers_dataset.data[configuration_hash].CopyFrom(solvers_dataset_pb2.DataSetInstance())
+                    self.solvers_dataset.data.append(solvers_dataset_pb2.DataSetInstance(
+                        configuration_hash=bytes.fromhex(configuration_hash),
+                        service_hash=bytes.fromhex(solver_hash)
+                    ))
                     self._solver.add_solver(
                         solver_configuration=config,
                         solver_config_id=configuration_hash,

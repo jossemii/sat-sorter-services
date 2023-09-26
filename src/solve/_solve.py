@@ -98,8 +98,8 @@ class Session(metaclass=Singleton):
                 )
             })
         try:
-            LOGGER('ADDED NEW SOLVER ' + str(solver_config_id) + ' \ndef_ids -> ' + str(
-                solver_configuration.meta.hashtag.hash[0].value.hex()))
+            LOGGER(f'ADDED NEW SOLVER {solver_config_id} \n'
+                   f'def_ids -> {solver_configuration.meta.hashtag.hash[0].value.hex()}')
         except:
             LOGGER('ADDED NEW SOLVER ' + str(solver_config_id))
 
