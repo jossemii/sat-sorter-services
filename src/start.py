@@ -44,6 +44,10 @@ if not DEV_MODE:
 else:
     ENVS['GATEWAY_MAIN_DIR'] = DEV_ENVS['GATEWAY_MAIN_DIR']
     mem_limit: int = DEV_ENVS['MEM_LIMIT']
+    os.makedirs(SERVICE_DIRECTORY, exist_ok=True)
+    os.makedirs(BLOCK_DIRECTORY, exist_ok=True)
+    os.makedirs(METADATA_DIRECTORY, exist_ok=True)
+    os.makedirs(CACHE_DIRECTORY, exist_ok=True)
 
 LOGGER('INIT START THREAD ' + str(get_ident()))
 
