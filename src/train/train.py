@@ -1,7 +1,7 @@
 import os
 import shutil
 from threading import get_ident, Thread, Lock
-from typing import Optional, List
+from typing import Optional, List, Union, Dict
 
 from node_driver.dependency_manager.dependency_manager import DependencyManager
 from node_driver.dependency_manager.service_interface import ServiceInterface
@@ -118,7 +118,7 @@ class Session(metaclass=Singleton):
 
     def clear_dataset(self) -> None:
         self.solvers_dataset_lock.acquire()
-        for solver in self.solvers_dataset.data.values():
+        for solver in self.solvers_dataset.data:
             solver.ClearField('data')
         self.solvers_dataset_lock.release()
 
@@ -200,10 +200,13 @@ class Session(metaclass=Singleton):
                 cnf = self.random_cnf()
                 LOGGER('OBTENIDO NUEVO CNF. ')
                 is_insat = True  # En caso en que se demuestre lo contrario.
-                insats = []  # Solvers que afirman la insatisfactibilidad junto con su respectivo tiempo.
+                # Solvers que afirman la insatisfactibilidad junto con su respectivo tiempo.
+                insats: List[Dict[str, Union[solvers_dataset_pb2.DataSetInstance, float]]] = []
                 LOGGER('VAMOS A PROBAR LOS SOLVERS')
                 self.solvers_dataset_lock.acquire()
-                for _hash, solver_data in self.solvers_dataset.data.items():
+                for data_instance in self.solvers_dataset.data:
+                    _hash: str = bytes(data_instance.configuration_hash).hex()
+                    solver_data: solvers_dataset_pb2.DataSetInstance = data_instance
                     if self.do_stop: 
                         break
                     LOGGER('SOLVER --> ' + str(_hash))
@@ -214,7 +217,7 @@ class Session(metaclass=Singleton):
                         interpretation, time = None, timeout
                         pass
                     # Durante el entrenamiento, si ha ocurrido un error al obtener un cnf se marca como insatisfactible,
-                    # tras muchas iteraciones no debería suponer un problema en el tensor.
+                    # tras muchas iteracciones no debería suponer un problema en el tensor.
                     if not interpretation or not interpretation.satisfiable or len(interpretation.variable) == 0:
                         insats.append({
                             'solver': solver_data,
