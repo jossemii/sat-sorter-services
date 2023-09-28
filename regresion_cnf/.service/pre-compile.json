@@ -1,0 +1,19 @@
+{
+  "workdir": "regresioncnf",
+  "dependencies_directory": null,
+  "metadata_dependencies_directory": null,
+  "blocks_directory": null,
+  "zip": false,
+  "dependencies": [],
+  "include": [
+    "buffer_pb2.py",
+    "celaut_pb2.py",
+    "onnx_pb2.py",
+    "regresion.py",
+    "regresion_pb2.py",
+    "regresion_pb2_grpc.py",
+    "solvers_dataset_pb2.py",
+    "start.py",
+    "start.sh"
+  ]
+}

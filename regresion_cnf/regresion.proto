@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+import "onnx.proto";
+
+message Empty {}
+
+message File {
+    string file = 1;
+}
+
+message Tensor { // Like Onxx but with only str'field elements (with the solver with config id).
+    message NonEscalarDimension {    
+        message NonEscalar {
+            string element = 1;
+            oneof model {
+                tensor_onnx.ModelProto escalar = 2;
+                NonEscalarDimension non_escalar = 3;
+            } 
+        }
+        repeated NonEscalar non_escalar = 1;
+    }
+    oneof model {
+        tensor_onnx.ModelProto escalar = 1;
+        NonEscalarDimension non_escalar = 2;
+    }
+}
+
+// GRPC.
+message Buffer  {
+    optional bytes chunk = 1;
+    optional bool separator = 2;
+    optional bool signal = 3;
+    optional int32 head = 4;
+}
+
+service Regresion {
+    rpc StreamLogs ( stream Buffer) returns (stream Buffer){} // Empty -> File
+    rpc MakeRegresion (stream Buffer) returns ( stream Buffer) {}  // dataset.DataSet -> Tensor
+}
