@@ -1,0 +1,11 @@
+{
+  "workdir": "random",
+  "include": [
+    "api_pb2.py",
+    "api_pb2_grpc.py",
+    "api_pb2_grpcbf.py",
+    "randomCNF.py",
+    "start.py",
+    "start.sh"
+  ]
+}
