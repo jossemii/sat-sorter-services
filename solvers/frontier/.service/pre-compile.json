@@ -1,0 +1,10 @@
+{
+  "workdir": "frontier",
+  "include": [
+    "api_pb2.py",
+    "api_pb2_grpc.py",
+    "frontier.py",
+    "start.py",
+    "start.sh"
+  ]
+}
