@@ -1,6 +1,5 @@
 syntax = "proto3";
 
-import "onnx.proto";
 import "celaut.proto";
 import "solvers_dataset.proto";
 import "buffer.proto";
