@@ -6,8 +6,6 @@
   "zip": false,
   "dependencies": [],
   "include": [
-    "buffer_pb2.py",
-    "celaut_pb2.py",
     "onnx_pb2.py",
     "regresion.py",
     "regresion_pb2.py",
