@@ -13,7 +13,8 @@ ENVS = {
 
 if __name__ == "__main__":
 
-    import grpc, regresion_pb2, regresion_pb2_grpc, celaut_pb2, regresion
+    import grpc, regresion_pb2, regresion_pb2_grpc, regresion
+    from node_driver.gateway.protos import celaut_pb2
     from concurrent import futures
 
     # Read __config__ file.

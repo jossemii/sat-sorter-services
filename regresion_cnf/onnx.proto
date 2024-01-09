@@ -7,7 +7,6 @@
 // Licensed under the MIT license.
 
 syntax = "proto2";
-import "celaut.proto";
 
 package tensor_onnx;
 
@@ -22,10 +21,9 @@ message ONNX {
     }
     repeated NonEscalar non_escalar = 1;
   }
-  required celaut.Service.Tensor specification = 1;
   oneof model {
-    ModelProto escalar = 2;
-    NonEscalarDimension non_escalar = 3;
+    ModelProto escalar = 1;
+    NonEscalarDimension non_escalar = 2;
   }
 }
 

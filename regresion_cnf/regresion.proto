@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 import "onnx.proto";
+import "buffer.proto";
 
 message Empty {}
 
@@ -25,15 +26,7 @@ message Tensor { // Like Onxx but with only str'field elements (with the solver 
     }
 }
 
-// GRPC.
-message Buffer  {
-    optional bytes chunk = 1;
-    optional bool separator = 2;
-    optional bool signal = 3;
-    optional int32 head = 4;
-}
-
 service Regresion {
-    rpc StreamLogs ( stream Buffer) returns (stream Buffer){} // Empty -> File
-    rpc MakeRegresion (stream Buffer) returns ( stream Buffer) {}  // dataset.DataSet -> Tensor
+    rpc StreamLogs ( stream buffer.Buffer) returns (stream buffer.Buffer){} // Empty -> File
+    rpc MakeRegresion (stream buffer.Buffer) returns ( stream buffer.Buffer) {}  // dataset.DataSet -> Tensor
 }

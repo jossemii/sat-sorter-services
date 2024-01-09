@@ -1,5 +1,4 @@
 syntax = "proto3";
-import "celaut.proto";
 
 package dataset;
 
