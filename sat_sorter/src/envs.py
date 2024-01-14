@@ -36,6 +36,7 @@ logging.basicConfig(filename='../app.log', level=logging.DEBUG, format='%(asctim
 LOGGER = lambda message: logging.getLogger().debug(message + '\n') if not DEV_MODE else print(message + '\n')
 DIR = '/satsorter/' if not DEV_MODE else ''
 
+# TODO should include .service/pre-compile.json inside the service during compilation.
 # with open(os.path.join(DIR, ".service/pre-compile.json")) as pre_compile:
 #    _js = json.load(pre_compile)
 
@@ -44,8 +45,8 @@ _js = {
     "metadata_dependencies_directory": "__metadata__",
     "blocks_directory": "__block__",
     "dependencies": {
-        "REGRESSION": "e32b788d8848ef74c1c3a7ce076492b4fe811b579ccab5ec33d1c07566956177",
-        "RANDOM":    "6f332226caa2fd444d99e72856019687bcbee392ec497e27d162a2f52c5b4239"
+        "REGRESSION": "e7747fb97192140fa5e15119505f73474d8a6fb2070748915cfea576e9824abe",
+        "RANDOM":    "a4b4df3e799229a2a55decdd3d713242f18dd8f54a9a8084b98faf2bfabe1de7"
       },
 }
 

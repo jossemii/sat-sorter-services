@@ -3,11 +3,11 @@
   "service_dependencies_directory": "__services__",
   "metadata_dependencies_directory": "__metadata__",
   "blocks_directory": "__block__",
-  "zip": false,
+  "zip": true,
   "dependencies": {
-    "REGRESSION": "e7747fb97192140fa5e15119505f73474d8a6fb2070748915cfea576e9824abe",
-    "RANDOM":    "a4b4df3e799229a2a55decdd3d713242f18dd8f54a9a8084b98faf2bfabe1de7"
-  },
+      "REGRESION": "e7747fb97192140fa5e15119505f73474d8a6fb2070748915cfea576e9824abe",
+      "RANDOM": "a4b4df3e799229a2a55decdd3d713242f18dd8f54a9a8084b98faf2bfabe1de7"
+   },
   "include": [
     "protos",
     "src",
