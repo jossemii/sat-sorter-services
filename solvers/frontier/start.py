@@ -1,14 +1,15 @@
 from api_pb2 import Cnf
 import grpc
 from concurrent import futures
-import frontier, grpcbigbuffer
+import frontier
+from grpcbigbuffer.client import parse_from_buffer, serialize_to_buffer
 import api_pb2_grpc
 
 class Solver(api_pb2_grpc.Solver):
     def Solve(self, request_iterator, context):
-        for b in grpcbigbuffer.serialize_to_buffer(
+        for b in serialize_to_buffer(
             message_iterator=frontier.ok(
-                cnf = next(grpcbigbuffer.parse_from_buffer(
+                cnf = next(parse_from_buffer(
                     request_iterator = request_iterator,
                     indices = Cnf,
                     partitions_message_mode=True

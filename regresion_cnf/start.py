@@ -1,4 +1,5 @@
-import logging, grpcbigbuffer
+import logging
+from grpcbigbuffer.client import serialize_to_buffer, parse_from_buffer
 from typing import Callable
 
 from solvers_dataset_pb2 import DataSet
@@ -39,16 +40,16 @@ if __name__ == "__main__":
             else:
                 self.StreamLogs.__func__.has_been_called = True
             with open('app.log') as file:
-                yield from grpcbigbuffer.serialize_to_buffer(
+                yield from serialize_to_buffer(
                         message_iterator=regresion_pb2.File(
                             file=file.read()
                         )
                 )
 
         def MakeRegresion(self, request_iterator, context):
-            yield from grpcbigbuffer.serialize_to_buffer(
+            yield from serialize_to_buffer(
                     message_iterator=regresion.iterate_regression(
-                        data_set=next(grpcbigbuffer.parse_from_buffer(
+                        data_set=next(parse_from_buffer(
                             request_iterator=request_iterator,
                             indices=DataSet,
                             partitions_message_mode=True,
