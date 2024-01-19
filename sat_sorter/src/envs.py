@@ -45,8 +45,8 @@ _js = {
     "metadata_dependencies_directory": "__metadata__",
     "blocks_directory": "__block__",
     "dependencies": {
-        "REGRESSION": "e7747fb97192140fa5e15119505f73474d8a6fb2070748915cfea576e9824abe",
-        "RANDOM":    "a4b4df3e799229a2a55decdd3d713242f18dd8f54a9a8084b98faf2bfabe1de7"
+        "REGRESSION": "d9ee1b3ee55f007a7dc9614761a050b6c546e02ffb48916c86d0c0a68155784f",
+        "RANDOM":    "38509d6df87600c36bd2b099c1ba504c5696367570a14843788f2744f9532fb1"
       },
 }
 
