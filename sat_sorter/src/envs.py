@@ -1,11 +1,9 @@
 import hashlib
 import logging
-import json
-import os.path
 
 DEV_MODE = False
 DEV_ENVS = {
-    'GATEWAY_MAIN_DIR': 'localhost:8090',
+    'GATEWAY_MAIN_DIR': '192.168.1.84:8090',
     'MEM_LIMIT': 50 * pow(10, 6),
     'CLIENT_ID': 'dev'
 }
@@ -45,9 +43,10 @@ _js = {
     "metadata_dependencies_directory": "__metadata__",
     "blocks_directory": "__block__",
     "dependencies": {
-        "REGRESSION": "d9ee1b3ee55f007a7dc9614761a050b6c546e02ffb48916c86d0c0a68155784f",
-        "RANDOM":    "38509d6df87600c36bd2b099c1ba504c5696367570a14843788f2744f9532fb1"
+        "REGRESSION": "8beea9cc849bb5abee2aad72e3333f23575c1d0aacdd864ad2d34e4db2f60c90",
+        "RANDOM":    "3289ce366e78b9ba7bbe6ce42a08423c8befccaa3b8e078b88f9d9a3d6f41b3f"
       },
+    "zip": True
 }
 
 REGRESSION_SHA3_256 = _js['dependencies']['REGRESSION']
@@ -57,3 +56,4 @@ BLOCK_DIRECTORY = _js["blocks_directory"]
 SERVICE_DIRECTORY = _js["service_dependencies_directory"]
 METADATA_DIRECTORY = _js["metadata_dependencies_directory"]
 CACHE_DIRECTORY = "__cache__"
+DEPENDENCIES_ARE_ZIP = _js["zip"]

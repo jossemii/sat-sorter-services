@@ -7,7 +7,7 @@ from node_driver.dependency_manager.dependency_manager import DependencyManager
 from iterators import TimeoutIterator
 
 from resource_manager.resourcemanager import ResourceManager, mem_manager
-from src.envs import ENVS, LOGGER, DIR, DEV_ENVS, DEV_MODE, BLOCK_DIRECTORY, SERVICE_DIRECTORY, METADATA_DIRECTORY, \
+from src.envs import DEPENDENCIES_ARE_ZIP, ENVS, LOGGER, DIR, DEV_ENVS, DEV_MODE, BLOCK_DIRECTORY, SERVICE_DIRECTORY, METADATA_DIRECTORY, \
     CACHE_DIRECTORY
 from src.utils.modify_resources import MODIFY_SYSTEM_RESOURCES_LAMBDA
 from src.utils.general import read_file, get_grpc_uri
@@ -69,6 +69,7 @@ if not DEV_MODE:
     os.makedirs(cache_directory, exist_ok=True)
 
     def unzip_registry():
+        LOGGER("Start unzip registry")
         # Without the service_zip_folder, the services added by UploadSolver could not be rewritten before
         #  decompressing services.zip
         # Create a folder to store the extracted services from the zip file
@@ -78,20 +79,30 @@ if not DEV_MODE:
         with zipfile.ZipFile(os.path.join(DIR, 'services.zip'), 'r') as zip_ref:
             zip_ref.extractall(os.path.join(DIR, services_zip_folder))
 
+        LOGGER("Extracted services zip to the services zip folder")
+
         # Remove the original services.zip file
         os.remove(os.path.join(DIR, 'services.zip'))
+
+        LOGGER("Removed the original services.zip file")
 
         # Move extracted service folders to the main directory
         for folder in os.listdir(f"{os.path.join(DIR, services_zip_folder)}"):
             os.system(f"mv {os.path.join(DIR, services_zip_folder, folder, '*')} {os.path.join(DIR, folder)} ")
 
+        LOGGER("Moved extracted service folders to the main directory")
+
         # Remove the temporary services_zip_folder
         os.system(f'rm -rf {os.path.join(DIR, services_zip_folder)}')
+
+        LOGGER("Removed the temporary services zip folder")
 
         # Log that the services files have been extracted
         LOGGER('Services files extracted.')
 
-    # Thread(target=unzip_registry).start()  # Only use if .service/pre-compile.json["zip"] is True
+    if DEPENDENCIES_ARE_ZIP:
+        LOGGER("Dependencies folder is on zip, so will unzip it.")
+        Thread(target=unzip_registry).start()  # Only use if .service/pre-compile.json["zip"] is True
 
 ResourceManager(
     log=LOGGER,
@@ -194,6 +205,7 @@ class SolverServicer(api_pb2_grpc.SolverServicer):
             partitions_message_mode=api_pb2_grpcbf.UploadSolver_input_message_mode
         ):
             if type(_e) is api_pb2_grpcbf.celaut.Any.Metadata:
+                print(f"New solver metadata {[(h.type.hex(), h.value.hex())  for h in _e.hashtag.hash]}")
                 metadata = _e
             elif type(_e) is grpcbf.Dir and _e.type == api_pb2_grpcbf.celaut.Service:
                 service_dir = _e.dir
