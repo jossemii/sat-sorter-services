@@ -5,8 +5,8 @@
   "blocks_directory": "__block__",
   "zip": true,
   "dependencies": {
-      "REGRESION": "8beea9cc849bb5abee2aad72e3333f23575c1d0aacdd864ad2d34e4db2f60c90",
-      "RANDOM": "3289ce366e78b9ba7bbe6ce42a08423c8befccaa3b8e078b88f9d9a3d6f41b3f"
+      "REGRESION": "12cb12821888cab3c3b8770175ee61d84bbd7ab4d6abea00d18107d363833099",
+      "RANDOM": "59a7da2db97cdfabb438c6dc71ceeee9d5cd5b66d1f991749cc550c1d8fab6bb"
    },
   "include": [
     "protos",
