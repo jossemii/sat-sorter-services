@@ -1,5 +1,7 @@
 Sat-Sorter Repository and Regression & CNF Tools
 
+ __The core service (sat_sorter) automatically selects the most efficient SAT solver based on the structure and size of the CNF-encoded problem, optimizing the resolution of complex constraints.__
+
 This repository contains various services and tools related to solving SAT (Satisfiability) problems and data regression. Below, we describe the key components of the repository:
 Sat-Sorter
 
