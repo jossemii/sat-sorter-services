@@ -165,7 +165,7 @@ class Session(metaclass=Singleton):
             for literal in clause.literal:
                 if abs(literal) > num_literals:
                     num_literals = abs(literal)
-        type_of_cnf = str(num_clauses) + ':' + str(num_literals)
+        type_of_cnf = str(num_clauses) + regresion.TYPE_CNF_SEPARATOR_SYMBOL + str(num_literals)
         if type_of_cnf not in solver.data:
             solver.data[type_of_cnf].index = 1
             solver.data[type_of_cnf].score = 0

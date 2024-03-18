@@ -11,16 +11,21 @@ from node_driver.dependency_manager.service_instance import ServiceInstance
 from grpcbigbuffer.client import client_grpc, Dir
 from typing import Generator, Optional, Final, List, Dict
 
-from protos import api_pb2, regresion_pb2_grpc, solvers_dataset_pb2, regresion_pb2
+from protos import api_pb2, regresion_pb2_grpc, solvers_dataset_pb2 as sd_pb2, regresion_pb2
 from src.envs import REGRESSION_SHA3_256, LOGGER, SHA3_256
 from src.utils.singleton import Singleton
 from src.utils.general import read_file
 
 
+MAX_CNF_GROUPS = 2  # 2² groups.
+MAX_LITERALS = 100
+MAX_CLAUSES = 100
+TYPE_CNF_SEPARATOR_SYMBOL = ":"
+
 class Session(metaclass=Singleton):
 
     def __init__(self, time_for_each_regression_loop: int) -> None:
-        self.data_set: Optional[solvers_dataset_pb2.DataSet] = None
+        self.data_set: Optional[sd_pb2.DataSet] = None
 
         # set used envs on variables.
         self.TIME_FOR_EACH_LOOP: int = time_for_each_regression_loop
@@ -54,7 +59,7 @@ class Session(metaclass=Singleton):
 
                     # Se evita crear condiciones de carrera.
                     self.dataset_lock.acquire()
-                    data_set = solvers_dataset_pb2.DataSet()
+                    data_set = sd_pb2.DataSet()
                     data_set.CopyFrom(self.data_set)
                     self.dataset_lock.release()
 
@@ -80,41 +85,55 @@ class Session(metaclass=Singleton):
             return tensor
         else:
             raise Exception('__tensor__ does not exist.')
+        
+    def determine_cnf_group(self, cnf) -> str:
+        cnf = cnf.split(TYPE_CNF_SEPARATOR_SYMBOL)
+        literals = int(cnf[0])
+        clauses = int(cnf[1])
+        # Esta es una función de ejemplo que asigna CNF a grupos basados en alguna lógica.
+        # Deberías reemplazar esta lógica con la que sea adecuada para tu caso de uso.
+        # Por ejemplo, podrías usar k-means o alguna otra técnica de clustering para determinar los grupos.
+        literal_group = literals // (MAX_LITERALS // MAX_CNF_GROUPS)
+        clause_group = clauses // (MAX_CLAUSES // MAX_CNF_GROUPS)
+        return f"{literal_group}{TYPE_CNF_SEPARATOR_SYMBOL}{clause_group}"
 
     # Add new data
-    def add_data(self, new_data_set: solvers_dataset_pb2.DataSet) -> None:
+    def add_data(self, new_data_set: sd_pb2.DataSet) -> None:
         with self.dataset_lock:
             if not self.data_set:
-                self.data_set = solvers_dataset_pb2.DataSet()
+                self.data_set = sd_pb2.DataSet()
 
-            prev_instances: Dict[bytes: solvers_dataset_pb2.DataSetInstance] = {instance.configuration_hash: instance
+            prev_instances: Dict[bytes: sd_pb2.DataSetInstance] = {instance.configuration_hash: instance
                                                                                 for instance in self.data_set.data}
 
             # Add the new data set to the dataset on regression module.
+
+            # TODO This don't work.
             for new_instance in new_data_set.data:
-                if new_instance.configuration_hash in prev_instances:
-                    for cnf, new_data in new_instance.data.items():
-                        prev_data_instance: solvers_dataset_pb2.DataSetInstance = prev_instances[
-                                                                                      new_instance.configuration_hash
-                                                                                  ]
-                        if cnf in prev_data_instance.data:
-                            prev_data_instance.data[cnf].score = sum([
-                                (prev_data_instance.data[cnf].index * prev_data_instance.data[cnf].score),
-                                new_data.index * new_data.score,
-                            ]) / (prev_data_instance.data[cnf].index + new_data.index)
-                            prev_data_instance.data[cnf].index = prev_data_instance.data[cnf].index + new_data.index
+                if new_instance.configuration_hash not in prev_instances:
+                    prev_data_instance = sd_pb2.DataSetInstance()
+                    self.data_set.data.append(prev_data_instance)
+                    prev_instances[new_instance.configuration_hash] = prev_data_instance  # Op. don't needed, but simplifies the code.
 
-                        else:
-                            prev_data_instance.data[cnf].CopyFrom(new_data)
+                prev_data_instance: sd_pb2.DataSetInstance = prev_instances[new_instance.configuration_hash]
+                for cnf, new_data in new_instance.data.items():
+                    group_key: str = self.determine_cnf_group(cnf)
+                    print(f"cnf {cnf} on group {group_key}")
+                    if group_key in prev_data_instance.data:   
+                        _prev: sd_pb2.Data = prev_data_instance.data[group_key] 
+                        _prev.score = sum([
+                            (_prev.index * _prev.score),
+                            new_data.index * new_data.score,
+                        ]) / (_prev.index + new_data.index)
+                        _prev.index = _prev.index + new_data.index
 
-                else:
-                    self.data_set.data.append(new_instance)
-                    prev_instances[new_instance.configuration_hash] = new_instance
+                    else:
+                        prev_data_instance.data[group_key].CopyFrom(new_data)
 
-        LOGGER(f'Dataset updated. size: {self.data_set.ByteSize()}')
+        LOGGER(f'\n\nDataset updated {self.data_set}. size: {self.data_set.ByteSize()}\n\n')
 
     # Hasta que se implemente AddTensor en el clasificador.
-    def get_data_set(self) -> solvers_dataset_pb2.DataSet:
+    def get_data_set(self) -> sd_pb2.DataSet:
         return self.data_set
 
     # Stream logs Grpc method. TODO CHECK
@@ -138,13 +157,13 @@ class Session(metaclass=Singleton):
                 self.service.push_instance(instance)
 
     # Make regression Grpc method. Return the Tensor buffer.
-    def iterate_regression(self, data_set: solvers_dataset_pb2.DataSet) -> str:
+    def iterate_regression(self, data_set: sd_pb2.DataSet) -> str:
         instance: ServiceInstance = self.service.get_instance()
         try:
             dataset: Dir = client_grpc(
                 method=instance.stub.MakeRegresion,
                 input=data_set,
-                indices_serializer=solvers_dataset_pb2.DataSet,
+                indices_serializer=sd_pb2.DataSet,
                 indices_parser=regresion_pb2.Tensor,
                 partitions_message_mode_parser=False,
             )
