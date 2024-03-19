@@ -9,7 +9,7 @@ from node_driver.dependency_manager.service_interface import ServiceInterface
 from node_driver.dependency_manager.dependency_manager import DependencyManager
 from node_driver.dependency_manager.service_instance import ServiceInstance
 from grpcbigbuffer.client import client_grpc, Dir
-from typing import Generator, Optional, Final, List, Dict
+from typing import Generator, Optional, Dict
 
 from protos import api_pb2, regresion_pb2_grpc, solvers_dataset_pb2 as sd_pb2, regresion_pb2
 from src.envs import REGRESSION_SHA3_256, LOGGER, SHA3_256
@@ -17,7 +17,7 @@ from src.utils.singleton import Singleton
 from src.utils.general import read_file
 
 
-MAX_CNF_GROUPS = 2  # 2² groups.
+MAX_CNF_GROUPS = 5  # 5² groups.
 MAX_LITERALS = 100
 MAX_CLAUSES = 100
 TYPE_CNF_SEPARATOR_SYMBOL = ":"
@@ -103,24 +103,28 @@ class Session(metaclass=Singleton):
             if not self.data_set:
                 self.data_set = sd_pb2.DataSet()
 
-            prev_instances: Dict[bytes: sd_pb2.DataSetInstance] = {instance.configuration_hash: instance
+            __local_instances: Dict[bytes: sd_pb2.DataSetInstance] = {instance.configuration_hash: instance
                                                                                 for instance in self.data_set.data}
+            self.data_set = None
 
             # Add the new data set to the dataset on regression module.
 
             # TODO This don't work.
             for new_instance in new_data_set.data:
-                if new_instance.configuration_hash not in prev_instances:
-                    prev_data_instance = sd_pb2.DataSetInstance()
-                    self.data_set.data.append(prev_data_instance)
-                    prev_instances[new_instance.configuration_hash] = prev_data_instance  # Op. don't needed, but simplifies the code.
-
-                prev_data_instance: sd_pb2.DataSetInstance = prev_instances[new_instance.configuration_hash]
+                __current: sd_pb2.DataSetInstance = __local_instances.get(new_instance.configuration_hash)
+                
+                if __current is None:
+                    __current = sd_pb2.DataSetInstance()
+                    __current.configuration_hash = new_instance.configuration_hash
+                    __current.service_hash = new_instance.service_hash
+                    # Stores it on instances
+                    __local_instances[new_instance.configuration_hash] = __current
+                
                 for cnf, new_data in new_instance.data.items():
                     group_key: str = self.determine_cnf_group(cnf)
                     print(f"cnf {cnf} on group {group_key}")
-                    if group_key in prev_data_instance.data:   
-                        _prev: sd_pb2.Data = prev_data_instance.data[group_key] 
+                    if group_key in __current.data:
+                        _prev: sd_pb2.Data = __current.data[group_key] 
                         _prev.score = sum([
                             (_prev.index * _prev.score),
                             new_data.index * new_data.score,
@@ -128,8 +132,10 @@ class Session(metaclass=Singleton):
                         _prev.index = _prev.index + new_data.index
 
                     else:
-                        prev_data_instance.data[group_key].CopyFrom(new_data)
+                        __current.data[group_key].CopyFrom(new_data)
 
+            self.data_set = sd_pb2.DataSet()
+            self.data_set.data.extend(__local_instances.values())
         LOGGER(f'\n\nDataset updated {self.data_set}. size: {self.data_set.ByteSize()}\n\n')
 
     # Hasta que se implemente AddTensor en el clasificador.
