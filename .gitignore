@@ -3,6 +3,7 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,flask
 venv
 __services__
+__tensor__
 __cache__
 __block__
 __metadata__

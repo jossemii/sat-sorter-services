@@ -72,10 +72,10 @@ def iterate_regression(
         # Si hemos tomado menos de cinco ejemplos, podemos esperar a la siguiente iteración.
         if len(solver_data) < 5:
             break
-        log('SOLVER --> ' + str(solver_config_id))
+        log('SOLVER --> ' + solver_config_id.hex())
         # ONNXTensor
         tensor = regresion_pb2.Tensor.NonEscalarDimension.NonEscalar()
-        tensor.element = solver_config_id
+        tensor.element = solver_config_id.hex()
 
         # We need to serialize and parse the buffer because the classes are provided by different proto files.
         #  It is because import the onnx-ml.proto on skl2onnx lib to our onnx.proto was impossible.
