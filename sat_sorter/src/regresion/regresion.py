@@ -122,7 +122,6 @@ class Session(metaclass=Singleton):
                 
                 for cnf, new_data in new_instance.data.items():
                     group_key: str = self.determine_cnf_group(cnf)
-                    print(f"cnf {cnf} on group {group_key}")
                     if group_key in __current.data:
                         _prev: sd_pb2.Data = __current.data[group_key] 
                         _prev.score = sum([
@@ -136,7 +135,7 @@ class Session(metaclass=Singleton):
 
             self.data_set = sd_pb2.DataSet()
             self.data_set.data.extend(__local_instances.values())
-        LOGGER(f'\n\nDataset updated {self.data_set}. size: {self.data_set.ByteSize()}\n\n')
+        LOGGER(f'\n\nDataset updated size: {self.data_set.ByteSize()}\n\n')
 
     # Hasta que se implemente AddTensor en el clasificador.
     def get_data_set(self) -> sd_pb2.DataSet:
@@ -166,13 +165,13 @@ class Session(metaclass=Singleton):
     def iterate_regression(self, data_set: sd_pb2.DataSet) -> str:
         instance: ServiceInstance = self.service.get_instance()
         try:
-            dataset: Dir = client_grpc(
+            dataset: Dir = next(client_grpc(
                 method=instance.stub.MakeRegresion,
                 input=data_set,
                 indices_serializer=sd_pb2.DataSet,
                 indices_parser=regresion_pb2.Tensor,
                 partitions_message_mode_parser=False,
-            )
+            ))
             if dataset.type != regresion_pb2.Tensor:
                 raise Exception("Incorrect regression type.")
             return dataset.dir
