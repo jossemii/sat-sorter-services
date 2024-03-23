@@ -164,9 +164,15 @@ class Session(metaclass=Singleton):
     # Make regression Grpc method. Return the Tensor buffer.
     def iterate_regression(self, data_set: sd_pb2.DataSet) -> str:
         instance: ServiceInstance = self.service.get_instance()
+        if False: # Test with local regresion service.
+            import grpc
+            _uri = "localhost:9999"
+            regresion_stub = regresion_pb2_grpc.RegresionStub(grpc.insecure_channel(_uri))
+        else:
+            regresion_stub = instance.stub
         try:
             dataset: Dir = next(client_grpc(
-                method=instance.stub.MakeRegresion,
+                method=regresion_stub.MakeRegresion,
                 input=data_set,
                 indices_serializer=sd_pb2.DataSet,
                 indices_parser=regresion_pb2.Tensor,
