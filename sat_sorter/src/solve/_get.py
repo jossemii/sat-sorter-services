@@ -1,12 +1,14 @@
+from typing import Optional
 import numpy
 import onnxruntime as rt
 
-from protos import api_pb2, onnx_pb2
-from protos import regresion_pb2
+from protos.api_pb2 import Cnf
+from protos.onnx_pb2 import ModelProto
+from protos.regresion_pb2 import Tensor
 from src.envs import LOGGER
 
 
-def get_score(model: onnx_pb2.ModelProto, _cnf: dict) -> float:
+def get_score(model: ModelProto, _cnf: dict) -> float:
     session = rt.InferenceSession(
         model.SerializeToString()
     )
@@ -15,7 +17,7 @@ def get_score(model: onnx_pb2.ModelProto, _cnf: dict) -> float:
     return session.run([label_name], {input_name: [_cnf]})[0][0][0]
 
 
-def data(cnf: api_pb2.Cnf) -> dict:
+def data(cnf: Cnf) -> dict:
     num_literals = 0
     for clause in cnf.clause:
         for literal in clause.literal:
@@ -27,7 +29,8 @@ def data(cnf: api_pb2.Cnf) -> dict:
     ]
 
 
-def cnf(cnf: api_pb2.Cnf, tensors: regresion_pb2.Tensor) -> str:
+def cnf(cnf: Cnf, tensors: Optional[Tensor]) -> Optional[str]:
+    if not tensors: return None
     LOGGER('GET CNF: selecting a solver ...')
     best_score = None
     for solver_tensor in tensors.non_escalar.non_escalar:

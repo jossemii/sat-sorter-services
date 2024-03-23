@@ -146,7 +146,7 @@ class SolverServicer(api_pb2_grpc.SolverServicer):
         ))
         try:
             while True:
-                solver_config_id = _get.cnf(
+                solver_config_id: Optional[str] = _get.cnf(
                     cnf=cnf,
                     tensors=_regresion.get_tensor()
                 )

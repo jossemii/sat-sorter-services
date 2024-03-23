@@ -75,7 +75,7 @@ class Session(metaclass=Singleton):
                         LOGGER('Exception with regresion service, ' + str(e))
                         continue
 
-    def get_tensor(self) -> regresion_pb2.Tensor:
+    def get_tensor(self) -> Optional[regresion_pb2.Tensor]:
         # No hay condiciones de carrera aunque lo reescriba en ese momento.
         if os.path.isfile('__tensor__'):
             tensor = regresion_pb2.Tensor()
@@ -84,7 +84,7 @@ class Session(metaclass=Singleton):
             )
             return tensor
         else:
-            raise Exception('__tensor__ does not exist.')
+            return None
         
     def determine_cnf_group(self, cnf) -> str:
         cnf = cnf.split(TYPE_CNF_SEPARATOR_SYMBOL)

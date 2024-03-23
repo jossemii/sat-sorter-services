@@ -20,10 +20,16 @@ class Session(metaclass=Singleton):
         self.solvers: Dict[str, ServiceInterface] = {}
         self.lock = Lock()
 
-    def cnf(self, cnf: api_pb2.Cnf, solver_config_id: str, timeout=None):
+    def cnf(self, cnf: api_pb2.Cnf, solver_config_id: Optional[str], timeout=None):
         LOGGER(str(timeout) + 'cnf want solvers lock' + str(self.lock.locked()))
 
-        solver_interface = self.solvers[solver_config_id]
+        if not solver_config_id:
+            if len(self.solvers) > 0:
+                solver_config_id = list(self.solvers.keys())[0]
+            else:
+                raise Exception("Don't 've solvers.")
+
+        solver_interface: ServiceInterface = self.solvers[solver_config_id]
         instance = solver_interface.get_instance()
 
         try:
