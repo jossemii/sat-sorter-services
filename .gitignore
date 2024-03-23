@@ -2,6 +2,7 @@
 # Created by https://www.toptal.com/developers/gitignore/api/python,flask
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,flask
 venv
+.service
 __services__
 __tensor__
 __cache__
