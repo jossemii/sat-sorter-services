@@ -167,7 +167,7 @@ class SolverServicer(api_pb2_grpc.SolverServicer):
                         continue
 
         except Exception as e:
-            LOGGER('Wait more for it, tensor is not ready yet. ')
+            LOGGER('Wait more for it, tensor is not ready yet. '+str(e))
             yield from grpcbf.serialize_to_buffer(
                 indices={1: api_pb2.Interpretation, 2: buffer_pb2.Empty}
             )
