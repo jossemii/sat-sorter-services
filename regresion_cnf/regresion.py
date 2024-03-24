@@ -62,7 +62,8 @@ def iterate_regression(max_degree: int, data_set: solvers_dataset_pb2.DataSet, l
         # Directly use the ONNX tensor without unnecessary serialization/deserialization.
         onnx_tensor = regresion_pb2.Tensor.NonEscalarDimension.NonEscalar()
         onnx_tensor.element = solver_config_id
-        onnx_tensor.escalar.CopyFrom(tensor)
+        # onnx_tensor.escalar.CopyFrom(tensor)
+        onnx_tensor.escalar.ParseFromString(tensor.SerializeToString())
         onnx.non_escalar.non_escalar.append(onnx_tensor)
         log(' ****** ')
 
