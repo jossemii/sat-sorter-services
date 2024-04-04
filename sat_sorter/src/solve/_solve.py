@@ -1,3 +1,4 @@
+from memory_profiler import profile
 from threading import Lock
 from time import time as time_now
 from typing import Optional, Dict

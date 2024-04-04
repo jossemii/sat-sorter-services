@@ -1,12 +1,14 @@
 import hashlib
 import logging
 
-DEV_MODE = False
+DEV_MODE = True
 DEV_ENVS = {
-    'GATEWAY_MAIN_DIR': '192.168.1.84:8090',
+    'GATEWAY_MAIN_DIR': '192.168.1.78:8090',
     'MEM_LIMIT': 50 * pow(10, 6),
     'CLIENT_ID': 'dev'
 }
+import os, psutil; 
+RAM = lambda: print("\n RAM -> ", psutil.Process(os.getpid()).memory_info().rss)
 
 ENVS = {
     'GATEWAY_MAIN_DIR': None,

@@ -1,3 +1,4 @@
+import gc
 import shutil
 import threading
 from time import sleep
@@ -12,9 +13,10 @@ from grpcbigbuffer.client import client_grpc, Dir
 from typing import Generator, Optional, Dict
 
 from protos import api_pb2, regresion_pb2_grpc, solvers_dataset_pb2 as sd_pb2, regresion_pb2
-from src.envs import REGRESSION_SHA3_256, LOGGER, SHA3_256
+from src.envs import RAM, REGRESSION_SHA3_256, LOGGER, SHA3_256
 from src.utils.singleton import Singleton
 from src.utils.general import read_file
+from pympler.asizeof import asizeof
 
 
 MAX_CNF_GROUPS = 5  # 5² groups.
@@ -64,6 +66,7 @@ class Session(metaclass=Singleton):
                     self.dataset_lock.release()
 
                     LOGGER('..........')
+                    RAM()
                     try:
                         shutil.move(
                             self.iterate_regression(
@@ -74,6 +77,7 @@ class Session(metaclass=Singleton):
                     except Exception as e:
                         LOGGER('Exception with regresion service, ' + str(e))
                         continue
+                    RAM()
 
     def get_tensor(self) -> Optional[regresion_pb2.Tensor]:
         # No hay condiciones de carrera aunque lo reescriba en ese momento.
@@ -135,7 +139,9 @@ class Session(metaclass=Singleton):
 
             self.data_set = sd_pb2.DataSet()
             self.data_set.data.extend(__local_instances.values())
+        print(f"\nEl tamaño total de la regresion solvers dataset es: {asizeof(self.data_set)} bytes \n")
         LOGGER(f'\n\nDataset updated size: {self.data_set.ByteSize()}\n\n')
+        gc.collect()
 
     # Hasta que se implemente AddTensor en el clasificador.
     def get_data_set(self) -> sd_pb2.DataSet:
@@ -162,7 +168,9 @@ class Session(metaclass=Singleton):
                 self.service.push_instance(instance)
 
     # Make regression Grpc method. Return the Tensor buffer.
+
     def iterate_regression(self, data_set: sd_pb2.DataSet) -> str:
+        print(f"\nEl tamaño total de la instancia del regresion es: {asizeof(self.service)} bytes \n")
         instance: ServiceInstance = self.service.get_instance()
         if False: # Test with local regresion service.
             import grpc
@@ -185,3 +193,4 @@ class Session(metaclass=Singleton):
             instance.compute_exception(e)
 
         self.service.push_instance(instance)
+        gc.collect()

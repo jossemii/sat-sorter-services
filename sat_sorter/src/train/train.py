@@ -1,3 +1,4 @@
+import gc
 import os
 import shutil
 from threading import get_ident, Thread, Lock
@@ -10,11 +11,11 @@ from grpcbigbuffer.client import client_grpc
 from grpcbigbuffer.utils import WITHOUT_BLOCK_POINTERS_FILE_NAME
 
 from protos import api_pb2, api_pb2_grpc, solvers_dataset_pb2
-from src.envs import SHA3_256_ID, LOGGER, SHA3_256, RANDOM_SHA3_256
+from src.envs import RAM, SHA3_256_ID, LOGGER, SHA3_256, RANDOM_SHA3_256
 from src.regresion import regresion
 from src.solve import _solve
 from src.utils.singleton import Singleton
-
+from pympler.asizeof import asizeof
 
 class Session(metaclass=Singleton):
 
@@ -124,6 +125,7 @@ class Session(metaclass=Singleton):
 
     def random_cnf(self) -> api_pb2.Cnf:
         while True:
+            print(f"\nEl tamaño total de la instancia del random es: {asizeof(self.service) } bytes \n")
             instance = self.service.get_instance()
 
             try:
@@ -195,6 +197,7 @@ class Session(metaclass=Singleton):
         #  finalizará en la siguiente iteración.
         while not self.do_stop:
             if refresh < self.REFRESH:
+                RAM()
                 LOGGER('REFRESH ES MENOR')
                 refresh = refresh + 1
                 cnf = self.random_cnf()
@@ -248,6 +251,8 @@ class Session(metaclass=Singleton):
                         else (float(-1 / d['time']) if d['time'] != 0 else -1)
                         # comprueba is_insat en cada vuelta, cuando no es necesario, pero el codigo queda más limpio.
                     )
+
+                print(f"\nEl tamaño total de la trainer solvers dataset es: {asizeof(self.solvers_dataset) } bytes \n")
             else:
                 LOGGER('ACTUALIZA EL DATASET')
                 refresh = 0
@@ -255,3 +260,4 @@ class Session(metaclass=Singleton):
                 # No formatear los datos cada vez provocaría que el regresion realizara equívocamente la media, pues 
                 # estaría contando los datos anteriores una y otra vez.
                 self.clear_dataset()
+            gc.collect()
