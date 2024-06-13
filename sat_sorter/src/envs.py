@@ -43,8 +43,8 @@ _js = {
     "metadata_dependencies_directory": "__metadata__",
     "blocks_directory": "__block__",
     "dependencies": {
-        "REGRESSION": "d4a7d579917025a8743c1b6831fd68e81e098892de388f782f96f48c93dd91f8",
-        "RANDOM":    "59a7da2db97cdfabb438c6dc71ceeee9d5cd5b66d1f991749cc550c1d8fab6bb"
+        "REGRESSION": "163ec59372f965e6b25794e7dc655a800b20f7f15fd56f633ef5d555fc1b730b",
+        "RANDOM":    "d997197e4356a34c7bb412e897049be3a9a18ebf4b231f80f9debefc236d98ed"
       },
     "zip": True
 }
