@@ -3,9 +3,9 @@ import shutil
 from threading import get_ident, Thread, Lock
 from typing import Optional, List, Union, Dict
 
-from node_driver.dependency_manager.dependency_manager import DependencyManager
-from node_driver.dependency_manager.service_interface import ServiceInterface
-from node_driver.gateway.protos import celaut_pb2 as celaut
+from node_controller.dependency_manager.dependency_manager import DependencyManager
+from node_controller.dependency_manager.service_interface import ServiceInterface
+from node_controller.gateway.protos import celaut_pb2 as celaut
 from grpcbigbuffer.client import client_grpc
 from grpcbigbuffer.utils import WITHOUT_BLOCK_POINTERS_FILE_NAME
 

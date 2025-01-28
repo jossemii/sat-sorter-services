@@ -1,4 +1,4 @@
-import node_driver.gateway.protos.celaut_pb2 as celaut
+import node_controller.gateway.protos.celaut_pb2 as celaut
 
 UploadSolver_input_indices = {
     1: celaut.Any.Metadata,

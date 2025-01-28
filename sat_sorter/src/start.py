@@ -3,7 +3,7 @@ import zipfile
 from threading import Thread
 from typing import Optional
 
-from node_driver.dependency_manager.dependency_manager import DependencyManager
+from node_controller.dependency_manager.dependency_manager import DependencyManager
 from iterators import TimeoutIterator
 
 from resource_manager.resourcemanager import ResourceManager, mem_manager
