@@ -49,7 +49,7 @@ _js = {
     "zip": True
 }
 
-REGRESSION_SHA3_256 = _js['dependencies']['REGRESSION']
+REGRESSION_SHA3_256 = _js['dependencies']['REGRESION']
 RANDOM_SHA3_256 = _js['dependencies']['RANDOM']
 
 BLOCK_DIRECTORY = _js["blocks_directory"]
