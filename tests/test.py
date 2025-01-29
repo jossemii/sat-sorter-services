@@ -15,6 +15,7 @@ from node_controller.gateway.protos import gateway_pb2, celaut_pb2, gateway_pb2_
 
 
 GATEWAY="localhost:53047"
+CLIENT_DEV=""
 RANDOM="54500441c6e791d9f6ef74102f962f1de763c9284f17a8ffde3ada9026d55089"
 FRONTIER=""
 SORTER="098b5c01cd051ef759a54ba1a1d133bf2c196704df6fe5916e08460c9819a082"
@@ -35,7 +36,7 @@ def to_gas_amount(gas_amount: int) -> gateway_pb2.GasAmount:
 
 def generator(_hash: str, mem_limit: int = 50 * pow(10, 6), initial_gas_amount: Optional[int] = None):
     try:
-        yield gateway_pb2.Client(client_id='dev')
+        yield gateway_pb2.Client(client_id=CLIENT_DEV)
 
         yield gateway_pb2.Configuration(
             config=celaut_pb2.Configuration(),
