@@ -8,4 +8,4 @@ if DEV_MODE:
                     mem_limit=d['max']
                 ), 0)
 else:
-    MODIFY_SYSTEM_RESOURCES_LAMBDA = lambda d: modify_resources(i=d, gateway_main_dir=ENVS['GATEWAY_MAIN_DIR'])
+    MODIFY_SYSTEM_RESOURCES_LAMBDA = lambda d: modify_resources(i=d, node_url=ENVS['GATEWAY_MAIN_DIR'])

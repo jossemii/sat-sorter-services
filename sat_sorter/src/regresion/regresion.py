@@ -4,6 +4,7 @@ from time import sleep
 
 import os
 
+import grpc
 from node_controller.gateway.protos import celaut_pb2
 from node_controller.dependency_manager.service_interface import ServiceInterface
 from node_controller.dependency_manager.dependency_manager import DependencyManager
@@ -35,7 +36,6 @@ class Session(metaclass=Singleton):
         self.service: ServiceInterface = DependencyManager().add_service(
             service_hash=REGRESSION_SHA3_256,
             config=celaut_pb2.Configuration(),
-            stub_class=regresion_pb2_grpc.RegresionStub,
             dynamic=False
         )
 
@@ -150,7 +150,7 @@ class Session(metaclass=Singleton):
                 for i in range(1):
                     try:
                         yield from client_grpc(
-                                method=instance.stub.StreamLogs,
+                                method=regresion_pb2_grpc.RegresionStub(grpc.insecure_channel(instance.uri)).StreamLogs,
                                 indices_parser=regresion_pb2.File,
                                 partitions_message_mode_parser=True,
                                 timeout=self.service.sc.timeout
@@ -169,7 +169,7 @@ class Session(metaclass=Singleton):
             _uri = "localhost:9999"
             regresion_stub = regresion_pb2_grpc.RegresionStub(grpc.insecure_channel(_uri))
         else:
-            regresion_stub = instance.stub
+            regresion_stub = regresion_pb2_grpc.RegresionStub(grpc.insecure_channel(instance.uri))
         try:
             dataset: Dir = next(client_grpc(
                 method=regresion_stub.MakeRegresion,

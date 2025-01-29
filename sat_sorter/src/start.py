@@ -111,7 +111,7 @@ ResourceManager(
 )
 
 DependencyManager(
-    gateway_main_dir=ENVS['GATEWAY_MAIN_DIR'],
+    node_url=ENVS['GATEWAY_MAIN_DIR'],
     maintenance_sleep_time=ENVS['MAINTENANCE_SLEEP_TIME'],
     timeout=ENVS['TRAIN_SOLVERS_TIMEOUT'],
     failed_attempts=ENVS['SOLVER_FAILED_ATTEMPTS'],

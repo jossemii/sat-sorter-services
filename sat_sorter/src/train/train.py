@@ -3,6 +3,7 @@ import shutil
 from threading import get_ident, Thread, Lock
 from typing import Optional, List, Union, Dict
 
+import grpc
 from node_controller.dependency_manager.dependency_manager import DependencyManager
 from node_controller.dependency_manager.service_interface import ServiceInterface
 from node_controller.gateway.protos import celaut_pb2 as celaut
@@ -22,7 +23,7 @@ class Session(metaclass=Singleton):
                  save_train_data: int,
                  train_solvers_timeout: int,
                  time_for_each_regression_loop: int
-                 ):
+                ):
 
         # set used envs on variables.
         self.REFRESH = save_train_data
@@ -31,7 +32,6 @@ class Session(metaclass=Singleton):
         self.service: ServiceInterface = DependencyManager().add_service(
             service_hash=RANDOM_SHA3_256,
             config=celaut.Configuration(),
-            stub_class=api_pb2_grpc.RandomStub,
             dynamic=False
         )
 
@@ -129,7 +129,7 @@ class Session(metaclass=Singleton):
             try:
                 LOGGER('Generate new random CNF.')
                 return next(client_grpc(
-                    method=instance.stub.RandomCnf,
+                    method=api_pb2_grpc.RandomStub(grpc.insecure_channel(instance.uri)).RandomCnf,
                     indices_parser=api_pb2.Cnf,
                     partitions_message_mode_parser=True,
                     timeout=self.service.sc.timeout
@@ -179,7 +179,7 @@ class Session(metaclass=Singleton):
             self.thread = Thread(target=self.init, name='Trainer')
             self.thread.start()
         except RuntimeError:
-            LOGGER('Error: train thread was started and have an error.')
+            LOGGER('Error: train thread was started and have an errservice_urior.')
 
     def init(self):
         if not self._solver: 

@@ -3,7 +3,7 @@ import logging
 
 DEV_MODE = False
 DEV_ENVS = {
-    'GATEWAY_MAIN_DIR': '192.168.1.84:8090',
+    'GATEWAY_MAIN_DIR': 'localhost:8090',
     'MEM_LIMIT': 50 * pow(10, 6),
     'CLIENT_ID': 'dev'
 }
