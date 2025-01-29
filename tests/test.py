@@ -9,10 +9,9 @@ import json
 import threading
 from grpcbigbuffer.client import Dir, client_grpc
 
-from sat_sorter.protos import api_pb2, api_pb2_grpc
-from sat_sorter.protos import gateway_pb2, celaut_pb2, gateway_pb2_grpc
-from sat_sorter.protos import solvers_dataset_pb2
+from protos import api_pb2, api_pb2_grpc, solvers_dataset_pb2
 from node_controller.gateway.protos.gateway_pb2_grpcbf import StartService_input_indices
+from node_controller.gateway.protos import gateway_pb2, celaut_pb2, gateway_pb2_grpc
 
 
 GATEWAY=""
@@ -397,3 +396,6 @@ def test_sorter_service(sorter_endpoint: Optional[str] = sys.argv[3] if len(sys.
     with open(SESSION_SERVICES_JSON, 'w') as file:
         print('Clearing data ...')
         json.dump("", file)
+
+if __name__ == "__main__":
+    test_sorter_service()
