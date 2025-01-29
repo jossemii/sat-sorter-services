@@ -14,10 +14,10 @@ from node_controller.gateway.protos.gateway_pb2_grpcbf import StartService_input
 from node_controller.gateway.protos import gateway_pb2, celaut_pb2, gateway_pb2_grpc
 
 
-GATEWAY=""
-RANDOM=""
+GATEWAY="localhost:53047"
+RANDOM="54500441c6e791d9f6ef74102f962f1de763c9284f17a8ffde3ada9026d55089"
 FRONTIER=""
-SORTER=""
+SORTER="098b5c01cd051ef759a54ba1a1d133bf2c196704df6fe5916e08460c9819a082"
 
 METADATA_REGISTRY="/nodo/storage/__metadata__"
 REGISTRY="/nodo/storage/__registry__"
@@ -25,7 +25,7 @@ REGISTRY="/nodo/storage/__registry__"
 SHA3_256_ID: Final[bytes] = bytes.fromhex("a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a")
 SHA3_256 = SHA3_256_ID.hex()
 
-LIST_OF_SOLVERS = [FRONTIER]
+LIST_OF_SOLVERS = [FRONTIER] if FRONTIER else []
 TEST_DATA_STORAGE = f'test_storage'
 os.makedirs(TEST_DATA_STORAGE, exist_ok=True)
 SESSION_SERVICES_JSON: Final[str] = f'{TEST_DATA_STORAGE}/script_data.json'
