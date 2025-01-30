@@ -15,7 +15,7 @@ from node_controller.gateway.protos import gateway_pb2, celaut_pb2, gateway_pb2_
 
 
 GATEWAY="localhost:53047"
-CLIENT_DEV=""
+CLIENT_DEV="dev-fd808933-55fa-462f-b631-bb28be265a6b"
 RANDOM="54500441c6e791d9f6ef74102f962f1de763c9284f17a8ffde3ada9026d55089"
 FRONTIER="900adcdd218c60a02d061fe9853c554be3c9b50616c085c10c404a7befdedf19"
 SORTER="098b5c01cd051ef759a54ba1a1d133bf2c196704df6fe5916e08460c9819a082"
@@ -197,7 +197,7 @@ def test_sorter_service(sorter_endpoint: Optional[str] = sys.argv[3] if len(sys.
     print('Uploading solvers al clasificador.')
     for s in LIST_OF_SOLVERS:
         print('     ', s)
-        while True:
+        while input("\n Upload the solver? (y/n)") == 'y':
             try:
                 next(client_grpc(
                     method=c_stub.UploadSolver,
@@ -226,7 +226,7 @@ def test_sorter_service(sorter_endpoint: Optional[str] = sys.argv[3] if len(sys.
         print("Don't have dataset")
         pass
 
-    if True:  # input("\nGo to train? (y/n)")=='y':
+    if input("\nGo to train? (y/n)")=='y':
         print('Starting training ...')
         next(client_grpc(method=c_stub.StartTrain))
 
@@ -399,4 +399,4 @@ def test_sorter_service(sorter_endpoint: Optional[str] = sys.argv[3] if len(sys.
         json.dump("", file)
 
 if __name__ == "__main__":
-    test_sorter_service()
+    test_sorter_service(sorter_endpoint="localhost:8081")

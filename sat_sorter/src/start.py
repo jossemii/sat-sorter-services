@@ -199,18 +199,27 @@ class SolverServicer(api_pb2_grpc.SolverServicer):
         LOGGER('New solver ...')
         metadata: Optional[api_pb2_grpcbf.celaut.Any.Metadata] = None
         service_dir: Optional[str] = None
-        for _e in grpcbf.parse_from_buffer(
-            request_iterator=request_iterator,
-            indices=api_pb2_grpcbf.UploadSolver_input_indices,
-            partitions_message_mode=api_pb2_grpcbf.UploadSolver_input_message_mode
-        ):
-            if type(_e) is api_pb2_grpcbf.celaut.Any.Metadata:
-                print(f"New solver metadata {[(h.type.hex(), h.value.hex())  for h in _e.hashtag.hash]}")
-                metadata = _e
-            elif type(_e) is grpcbf.Dir and _e.type == api_pb2_grpcbf.celaut.Service:
-                service_dir = _e.dir
-            else:
-                LOGGER('Upload solver error: incorrect message type.')
+        try:
+            for _e in grpcbf.parse_from_buffer(
+                request_iterator=request_iterator,
+                indices=api_pb2_grpcbf.UploadSolver_input_indices,
+                partitions_message_mode=api_pb2_grpcbf.UploadSolver_input_message_mode
+            ):
+                print(type(_e))
+                if type(_e) is api_pb2_grpcbf.celaut.Any.Metadata:
+                    print(f"New solver metadata {[(h.type.hex(), h.value.hex())  for h in _e.hashtag.hash]}")
+                    metadata = _e
+                elif type(_e) is grpcbf.Dir and _e.type == api_pb2_grpcbf.celaut.Service:
+                    service_dir = _e.dir
+                else:
+                    LOGGER('Upload solver error: incorrect message type.')
+        except Exception as e:
+            print(f"metadata -> {metadata}")
+            print(f"service dir -> {service_dir}")
+            print(f"Exception -> {e}")
+            raise e
+        
+        print("exit the parse from buffer.")
         trainer.load_solver(
             metadata=metadata,
             service_dir=service_dir

@@ -63,6 +63,9 @@ class Session(metaclass=Singleton):
             self.thread = None
 
     def load_solver(self, metadata: Optional[celaut.Any.Metadata], service_dir: str) -> str:
+        print("\nLoad solver function")
+        print(self.solvers)
+        
         if not self._solver:
             self._solver = _solve.Session()
 
