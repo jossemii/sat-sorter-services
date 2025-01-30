@@ -15,7 +15,8 @@ from node_controller.gateway.protos import gateway_pb2, celaut_pb2, gateway_pb2_
 
 
 GATEWAY="localhost:53047"
-CLIENT_DEV="dev-c819b4bd-f520-4ba1-99f9-d0fcee59ed85"
+SORTER_ENDPOINT="localhost:8081"
+CLIENT_DEV="dev-6c871eff-8c75-4f29-83ed-29fda92d87da"
 RANDOM="54500441c6e791d9f6ef74102f962f1de763c9284f17a8ffde3ada9026d55089"
 FRONTIER="900adcdd218c60a02d061fe9853c554be3c9b50616c085c10c404a7befdedf19"
 SORTER="098b5c01cd051ef759a54ba1a1d133bf2c196704df6fe5916e08460c9819a082"
@@ -426,4 +427,4 @@ def test_sorter_service(sorter_endpoint: Optional[str] = sys.argv[3] if len(sys.
         json.dump("", file)
 
 if __name__ == "__main__":
-    test_sorter_service(sorter_endpoint="localhost:8081")
+    test_sorter_service(sorter_endpoint=SORTER_ENDPOINT)
