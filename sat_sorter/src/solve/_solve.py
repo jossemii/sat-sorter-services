@@ -2,6 +2,7 @@ from threading import Lock
 from time import time as time_now
 from typing import Optional, Dict
 
+import grpc
 from node_controller.dependency_manager.dependency_manager import DependencyManager
 from node_controller.dependency_manager.service_interface import ServiceInterface
 from grpcbigbuffer.client import client_grpc
@@ -37,7 +38,7 @@ class Session(metaclass=Singleton):
             start_time = time_now()
             LOGGER('    resolving cnf on ' + str(solver_config_id))
             interpretation = next(client_grpc(
-                method=instance.stub.Solve,
+                method=api_pb2_grpc.SolverStub(grpc.insecure_channel(instance.uri)).Solve,
                 input=cnf,
                 indices_parser=api_pb2.Interpretation,
                 partitions_message_mode_parser=True,
@@ -99,7 +100,6 @@ class Session(metaclass=Singleton):
                     config=celaut.Configuration(
                         enviroment_variables=solver_configuration.enviroment_variables
                     ),
-                    stub_class=api_pb2_grpc.SolverStub,
                     dynamic=True
                 )
             })
