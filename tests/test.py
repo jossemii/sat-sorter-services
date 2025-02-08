@@ -8,21 +8,23 @@ import grpc
 import json
 import threading
 from grpcbigbuffer.client import Dir, client_grpc
+from grpcbigbuffer.utils import modify_env
 
 from protos import api_pb2, api_pb2_grpc, solvers_dataset_pb2
 from node_controller.gateway.protos.gateway_pb2_grpcbf import StartService_input_indices
 from node_controller.gateway.protos import gateway_pb2, celaut_pb2, gateway_pb2_grpc
 
 
-GATEWAY="localhost:53047"
+GATEWAY="192.168.1.20:53047"
 SORTER_ENDPOINT="localhost:8081"
-CLIENT_DEV="dev-6c871eff-8c75-4f29-83ed-29fda92d87da"
+CLIENT_DEV="dev-f370966a-8b88-4056-a45b-fcca76bcba97"
 RANDOM="54500441c6e791d9f6ef74102f962f1de763c9284f17a8ffde3ada9026d55089"
 FRONTIER="900adcdd218c60a02d061fe9853c554be3c9b50616c085c10c404a7befdedf19"
-SORTER="098b5c01cd051ef759a54ba1a1d133bf2c196704df6fe5916e08460c9819a082"
+SORTER=""
 
 METADATA_REGISTRY="/nodo/storage/__metadata__"
 REGISTRY="/nodo/storage/__registry__"
+modify_env(block_dir="/nodo/storage/__block__/")
 
 SHA3_256_ID: Final[bytes] = bytes.fromhex("a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a")
 SHA3_256 = SHA3_256_ID.hex()
@@ -111,7 +113,6 @@ def test_sorter_service(sorter_endpoint: Optional[str] = sys.argv[3] if len(sys.
             try:
                 # Get a classifier.
                 classifier = next(client_grpc(
-                    debug=lambda s: print(f"\n                     rpc: {s}"),
                     method=g_stub.StartService,
                     input=generator(
                         _hash=SORTER,
@@ -133,11 +134,10 @@ def test_sorter_service(sorter_endpoint: Optional[str] = sys.argv[3] if len(sys.
         c_stub = api_pb2_grpc.SolverStub(
             grpc.insecure_channel(c_uri)
         )
-        print('Tenemos clasificador. ', c_stub)
+        print('We have classifier ', c_stub)
 
         # Get random cnf
         random_cnf_service = next(client_grpc(
-            debug=lambda s: print(f"\n                     rpc: {s}"),
             method=g_stub.StartService,
             input=generator(_hash=RANDOM),
             indices_parser=gateway_pb2.Instance,
@@ -155,7 +155,6 @@ def test_sorter_service(sorter_endpoint: Optional[str] = sys.argv[3] if len(sys.
         if FRONTIER != '':
             # Get the frontier for test it.
             frontier_service = next(client_grpc(
-                debug=lambda s: print(f"\n                     rpc: {s}"),
                 method=g_stub.StartService,
                 input=generator(_hash=FRONTIER),
                 indices_parser=gateway_pb2.Instance,
@@ -204,7 +203,6 @@ def test_sorter_service(sorter_endpoint: Optional[str] = sys.argv[3] if len(sys.
         while input("\n Upload the solver? (y/n)") == 'y':
             try:
                 next(client_grpc(
-                    debug=lambda s: print(f"\n                     rpc: {s}"),
                     method=c_stub.UploadSolver,
                     indices_serializer={
                         1: celaut_pb2.Any.Metadata,
@@ -219,11 +217,11 @@ def test_sorter_service(sorter_endpoint: Optional[str] = sys.argv[3] if len(sys.
             except Exception as e:
                 print('Error connecting to the classifier ', e)
                 sleep(1)
+
     try:
         dataset = solvers_dataset_pb2.DataSet()
         dataset.ParseFromString(open('dataset.bin', 'rb').read())
         next(client_grpc(
-            debug=lambda s: print(f"\n                     rpc: {s}"),
             method=c_stub.AddDataSet,
             input=dataset
         ))
@@ -235,7 +233,6 @@ def test_sorter_service(sorter_endpoint: Optional[str] = sys.argv[3] if len(sys.
     if input("\nGo to train? (y/n)")=='y':
         print('Starting training ...')
         next(client_grpc(
-            debug=lambda s: print(f"\n                     rpc: {s}"),
             method=c_stub.StartTrain
         ))
 
@@ -244,12 +241,16 @@ def test_sorter_service(sorter_endpoint: Optional[str] = sys.argv[3] if len(sys.
 
             sleep(5)
 
-            cnf = next(client_grpc(
-                debug=lambda s: print(f"\n                     rpc: {s}"),
-                method=r_stub.RandomCnf,
-                partitions_message_mode_parser=True,
-                indices_parser=api_pb2.Cnf
-            ))
+            try:
+                cnf = next(client_grpc(
+                    method=r_stub.RandomCnf,
+                    partitions_message_mode_parser=True,
+                    indices_parser=api_pb2.Cnf
+                ))
+            except Exception as e:
+                print(f"Error getting a random cnf. Exception {e}")
+                exit()
+                
             # Comprueba si sabe generar una interpretacion (sin tener ni idea de que tal
             # ha hecho la seleccion del solver.)
             print('\n ---- ', i)
@@ -258,24 +259,20 @@ def test_sorter_service(sorter_endpoint: Optional[str] = sys.argv[3] if len(sys.
             t = time()
             try:
                 interpretation = next(client_grpc(
-                    debug=lambda s: print(f"\n                     rpc: {s}"),
                     method=c_stub.Solve,
-                    indices_parser={1: api_pb2.Interpretation, 2: api_pb2.Empty},
+                    indices_parser=api_pb2.Interpretation,
                     partitions_message_mode_parser=True,
                     input=cnf,
                     indices_serializer=api_pb2.Cnf,
                 ))
-                if type(interpretation) is api_pb2.Empty:
-                    print("No interpretation")
-                else:
-                    print(str(time() - t) + ' OKAY THE INTERPRETATION WAS ', interpretation, '.',
-                          is_good(cnf=cnf, interpretation=interpretation))
+                
+                print(str(time() - t) + ' OKAY THE INTERPRETATION WAS ', interpretation, '.',
+                        is_good(cnf=cnf, interpretation=interpretation))
 
                 print(' SOLVING CNF ON DIRECT SOLVER ...')
                 t = time()
                 try:
                     interpretation = next(client_grpc(
-                        debug=lambda s: print(f"\n                     rpc: {s}"),
                         method=frontier_stub.Solve,
                         input=cnf,
                         indices_serializer=api_pb2.Cnf,
@@ -285,7 +282,6 @@ def test_sorter_service(sorter_endpoint: Optional[str] = sys.argv[3] if len(sys.
                 except(grpc.RpcError):
                     # Get the frontier for test it.
                     uri = next(client_grpc(
-                        debug=lambda s: print(f"\n                     rpc: {s}"),
                         method=g_stub.StartService,
                         input=generator(_hash=FRONTIER),
                         indices_parser=gateway_pb2.Instance,
@@ -297,7 +293,6 @@ def test_sorter_service(sorter_endpoint: Optional[str] = sys.argv[3] if len(sys.
                         grpc.insecure_channel(frontier_uri)
                     )
                     interpretation = next(client_grpc(
-                        debug=lambda s: print(f"\n                     rpc: {s}"),
                         method=frontier_stub.Solve,
                         input=cnf,
                         indices_serializer=api_pb2.Cnf,
@@ -313,7 +308,6 @@ def test_sorter_service(sorter_endpoint: Optional[str] = sys.argv[3] if len(sys.
             print('Received the data_set.')
 
             dataset_obj = next(client_grpc(
-                debug=lambda s: print(f"\n                     rpc: {s}"),
                 method=c_stub.GetDataSet,
                 indices_parser=solvers_dataset_pb2.DataSet,
                 partitions_message_mode_parser=False
@@ -329,7 +323,6 @@ def test_sorter_service(sorter_endpoint: Optional[str] = sys.argv[3] if len(sys.
 
     print('Ends the training')
     next(client_grpc(
-        debug=lambda s: print(f"\n                     rpc: {s}"), 
         method=c_stub.StopTrain
     ))
 
@@ -337,14 +330,14 @@ def test_sorter_service(sorter_endpoint: Optional[str] = sys.argv[3] if len(sys.
     def final_test(c_stub, r_stub, i, j):
         cnf = next(
             client_grpc(
-                debug=lambda s: print(f"\n                     rpc: {s}"),
+                
                 method=r_stub.RandomCnf, 
                 indices_parser=api_pb2.Cnf, 
                 partitions_message_mode_parser=True
             ))
         t = time()
         interpretation = next(client_grpc(
-            debug=lambda s: print(f"\n                     rpc: {s}"),
+            
             method=c_stub.Solve,
             input=cnf,
             indices_serializer=api_pb2.Cnf,
@@ -366,7 +359,6 @@ def test_sorter_service(sorter_endpoint: Optional[str] = sys.argv[3] if len(sys.
 
     print('Received the data_set.')
     dataset_it = client_grpc(
-        debug=lambda s: print(f"\n                     rpc: {s}"),
         method=c_stub.GetDataSet,
         indices_parser=solvers_dataset_pb2.DataSet,
         partitions_message_mode_parser=False
@@ -391,7 +383,6 @@ def test_sorter_service(sorter_endpoint: Optional[str] = sys.argv[3] if len(sys.
     print('Stop the classifier.')
     try:
         next(client_grpc(
-            debug=lambda s: print(f"\n                     rpc: {s}"),
             method=g_stub.StopService,
             input=gateway_pb2.TokenMessage(token=classifier.token)
         ))
@@ -402,7 +393,6 @@ def test_sorter_service(sorter_endpoint: Optional[str] = sys.argv[3] if len(sys.
     print('Stop the random.')
     try:
         next(client_grpc(
-            debug=lambda s: print(f"\n                     rpc: {s}"),
             method=g_stub.StopService,
             input=gateway_pb2.TokenMessage(token=random_cnf_service.token)
         ))
@@ -413,7 +403,6 @@ def test_sorter_service(sorter_endpoint: Optional[str] = sys.argv[3] if len(sys.
     print('Stop the frontier.')
     try:
         next(client_grpc(
-            debug=lambda s: print(f"\n                     rpc: {s}"),
             method=g_stub.StopService,
             input=gateway_pb2.TokenMessage(token=frontier_service.token)
         ))

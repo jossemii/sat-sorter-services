@@ -1,11 +1,11 @@
 import hashlib
 import logging
 
-DEV_MODE = True
+DEV_MODE = False
 DEV_ENVS = {
-    'GATEWAY_MAIN_DIR': 'localhost:53047',
+    'GATEWAY_MAIN_DIR': '',
     'MEM_LIMIT': 50 * pow(10, 6),
-    'CLIENT_ID': 'dev-fd808933-55fa-462f-b631-bb28be265a6b'
+    'CLIENT_ID': ''
 }
 
 ENVS = {
