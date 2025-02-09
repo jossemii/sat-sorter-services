@@ -15,12 +15,13 @@ from node_controller.gateway.protos.gateway_pb2_grpcbf import StartService_input
 from node_controller.gateway.protos import gateway_pb2, celaut_pb2, gateway_pb2_grpc
 
 
-GATEWAY="192.168.1.20:53047"
+GATEWAY="localhost:53047"
 SORTER_ENDPOINT=None
-CLIENT_DEV="dev-d1426378-7b65-4f47-909b-89e7a3977e9c"
+CLIENT_DEV="dev-2d97c026-0438-484e-bac5-390cb00bc2dd"
+
 RANDOM="54500441c6e791d9f6ef74102f962f1de763c9284f17a8ffde3ada9026d55089"
 FRONTIER="900adcdd218c60a02d061fe9853c554be3c9b50616c085c10c404a7befdedf19"
-SORTER="a89040220535e7a7944bd9ae14c83cb1f7a7fc6e1e60d56765d608059e1d00e5"
+SORTER=""
 
 METADATA_REGISTRY="/nodo/storage/__metadata__"
 REGISTRY="/nodo/storage/__registry__"

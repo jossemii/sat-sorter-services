@@ -196,11 +196,13 @@ class SolverServicer(api_pb2_grpc.SolverServicer):
                 # TODO Could be async. (needs the async grpc lib.)
 
     def UploadSolver(self, request_iterator, context):
+        import psutil
         LOGGER('New solver ...')
         metadata: Optional[api_pb2_grpcbf.celaut.Any.Metadata] = None
         service_dir: Optional[str] = None
         try:
             for _e in grpcbf.parse_from_buffer(
+                debug=lambda s: print(f"  - rpc: {psutil.virtual_memory().used / (1024 ** 2):.2f} MB {s}"),
                 request_iterator=request_iterator,
                 indices=api_pb2_grpcbf.UploadSolver_input_indices,
                 partitions_message_mode=api_pb2_grpcbf.UploadSolver_input_message_mode

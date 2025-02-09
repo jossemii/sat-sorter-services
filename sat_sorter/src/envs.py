@@ -5,7 +5,7 @@ DEV_MODE = False
 DEV_ENVS = {
     'GATEWAY_MAIN_DIR': '',
     'MEM_LIMIT': 50 * pow(10, 6),
-    'CLIENT_ID': ''
+    'CLIENT_ID': 'd'
 }
 
 ENVS = {
