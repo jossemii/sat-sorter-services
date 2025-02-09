@@ -202,7 +202,7 @@ class SolverServicer(api_pb2_grpc.SolverServicer):
         service_dir: Optional[str] = None
         try:
             for _e in grpcbf.parse_from_buffer(
-                debug=lambda s: LOGGER(f"  - rpc: {psutil.virtual_memory().used / (1024 ** 2):.2f} MB {s}"),
+                # debug=lambda s: LOGGER(f"  - rpc: {psutil.virtual_memory().used / (1024 ** 2):.2f} MB {s}"),
                 request_iterator=request_iterator,
                 indices=api_pb2_grpcbf.UploadSolver_input_indices,
                 partitions_message_mode=api_pb2_grpcbf.UploadSolver_input_message_mode
