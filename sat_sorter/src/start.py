@@ -207,7 +207,6 @@ class SolverServicer(api_pb2_grpc.SolverServicer):
                 indices=api_pb2_grpcbf.UploadSolver_input_indices,
                 partitions_message_mode=api_pb2_grpcbf.UploadSolver_input_message_mode
             ):
-                LOGGER(type(_e))
                 if type(_e) is api_pb2_grpcbf.celaut.Any.Metadata:
                     metadata = _e
                 elif type(_e) is grpcbf.Dir and _e.type == api_pb2_grpcbf.celaut.Service:
