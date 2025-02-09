@@ -216,8 +216,8 @@ class SolverServicer(api_pb2_grpc.SolverServicer):
                 else:
                     LOGGER('Upload solver error: incorrect message type.')
         except Exception as e:
-            LOGGER(f"metadata -> {metadata}")
-            LOGGER(f"service dir -> {service_dir}")
+            LOGGER(f"metadata -> {type(metadata)}")
+            LOGGER(f"service dir -> {str(service_dir)}")
             LOGGER(f"Exception -> {e}")
             raise e
         
