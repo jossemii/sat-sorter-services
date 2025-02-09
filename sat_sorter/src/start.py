@@ -209,7 +209,6 @@ class SolverServicer(api_pb2_grpc.SolverServicer):
             ):
                 LOGGER(type(_e))
                 if type(_e) is api_pb2_grpcbf.celaut.Any.Metadata:
-                    LOGGER(f"New solver metadata {[(h.type.hex(), h.value.hex())  for h in _e.hashtag.hash]}")
                     metadata = _e
                 elif type(_e) is grpcbf.Dir and _e.type == api_pb2_grpcbf.celaut.Service:
                     service_dir = _e.dir
