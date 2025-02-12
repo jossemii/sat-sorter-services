@@ -11,7 +11,7 @@ from grpcbigbuffer.client import client_grpc
 from grpcbigbuffer.utils import WITHOUT_BLOCK_POINTERS_FILE_NAME
 
 from protos import api_pb2, api_pb2_grpc, solvers_dataset_pb2
-from src.envs import SHA3_256_ID, LOGGER, SHA3_256, RANDOM_SHA3_256
+from src.envs import IGNORE_SERVICE_PROTO_TYPE, SHA3_256_ID, LOGGER, SHA3_256, RANDOM_SHA3_256
 from src.regresion import regresion
 from src.solve import _solve
 from src.utils.singleton import Singleton
@@ -69,13 +69,14 @@ class Session(metaclass=Singleton):
         if not self._solver:
             self._solver = _solve.Session()
 
-        solver = celaut.Service()
-        try:
-            with open(os.path.join(service_dir, WITHOUT_BLOCK_POINTERS_FILE_NAME), 'rb') as f:
-                solver.ParseFromString(f.read())
-                del solver
-        except Exception:
-            raise Exception('UploadSolver error: this is not a ServiceWithMeta message. ' + str(service_dir))
+        if not IGNORE_SERVICE_PROTO_TYPE:
+            solver = celaut.Service()
+            try:
+                with open(os.path.join(service_dir, WITHOUT_BLOCK_POINTERS_FILE_NAME), 'rb') as f:
+                    solver.ParseFromString(f.read())
+                    del solver
+            except Exception:
+                raise Exception('UploadSolver error: this is not a ServiceWithMeta message. ' + str(service_dir))
 
         solver_hash: Optional[str] = None
         for h in metadata.hashtag.hash:

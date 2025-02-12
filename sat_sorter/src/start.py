@@ -8,7 +8,7 @@ from iterators import TimeoutIterator
 
 from resource_manager.resourcemanager import ResourceManager, mem_manager
 from src.envs import DEPENDENCIES_ARE_ZIP, ENVS, LOGGER, DIR, DEV_ENVS, DEV_MODE, BLOCK_DIRECTORY, SERVICE_DIRECTORY, METADATA_DIRECTORY, \
-    CACHE_DIRECTORY
+    CACHE_DIRECTORY, IGNORE_SERVICE_PROTO_TYPE
 from src.utils.modify_resources import MODIFY_SYSTEM_RESOURCES_LAMBDA
 from src.utils.general import read_file, get_grpc_uri
 
@@ -127,7 +127,7 @@ modify_env(
     mem_manager=mem_manager, 
     cache_dir=cache_directory+"/", 
     block_dir=block_directory+"/",
-    skip_wbp_generation=True
+    skip_wbp_generation=IGNORE_SERVICE_PROTO_TYPE
 )
 
 _regresion = regresion.Session(

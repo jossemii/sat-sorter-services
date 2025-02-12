@@ -8,6 +8,8 @@ DEV_ENVS = {
     'CLIENT_ID': 'd'
 }
 
+IGNORE_SERVICE_PROTO_TYPE = True
+
 ENVS = {
     'GATEWAY_MAIN_DIR': None,
     'SAVE_TRAIN_DATA': 10,
@@ -23,7 +25,7 @@ ENVS = {
     'MAX_REGRESION_WORKERS': 5,
     'MAX_DISUSE_TIME_FACTOR': 1,
     'TIME_SLEEP_WHEN_SOLVER_ERROR_OCCURS': 1,
-    'MAX_ERRORS_FOR_SOLVER': 5,
+    'MAX_ERRORS_FOR_SOLVER': 5
 }
 
 # -- The service use sha3-256 for identify internal objects. --
