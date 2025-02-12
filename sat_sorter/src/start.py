@@ -123,7 +123,12 @@ DependencyManager(
     dynamic_metadata_directory=dynamic_metadata_directory
 )
 
-modify_env(mem_manager=mem_manager, cache_dir=cache_directory+"/", block_dir=block_directory+"/")
+modify_env(
+    mem_manager=mem_manager, 
+    cache_dir=cache_directory+"/", 
+    block_dir=block_directory+"/",
+    skip_wbp_generation=True
+)
 
 _regresion = regresion.Session(
     time_for_each_regression_loop=ENVS['TIME_FOR_EACH_REGRESSION_LOOP']
