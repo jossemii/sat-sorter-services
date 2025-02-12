@@ -17,11 +17,11 @@ from node_controller.gateway.protos import gateway_pb2, celaut_pb2, gateway_pb2_
 
 GATEWAY="localhost:53047"
 SORTER_ENDPOINT=None
-CLIENT_DEV="dev-2d97c026-0438-484e-bac5-390cb00bc2dd"
+CLIENT_DEV="dev-339ed59c-e5bc-4945-bd1f-a650f3adf601"
 
 RANDOM="54500441c6e791d9f6ef74102f962f1de763c9284f17a8ffde3ada9026d55089"
 FRONTIER="900adcdd218c60a02d061fe9853c554be3c9b50616c085c10c404a7befdedf19"
-SORTER=""
+SORTER="c47113aa08992ea25aeb01499d69d8b42411ec1a92d731888979b9457c736bf0"
 
 METADATA_REGISTRY="/nodo/storage/__metadata__"
 REGISTRY="/nodo/storage/__registry__"
