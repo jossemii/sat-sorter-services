@@ -260,19 +260,24 @@ def test_sorter_service(sorter_endpoint: Optional[str] = sys.argv[3] if len(sys.
             # ha hecho la seleccion del solver.)
             print('\n ---- ', i)
 
-            print(' SOLVING CNF ...')
+            print(f' SOLVING CNF ... {cnf}')
             t = time()
             try:
-                interpretation = next(client_grpc(
-                    method=c_stub.Solve,
-                    indices_parser=api_pb2.Interpretation,
-                    partitions_message_mode_parser=True,
-                    input=cnf,
-                    indices_serializer=api_pb2.Cnf,
-                ))
-                
-                print(str(time() - t) + ' OKAY THE INTERPRETATION WAS ', interpretation, '.',
-                        is_good(cnf=cnf, interpretation=interpretation))
+                try:
+                    interpretation = next(client_grpc(
+                        method=c_stub.Solve,
+                        indices_parser=api_pb2.Interpretation,
+                        partitions_message_mode_parser=True,
+                        input=cnf,
+                        indices_serializer=api_pb2.Cnf,
+                        timeout=200
+                    ))
+                    
+                    print(str(time() - t) + ' OKAY THE INTERPRETATION WAS ', interpretation, '.',
+                            is_good(cnf=cnf, interpretation=interpretation))
+                except:
+                    print("Any interpretation from the sat-sorter service ....")
+                    interpretation = None
 
                 print(' SOLVING CNF ON DIRECT SOLVER ...')
                 t = time()
