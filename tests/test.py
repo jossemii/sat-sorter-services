@@ -17,7 +17,7 @@ from node_controller.gateway.protos import gateway_pb2, celaut_pb2, gateway_pb2_
 
 GATEWAY="localhost:53047"
 SORTER_ENDPOINT=None
-CLIENT_DEV="dev-339ed59c-e5bc-4945-bd1f-a650f3adf601"
+CLIENT_DEV="dev-2b53c0cd-9500-40c2-b64f-f83f8e71858a"
 
 RANDOM="54500441c6e791d9f6ef74102f962f1de763c9284f17a8ffde3ada9026d55089"
 FRONTIER="900adcdd218c60a02d061fe9853c554be3c9b50616c085c10c404a7befdedf19"
