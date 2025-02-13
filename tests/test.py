@@ -15,9 +15,10 @@ from node_controller.gateway.protos.gateway_pb2_grpcbf import StartService_input
 from node_controller.gateway.protos import gateway_pb2, celaut_pb2, gateway_pb2_grpc
 
 
-GATEWAY="localhost:53047"
+GATEWAY="192.168.1.84:8090"
 SORTER_ENDPOINT=None
-CLIENT_DEV="dev-2b53c0cd-9500-40c2-b64f-f83f8e71858a"
+CLIENT_DEV="dev-fbdb7e5d-e867-4564-aa58-67f1b21e4d74"
+LOCAL_SOLVER = False
 
 RANDOM="54500441c6e791d9f6ef74102f962f1de763c9284f17a8ffde3ada9026d55089"
 FRONTIER="2985edc25e91e4039214ebe632ba8a3b1c4f77fcc68faf3441339cd011a98947"
@@ -157,7 +158,7 @@ def test_sorter_service(sorter_endpoint: Optional[str] = sys.argv[3] if len(sys.
         
         sleep(10)
 
-        if FRONTIER != '':
+        if FRONTIER != '' and LOCAL_SOLVER:
             # Get the frontier for test it.
             frontier_service = next(client_grpc(
                 method=g_stub.StartService,
@@ -179,7 +180,7 @@ def test_sorter_service(sorter_endpoint: Optional[str] = sys.argv[3] if len(sys.
             json.dump({
                 'sorter': c_uri,
                 'random': r_uri,
-                'frontier': frontier_uri,
+                'frontier': frontier_uri if LOCAL_SOLVER else "",
             }, file)
 
     else:
@@ -194,9 +195,10 @@ def test_sorter_service(sorter_endpoint: Optional[str] = sys.argv[3] if len(sys.
                 grpc.insecure_channel(data['random'])
             )
             try:
-                frontier_stub = api_pb2_grpc.SolverStub(
-                    grpc.insecure_channel(data['frontier'])
-                )
+                if LOCAL_SOLVER:
+                    frontier_stub = api_pb2_grpc.SolverStub(
+                        grpc.insecure_channel(data['frontier'])
+                    )
             except:
                 pass
 
@@ -280,37 +282,38 @@ def test_sorter_service(sorter_endpoint: Optional[str] = sys.argv[3] if len(sys.
                     interpretation = None
 
                 print(' SOLVING CNF ON DIRECT SOLVER ...')
-                t = time()
-                try:
-                    interpretation = next(client_grpc(
-                        method=frontier_stub.Solve,
-                        input=cnf,
-                        indices_serializer=api_pb2.Cnf,
-                        partitions_message_mode_parser=True,
-                        indices_parser=api_pb2.Interpretation
-                    ))
-                except(grpc.RpcError):
-                    # Get the frontier for test it.
-                    uri = next(client_grpc(
-                        method=g_stub.StartService,
-                        input=generator(_hash=FRONTIER),
-                        indices_parser=gateway_pb2.Instance,
-                        partitions_message_mode_parser=True,
-                        indices_serializer=StartService_input_indices
-                    )).instance.uri_slot[0].uri[0]
-                    frontier_uri = uri.ip + ':' + str(uri.port)
-                    frontier_stub = api_pb2_grpc.SolverStub(
-                        grpc.insecure_channel(frontier_uri)
-                    )
-                    interpretation = next(client_grpc(
-                        method=frontier_stub.Solve,
-                        input=cnf,
-                        indices_serializer=api_pb2.Cnf,
-                        partitions_message_mode_parser=True,
-                        indices_parser=api_pb2.Interpretation
-                    ))
-                print(str(time() - t) + ' OKAY THE FRONTIER SAID ', interpretation, '.',
-                      is_good(interpretation=interpretation, cnf=cnf))
+                if LOCAL_SOLVER:
+                    t = time()
+                    try:
+                        interpretation = next(client_grpc(
+                            method=frontier_stub.Solve,
+                            input=cnf,
+                            indices_serializer=api_pb2.Cnf,
+                            partitions_message_mode_parser=True,
+                            indices_parser=api_pb2.Interpretation
+                        ))
+                    except(grpc.RpcError):
+                        # Get the frontier for test it.
+                        uri = next(client_grpc(
+                            method=g_stub.StartService,
+                            input=generator(_hash=FRONTIER),
+                            indices_parser=gateway_pb2.Instance,
+                            partitions_message_mode_parser=True,
+                            indices_serializer=StartService_input_indices
+                        )).instance.uri_slot[0].uri[0]
+                        frontier_uri = uri.ip + ':' + str(uri.port)
+                        frontier_stub = api_pb2_grpc.SolverStub(
+                            grpc.insecure_channel(frontier_uri)
+                        )
+                        interpretation = next(client_grpc(
+                            method=frontier_stub.Solve,
+                            input=cnf,
+                            indices_serializer=api_pb2.Cnf,
+                            partitions_message_mode_parser=True,
+                            indices_parser=api_pb2.Interpretation
+                        ))
+                    print(str(time() - t) + ' OKAY THE FRONTIER SAID ', interpretation, '.',
+                        is_good(interpretation=interpretation, cnf=cnf))
 
             except Exception as e:
                 print('Solving cnf error -> ', str(e), ' may the tensor is not ready')
