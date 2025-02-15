@@ -19,6 +19,7 @@ GATEWAY="192.168.1.84:8090"
 SORTER_ENDPOINT=None
 CLIENT_DEV="dev-fbdb7e5d-e867-4564-aa58-67f1b21e4d74"
 LOCAL_SOLVER = False
+LOCAL_CNF = False
 
 RANDOM="54500441c6e791d9f6ef74102f962f1de763c9284f17a8ffde3ada9026d55089"
 FRONTIER="2985edc25e91e4039214ebe632ba8a3b1c4f77fcc68faf3441339cd011a98947"
@@ -140,23 +141,24 @@ def test_sorter_service(sorter_endpoint: Optional[str] = sys.argv[3] if len(sys.
         
         sleep(10)
 
-        # Get random cnf
-        random_cnf_service = next(client_grpc(
-            method=g_stub.StartService,
-            input=generator(_hash=RANDOM),
-            indices_parser=gateway_pb2.Instance,
-            partitions_message_mode_parser=True,
-            indices_serializer=StartService_input_indices
-        ))
-        print(random_cnf_service)
-        uri = random_cnf_service.instance.uri_slot[0].uri[0]
-        r_uri = uri.ip + ':' + str(uri.port)
-        r_stub = api_pb2_grpc.RandomStub(
-            grpc.insecure_channel(r_uri)
-        )
-        print('Received random. ', r_stub)
+        if LOCAL_CNF:
+            # Get random cnf
+            random_cnf_service = next(client_grpc(
+                method=g_stub.StartService,
+                input=generator(_hash=RANDOM),
+                indices_parser=gateway_pb2.Instance,
+                partitions_message_mode_parser=True,
+                indices_serializer=StartService_input_indices
+            ))
+            print(random_cnf_service)
+            uri = random_cnf_service.instance.uri_slot[0].uri[0]
+            r_uri = uri.ip + ':' + str(uri.port)
+            r_stub = api_pb2_grpc.RandomStub(
+                grpc.insecure_channel(r_uri)
+            )
+            print('Received random. ', r_stub)
         
-        sleep(10)
+            sleep(10)
 
         if FRONTIER != '' and LOCAL_SOLVER:
             # Get the frontier for test it.
@@ -179,7 +181,7 @@ def test_sorter_service(sorter_endpoint: Optional[str] = sys.argv[3] if len(sys.
         with open(SESSION_SERVICES_JSON, 'w') as file:
             json.dump({
                 'sorter': c_uri,
-                'random': r_uri,
+                'random': r_uri if LOCAL_CNF else "",
                 'frontier': frontier_uri if LOCAL_SOLVER else "",
             }, file)
 
@@ -248,75 +250,76 @@ def test_sorter_service(sorter_endpoint: Optional[str] = sys.argv[3] if len(sys.
 
             sleep(5)
 
-            try:
-                cnf = next(client_grpc(
-                    method=r_stub.RandomCnf,
-                    partitions_message_mode_parser=True,
-                    indices_parser=api_pb2.Cnf
-                ))
-            except Exception as e:
-                print(f"Error getting a random cnf. Exception {e}")
-                exit()
-                
-            # Comprueba si sabe generar una interpretacion (sin tener ni idea de que tal
-            # ha hecho la seleccion del solver.)
-            print('\n ---- ', i)
-
-            print(f' SOLVING CNF ... {cnf}')
-            t = time()
-            try:
+            if LOCAL_CNF:
                 try:
-                    interpretation = next(client_grpc(
-                        method=c_stub.Solve,
-                        indices_parser=api_pb2.Interpretation,
+                    cnf = next(client_grpc(
+                        method=r_stub.RandomCnf,
                         partitions_message_mode_parser=True,
-                        input=cnf,
-                        indices_serializer=api_pb2.Cnf,
-                        timeout=200
+                        indices_parser=api_pb2.Cnf
                     ))
+                except Exception as e:
+                    print(f"Error getting a random cnf. Exception {e}")
+                    exit()
                     
-                    print(str(time() - t) + ' OKAY THE INTERPRETATION WAS ', interpretation, '.',
-                            is_good(cnf=cnf, interpretation=interpretation))
-                except:
-                    print("Any interpretation from the sat-sorter service ....")
-                    interpretation = None
+                # Comprueba si sabe generar una interpretacion (sin tener ni idea de que tal
+                # ha hecho la seleccion del solver.)
+                print('\n ---- ', i)
 
-                print(' SOLVING CNF ON DIRECT SOLVER ...')
-                if LOCAL_SOLVER:
-                    t = time()
+                print(f' SOLVING CNF ... {cnf}')
+                t = time()
+                try:
                     try:
                         interpretation = next(client_grpc(
-                            method=frontier_stub.Solve,
+                            method=c_stub.Solve,
+                            indices_parser=api_pb2.Interpretation,
+                            partitions_message_mode_parser=True,
                             input=cnf,
                             indices_serializer=api_pb2.Cnf,
-                            partitions_message_mode_parser=True,
-                            indices_parser=api_pb2.Interpretation
+                            timeout=200
                         ))
-                    except(grpc.RpcError):
-                        # Get the frontier for test it.
-                        uri = next(client_grpc(
-                            method=g_stub.StartService,
-                            input=generator(_hash=FRONTIER),
-                            indices_parser=gateway_pb2.Instance,
-                            partitions_message_mode_parser=True,
-                            indices_serializer=StartService_input_indices
-                        )).instance.uri_slot[0].uri[0]
-                        frontier_uri = uri.ip + ':' + str(uri.port)
-                        frontier_stub = api_pb2_grpc.SolverStub(
-                            grpc.insecure_channel(frontier_uri)
-                        )
-                        interpretation = next(client_grpc(
-                            method=frontier_stub.Solve,
-                            input=cnf,
-                            indices_serializer=api_pb2.Cnf,
-                            partitions_message_mode_parser=True,
-                            indices_parser=api_pb2.Interpretation
-                        ))
-                    print(str(time() - t) + ' OKAY THE FRONTIER SAID ', interpretation, '.',
-                        is_good(interpretation=interpretation, cnf=cnf))
+                        
+                        print(str(time() - t) + ' OKAY THE INTERPRETATION WAS ', interpretation, '.',
+                                is_good(cnf=cnf, interpretation=interpretation))
+                    except:
+                        print("Any interpretation from the sat-sorter service ....")
+                        interpretation = None
 
-            except Exception as e:
-                print('Solving cnf error -> ', str(e), ' may the tensor is not ready')
+                    print(' SOLVING CNF ON DIRECT SOLVER ...')
+                    if LOCAL_SOLVER:
+                        t = time()
+                        try:
+                            interpretation = next(client_grpc(
+                                method=frontier_stub.Solve,
+                                input=cnf,
+                                indices_serializer=api_pb2.Cnf,
+                                partitions_message_mode_parser=True,
+                                indices_parser=api_pb2.Interpretation
+                            ))
+                        except(grpc.RpcError):
+                            # Get the frontier for test it.
+                            uri = next(client_grpc(
+                                method=g_stub.StartService,
+                                input=generator(_hash=FRONTIER),
+                                indices_parser=gateway_pb2.Instance,
+                                partitions_message_mode_parser=True,
+                                indices_serializer=StartService_input_indices
+                            )).instance.uri_slot[0].uri[0]
+                            frontier_uri = uri.ip + ':' + str(uri.port)
+                            frontier_stub = api_pb2_grpc.SolverStub(
+                                grpc.insecure_channel(frontier_uri)
+                            )
+                            interpretation = next(client_grpc(
+                                method=frontier_stub.Solve,
+                                input=cnf,
+                                indices_serializer=api_pb2.Cnf,
+                                partitions_message_mode_parser=True,
+                                indices_parser=api_pb2.Interpretation
+                            ))
+                        print(str(time() - t) + ' OKAY THE FRONTIER SAID ', interpretation, '.',
+                            is_good(interpretation=interpretation, cnf=cnf))
+
+                except Exception as e:
+                    print('Solving cnf error -> ', str(e), ' may the tensor is not ready')
 
             print('Received the data_set.')
 
@@ -360,15 +363,16 @@ def test_sorter_service(sorter_endpoint: Optional[str] = sys.argv[3] if len(sys.
         print(interpretation, str(time() - t) + 'THE FINAL INTERPRETATION IN THREAD ' + str(threading.get_ident()),
               ' last time ', i, j)
 
-    for i in range(3):
-        sleep(10)
-        threads = []
-        for j in range(10):
-            t = threading.Thread(target=final_test, args=(c_stub, r_stub, i, j,))
-            threads.append(t)
-            t.start()
-        for t in threads:
-            t.join()
+    if LOCAL_CNF:
+        for i in range(3):
+            sleep(10)
+            threads = []
+            for j in range(10):
+                t = threading.Thread(target=final_test, args=(c_stub, r_stub, i, j,))
+                threads.append(t)
+                t.start()
+            for t in threads:
+                t.join()
 
     print('Received the data_set.')
     dataset_it = client_grpc(
