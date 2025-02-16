@@ -15,9 +15,9 @@ from node_controller.gateway.protos.gateway_pb2_grpcbf import StartService_input
 from node_controller.gateway.protos import gateway_pb2, celaut_pb2, gateway_pb2_grpc
 
 
-GATEWAY="192.168.1.84:8090"
+GATEWAY="192.168.1.20:53047"
 SORTER_ENDPOINT=None
-CLIENT_DEV="dev-fbdb7e5d-e867-4564-aa58-67f1b21e4d74"
+CLIENT_DEV="dev-f501d3a0-fd1e-44cb-98ea-1512002ce390"
 LOCAL_SOLVER = False
 LOCAL_CNF = False
 
