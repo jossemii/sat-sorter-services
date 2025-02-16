@@ -17,13 +17,13 @@ from node_controller.gateway.protos import gateway_pb2, celaut_pb2, gateway_pb2_
 
 GATEWAY="192.168.1.20:53047"
 SORTER_ENDPOINT=None
-CLIENT_DEV="dev-f501d3a0-fd1e-44cb-98ea-1512002ce390"
+CLIENT_DEV="dev-00ede560-3dba-4db6-9aa5-ec3772b9d711"
 LOCAL_SOLVER = False
-LOCAL_CNF = False
+LOCAL_CNF = True
 
 RANDOM="54500441c6e791d9f6ef74102f962f1de763c9284f17a8ffde3ada9026d55089"
 FRONTIER="2985edc25e91e4039214ebe632ba8a3b1c4f77fcc68faf3441339cd011a98947"
-SORTER="c47113aa08992ea25aeb01499d69d8b42411ec1a92d731888979b9457c736bf0"
+SORTER="fc6f3759d756150dc79e7821d0ad71a3c418abd325b0738e491181b9eb22204f"
 
 METADATA_REGISTRY="/nodo/storage/__metadata__"
 REGISTRY="/nodo/storage/__registry__"

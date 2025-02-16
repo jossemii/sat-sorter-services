@@ -10,8 +10,6 @@ __cache__
 __block__
 __metadata__
 protodot
-.service/src/*
-config.json
 templates/
 ### Flask ###
 instance/*
