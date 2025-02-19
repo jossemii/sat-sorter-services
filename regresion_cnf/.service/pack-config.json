@@ -1,6 +1,6 @@
 {
   "workdir": "regresioncnf",
-  "dependencies_directory": null,
+  "service_dependencies_directory": null,
   "metadata_dependencies_directory": null,
   "blocks_directory": null,
   "zip": false,
