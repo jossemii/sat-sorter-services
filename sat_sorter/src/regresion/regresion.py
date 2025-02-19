@@ -9,7 +9,7 @@ from node_controller.gateway.protos import celaut_pb2
 from node_controller.dependency_manager.service_interface import ServiceInterface
 from node_controller.dependency_manager.dependency_manager import DependencyManager
 from node_controller.dependency_manager.service_instance import ServiceInstance
-from grpcbigbuffer.client import client_grpc, Dir
+from bee_rpc.client import client_grpc, Dir
 from typing import Generator, Optional, Dict
 
 from protos import api_pb2, regresion_pb2_grpc, solvers_dataset_pb2 as sd_pb2, regresion_pb2

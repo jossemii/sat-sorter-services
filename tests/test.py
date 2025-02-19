@@ -7,8 +7,8 @@ from typing import Final, Optional
 import grpc
 import json
 import threading
-from grpcbigbuffer.client import Dir, client_grpc
-from grpcbigbuffer.utils import modify_env
+from bee_rpc.client import Dir, client_grpc
+from bee_rpc.utils import modify_env
 
 from protos import api_pb2, api_pb2_grpc, solvers_dataset_pb2
 from node_controller.gateway.protos.gateway_pb2_grpcbf import StartService_input_indices
@@ -17,8 +17,8 @@ from node_controller.gateway.protos import gateway_pb2, celaut_pb2, gateway_pb2_
 
 GATEWAY="192.168.1.20:53047"
 SORTER_ENDPOINT=None
-CLIENT_DEV="dev-1d9da70d-2a9a-49a7-baca-f7422d5dce17"
-LOCAL_SOLVER = False
+CLIENT_DEV="dev-e0d9c7c2-6b68-4933-86a3-a45ca7aa9441"
+LOCAL_SOLVER = True
 LOCAL_CNF = True
 
 RANDOM="54500441c6e791d9f6ef74102f962f1de763c9284f17a8ffde3ada9026d55089"

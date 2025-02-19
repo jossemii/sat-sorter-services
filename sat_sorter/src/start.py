@@ -20,8 +20,8 @@ import grpc
 from protos import api_pb2, api_pb2_grpc, api_pb2_grpcbf
 from src.regresion import regresion
 from concurrent import futures
-from grpcbigbuffer import client as grpcbf, buffer_pb2
-from grpcbigbuffer.utils import modify_env
+from bee_rpc import client as grpcbf, buffer_pb2
+from bee_rpc.utils import modify_env
 
 # Read __config__ file.
 if not DEV_MODE:

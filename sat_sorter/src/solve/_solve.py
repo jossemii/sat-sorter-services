@@ -5,7 +5,7 @@ from typing import Optional, Dict
 import grpc
 from node_controller.dependency_manager.dependency_manager import DependencyManager
 from node_controller.dependency_manager.service_interface import ServiceInterface
-from grpcbigbuffer.client import client_grpc
+from bee_rpc.client import client_grpc
 
 from protos import api_pb2, api_pb2_grpc, solvers_dataset_pb2
 from node_controller.gateway.protos import celaut_pb2 as celaut

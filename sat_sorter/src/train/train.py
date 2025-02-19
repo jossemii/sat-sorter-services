@@ -7,8 +7,8 @@ import grpc
 from node_controller.dependency_manager.dependency_manager import DependencyManager
 from node_controller.dependency_manager.service_interface import ServiceInterface
 from node_controller.gateway.protos import celaut_pb2 as celaut
-from grpcbigbuffer.client import client_grpc
-from grpcbigbuffer.utils import WITHOUT_BLOCK_POINTERS_FILE_NAME
+from bee_rpc.client import client_grpc
+from bee_rpc.utils import WITHOUT_BLOCK_POINTERS_FILE_NAME
 
 from protos import api_pb2, api_pb2_grpc, solvers_dataset_pb2
 from src.envs import IGNORE_SERVICE_PROTO_TYPE, SHA3_256_ID, LOGGER, SHA3_256, RANDOM_SHA3_256

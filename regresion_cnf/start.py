@@ -1,5 +1,5 @@
 import logging
-from grpcbigbuffer.client import serialize_to_buffer, parse_from_buffer
+from bee_rpc.client import serialize_to_buffer, parse_from_buffer
 from typing import Callable
 
 from solvers_dataset_pb2 import DataSet

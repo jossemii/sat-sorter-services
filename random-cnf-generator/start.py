@@ -4,7 +4,7 @@ if __name__ == "__main__":
     import randomCNF
     from concurrent import futures
     import grpc
-    from grpcbigbuffer.client import serialize_to_buffer
+    from bee_rpc.client import serialize_to_buffer
     import api_pb2_grpc
 
 

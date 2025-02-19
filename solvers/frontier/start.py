@@ -2,7 +2,7 @@ from api_pb2 import Cnf
 import grpc
 from concurrent import futures
 import frontier
-from grpcbigbuffer.client import parse_from_buffer, serialize_to_buffer
+from bee_rpc.client import parse_from_buffer, serialize_to_buffer
 import api_pb2_grpc
 
 class Solver(api_pb2_grpc.Solver):
